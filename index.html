@@ -193,6 +193,7 @@
   dialog::backdrop { background: rgba(0,0,0,0.55); }
   dialog h3 { margin-bottom: var(--space-3); }
   .dialog-actions { display: flex; gap: var(--space-2); justify-content: flex-start; margin-top: var(--space-3); }
+  .details-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: var(--space-2); }
   .file-status { background: var(--color-muted); border: 1px solid var(--color-border); border-radius: 8px; padding: var(--space-2); font-size: 14px; margin-bottom: var(--space-2); }
   .file-status strong { font-variant-numeric: tabular-nums; }
   .file-actions { display: flex; flex-wrap: wrap; gap: var(--space-2); }
@@ -532,12 +533,10 @@
 </div>
 
 <dialog id="tripDestDialog">
-  <h3 data-i18n="trip.dest.title">פרטי הטיול</h3>
+  <h3 data-i18n="trip.dest.title">בחירת יעד הטיול</h3>
   <label><span data-i18n="trip.dest.label">לאן טסים?</span> <input type="text" id="tdDest" data-i18n-ph="settings.trip.destPh" placeholder="למשל: לונדון, אנגליה"></label>
-  <label style="margin-top:10px"><span data-i18n="trip.budgetLabel">תקציב כולל (₪)</span> <input type="number" id="tdBudget" min="0" step="0.01"></label>
-  <label style="margin-top:10px"><span data-i18n="trip.travelersLabel">מספר נוסעים</span> <input type="number" id="tdTravelers" min="0" step="1"></label>
   <div class="dialog-actions" style="margin-top:12px">
-    <button type="button" class="btn-primary" id="tdDestSave" data-i18n="trip.dest.saveBtn">שמירה</button>
+    <button type="button" class="btn-primary" id="tdDestSave" data-i18n="trip.dest.saveBtn">שמור יעד</button>
     <button type="button" class="btn-ghost" id="tdDestCancel" data-i18n="common.cancel">ביטול</button>
   </div>
 </dialog>
@@ -575,6 +574,7 @@
   <div class="tabs settings-tabs" id="settingsTabs">
     <button type="button" class="tab active" data-stab="data" data-i18n="settings.tabs.data">נתונים מקומיים</button>
     <button type="button" class="tab" data-stab="backup" data-i18n="settings.tabs.backup">תזכורת גיבוי</button>
+    <button type="button" class="tab" data-stab="trip" data-i18n="settings.trip.heading">פרטי הטיול</button>
   </div>
 
   <section class="settings-section" id="settingsDataSection" data-stab="data">
@@ -602,6 +602,26 @@
         <option value="off" data-i18n="settings.backupReminder.off">בלי תזכורת</option>
       </select>
     </label>
+  </section>
+
+  <section class="settings-section" id="settingsTripSection" data-stab="trip" hidden>
+    <div class="details-grid">
+      <label><span data-i18n="settings.trip.dest">יעד</span> <input id="tDest" type="text" data-i18n-ph="settings.trip.destPh" placeholder="למשל: לונדון, אנגליה"></label>
+      <label><span data-i18n="field.dateFrom">מתאריך</span> <input id="tFrom" type="date"></label>
+      <label><span data-i18n="field.dateTo">עד תאריך</span> <input id="tTo" type="date"></label>
+      <label><span data-i18n="settings.trip.travelers">כמה אנשים טסים</span> <input id="tTravelers" type="number" min="1"></label>
+      <label><span data-i18n="settings.trip.budget">תקציב כולל (₪)</span> <input id="tBudget" type="number" min="0" step="0.01"></label>
+    </div>
+    <h4 style="margin-top:16px" data-i18n="settings.trip.insurance">ביטוח רפואי</h4>
+    <div class="details-grid">
+      <label><span data-i18n="settings.trip.insCompany">חברת הביטוח</span> <input id="tInsCompany" type="text"></label>
+      <label><span data-i18n="settings.trip.insPolicy">מספר פוליסה</span> <input id="tInsPolicy" type="text" dir="ltr" style="text-align:right"></label>
+      <label><span data-i18n="settings.trip.insPhone">טלפון חירום של הביטוח</span> <input id="tInsPhone" type="tel" dir="ltr" style="text-align:right"></label>
+      <label><span data-i18n="field.notes">הערות</span> <input id="tNotes" type="text" data-i18n-ph="settings.trip.notesPh" placeholder="דרכונים, ויזות, תרופות..."></label>
+    </div>
+    <div class="dialog-actions" style="justify-content:flex-start; margin-top:12px">
+      <button type="button" class="btn-primary" id="saveTripBtn" data-i18n="settings.trip.saveBtn">שמור פרטי טיול</button>
+    </div>
   </section>
 </dialog>
 
@@ -700,10 +720,11 @@ const I18N = {
 
   'trip.pickDatesBtn': { he: 'בחר תאריכים', en: 'Choose dates', ru: 'Выбрать даты', ar: 'اختيار التواريخ' },
   'trip.pickDestBtn': { he: 'בחר יעד', en: 'Choose destination', ru: 'Выбрать направление', ar: 'اختيار الوجهة' },
-  'trip.dest.title': { he: 'פרטי הטיול', en: 'Trip details', ru: 'Детали поездки', ar: 'تفاصيل الرحلة' },
+  'trip.dest.title': { he: 'בחירת יעד הטיול', en: 'Choose trip destination', ru: 'Выбор направления поездки', ar: 'اختيار وجهة الرحلة' },
   'trip.dest.label': { he: 'לאן טסים?', en: 'Where to?', ru: 'Куда едем?', ar: 'إلى أين؟' },
-  'trip.dest.saveBtn': { he: 'שמירה', en: 'Save', ru: 'Сохранить', ar: 'حفظ' },
+  'trip.dest.saveBtn': { he: 'שמור יעד', en: 'Save destination', ru: 'Сохранить направление', ar: 'حفظ الوجهة' },
   'trip.dest.saved': { he: 'היעד נשמר: {dest}', en: 'Destination saved: {dest}', ru: 'Направление сохранено: {dest}', ar: 'تم حفظ الوجهة: {dest}' },
+  'trip.dest.cleared': { he: 'היעד נוקה', en: 'Destination cleared', ru: 'Направление очищено', ar: 'تم مسح الوجهة' },
   'trip.budgetLabel': { he: 'תקציב כולל (₪)', en: 'Total budget (₪)', ru: 'Общий бюджет (₪)', ar: 'الميزانية الإجمالية (₪)' },
   'trip.travelersLabel': { he: 'מספר נוסעים', en: 'Number of travelers', ru: 'Количество путешественников', ar: 'عدد المسافرين' },
   'trip.dates.title': { he: 'בחירת תאריכי הטיול', en: 'Pick trip dates', ru: 'Выбор дат поездки', ar: 'اختيار تواريخ الرحلة' },
@@ -869,7 +890,17 @@ const I18N = {
   'settings.backupReminder.every30': { he: 'כל 30 דקות', en: 'Every 30 minutes', ru: 'Каждые 30 минут', ar: 'كل 30 دقيقة' },
   'settings.backupReminder.every60': { he: 'כל שעה', en: 'Every hour', ru: 'Каждый час', ar: 'كل ساعة' },
   'settings.backupReminder.off': { he: 'בלי תזכורת', en: 'No reminder', ru: 'Без напоминания', ar: 'بدون تذكير' },
+  'settings.trip.heading': { he: 'פרטי הטיול', en: 'Trip details', ru: 'Данные поездки', ar: 'بيانات الرحلة' },
+  'settings.trip.dest': { he: 'יעד', en: 'Destination', ru: 'Направление', ar: 'الوجهة' },
   'settings.trip.destPh': { he: 'למשל: לונדון, אנגליה', en: 'e.g. London, England', ru: 'напр. Лондон, Англия', ar: 'مثال: لندن، إنجلترا' },
+  'settings.trip.travelers': { he: 'כמה אנשים טסים', en: 'Number of travelers', ru: 'Количество путешественников', ar: 'عدد المسافرين' },
+  'settings.trip.budget': { he: 'תקציב כולל (₪)', en: 'Total budget (₪)', ru: 'Общий бюджет (₪)', ar: 'الميزانية الإجمالية (₪)' },
+  'settings.trip.insurance': { he: 'ביטוח רפואי', en: 'Medical insurance', ru: 'Медицинская страховка', ar: 'التأمين الطبي' },
+  'settings.trip.insCompany': { he: 'חברת הביטוח', en: 'Insurance company', ru: 'Страховая компания', ar: 'شركة التأمين' },
+  'settings.trip.insPolicy': { he: 'מספר פוליסה', en: 'Policy number', ru: 'Номер полиса', ar: 'رقم بوليصة التأمين' },
+  'settings.trip.insPhone': { he: 'טלפון חירום של הביטוח', en: 'Insurance emergency phone', ru: 'Телефон экстренной связи страховой', ar: 'هاتف الطوارئ للتأمين' },
+  'settings.trip.notesPh': { he: 'דרכונים, ויזות, תרופות...', en: 'Passports, visas, medication...', ru: 'Паспорта, визы, лекарства...', ar: 'جوازات السفر، التأشيرات، الأدوية...' },
+  'settings.trip.saveBtn': { he: 'שמור פרטי טיול', en: 'Save trip details', ru: 'Сохранить данные поездки', ar: 'حفظ بيانات الرحلة' },
   'backup.reminderTitle': { he: 'עדיין לא בוצע גיבוי', en: 'Backup not done yet', ru: 'Резервная копия ещё не создана', ar: 'لم يتم إجراء نسخة احتياطية بعد' },
   'backup.reminderHint': { he: 'עבר הזמן שבחרתם בלי גיבוי עדכני. מומלץ לייצא גיבוי לאקסל מההגדרות.', en: 'The time you chose has passed without a fresh backup. Consider exporting a backup to Excel from Settings.', ru: 'Прошло выбранное вами время без свежей резервной копии. Рекомендуем экспортировать резервную копию в Excel в настройках.', ar: 'مرّ الوقت الذي اخترتموه دون نسخة احتياطية حديثة. يُنصح بتصدير نسخة احتياطية إلى إكسل من الإعدادات.' },
   'backup.reminderFrequencyHint': { he: 'אפשר לשנות את תדירות התזכורת הזו בכל עת דרך חלון ההגדרות.', en: 'You can change this reminder\'s frequency any time from the settings window.', ru: 'Вы можете изменить частоту этого напоминания в любое время в окне настроек.', ar: 'يمكنكم تغيير وتيرة هذا التذكير في أي وقت من نافذة الإعدادات.' },
@@ -1295,8 +1326,8 @@ const SHEET_MATCH = {
 function buildWorkbook() {
   const wb = XLSX.utils.book_new();
 
-  const tripHeader = [t('trip.dest.label'), t('field.dateFrom'), t('field.dateTo'), t('trip.budgetLabel'), t('trip.travelersLabel')];
-  const tripRow = [trip.destination || '', trip.from || '', trip.to || '', trip.budget || 0, trip.travelers || 0];
+  const tripHeader = [t('trip.dest.label'), t('field.dateFrom'), t('field.dateTo'), t('trip.travelersLabel'), t('trip.budgetLabel'), t('settings.trip.insCompany'), t('settings.trip.insPolicy'), t('settings.trip.insPhone'), t('field.notes')];
+  const tripRow = [trip.destination || '', trip.from || '', trip.to || '', trip.travelers || 0, trip.budget || 0, trip.insCompany || '', trip.insPolicy || '', trip.insPhone || '', trip.notes || ''];
   XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([tripHeader, tripRow]), 'Trip info');
 
   const itiHeader = ['id', t('field.date'), t('field.time'), t('field.category'), t('field.name'), t('field.address'), t('field.coords'), t('field.costILS'), t('field.notes')];
@@ -1353,7 +1384,7 @@ function importXlsxFromArrayBuffer(buf) {
   const tripName = wb.SheetNames.find(n => SHEET_MATCH.trip.test(n));
   if (tripName) {
     const rows = XLSX.utils.sheet_to_json(wb.Sheets[tripName], { header: 1 });
-    if (rows[1]) trip = { destination: rows[1][0] || '', from: asDateStr(rows[1][1]), to: asDateStr(rows[1][2]), budget: Number(rows[1][3]) || 0, travelers: Number(rows[1][4]) || 0 };
+    if (rows[1]) trip = { destination: rows[1][0] || '', from: asDateStr(rows[1][1]), to: asDateStr(rows[1][2]), travelers: Number(rows[1][3]) || 0, budget: Number(rows[1][4]) || 0, insCompany: rows[1][5] || '', insPolicy: String(rows[1][6] ?? ''), insPhone: String(rows[1][7] ?? ''), notes: rows[1][8] || '' };
   }
   const itiRows = sheetRows(wb, 'itinerary');
   if (itiRows.length) itinerary = itiRows.map((r, i) => ({ id: Number(r[0]) || (i + 1), date: asDateStr(r[1]), time: r[2] || '', category: enumKeyFromLabel('itiCat', r[3], ['attraction', 'restaurant', 'hotel', 'transport', 'shopping', 'other'], 'other'), name: r[4] || '', address: r[5] || '', coords: r[6] || '', cost: Number(r[7]) || 0, notes: r[8] || '' }));
@@ -1578,21 +1609,18 @@ function init() {
     renderTripDayViews();
   });
 
-  // Trip dest/budget dialog
+  // Trip destination dialog (destination only - dates/travelers/budget/insurance live in Settings → "פרטי הטיול")
   document.getElementById('tripPickDestBtn').addEventListener('click', () => {
     document.getElementById('tdDest').value = trip.destination || '';
-    document.getElementById('tdBudget').value = trip.budget || '';
-    document.getElementById('tdTravelers').value = trip.travelers || '';
     document.getElementById('tripDestDialog').showModal();
   });
   document.getElementById('tdDestSave').addEventListener('click', () => {
-    trip.destination = document.getElementById('tdDest').value.trim();
-    trip.budget = Number(document.getElementById('tdBudget').value) || 0;
-    trip.travelers = Number(document.getElementById('tdTravelers').value) || 0;
+    const dest = document.getElementById('tdDest').value.trim();
+    trip.destination = dest;
     persist();
     document.getElementById('tripDestDialog').close();
     renderDayStrip(); renderTripSummary();
-    toast(t('toast.destSaved'));
+    toast(dest ? t('trip.dest.saved', { dest }) : t('trip.dest.cleared'));
   });
   document.getElementById('tdDestCancel').addEventListener('click', () => document.getElementById('tripDestDialog').close());
 
@@ -1699,11 +1727,45 @@ function init() {
 
   // Settings / data
   const settingsDialog = document.getElementById('settingsDialog');
-  document.getElementById('settingsBtn').addEventListener('click', () => { renderFileStatus(); showSettingsTab('data'); settingsDialog.showModal(); });
+  function loadTripSettingsForm() {
+    document.getElementById('tDest').value = trip.destination || '';
+    document.getElementById('tFrom').value = trip.from || '';
+    document.getElementById('tTo').value = trip.to || '';
+    document.getElementById('tTravelers').value = trip.travelers || '';
+    document.getElementById('tBudget').value = trip.budget || '';
+    document.getElementById('tInsCompany').value = trip.insCompany || '';
+    document.getElementById('tInsPolicy').value = trip.insPolicy || '';
+    document.getElementById('tInsPhone').value = trip.insPhone || '';
+    document.getElementById('tNotes').value = trip.notes || '';
+    document.getElementById('tFrom').min = todayISO();
+    document.getElementById('tTo').min = trip.from || todayISO();
+  }
+  document.getElementById('settingsBtn').addEventListener('click', () => { renderFileStatus(); loadTripSettingsForm(); showSettingsTab('data'); settingsDialog.showModal(); });
   document.getElementById('closeSettings').addEventListener('click', () => settingsDialog.close());
   document.getElementById('settingsTabs').addEventListener('click', ev => {
     const b = ev.target.closest('.tab');
     if (b) showSettingsTab(b.dataset.stab);
+  });
+  document.getElementById('tFrom').addEventListener('change', () => {
+    document.getElementById('tTo').min = document.getElementById('tFrom').value || todayISO();
+  });
+  document.getElementById('saveTripBtn').addEventListener('click', () => {
+    const from = document.getElementById('tFrom').value, to = document.getElementById('tTo').value;
+    if (from && from < todayISO()) { toast(t('trip.date.pastError'), true); return; }
+    if (from && to && to < from) { toast(t('trip.dates.endBeforeStartError'), true); return; }
+    trip.destination = document.getElementById('tDest').value.trim();
+    trip.from = from;
+    trip.to = to;
+    trip.travelers = Number(document.getElementById('tTravelers').value) || 0;
+    trip.budget = Number(document.getElementById('tBudget').value) || 0;
+    trip.insCompany = document.getElementById('tInsCompany').value.trim();
+    trip.insPolicy = document.getElementById('tInsPolicy').value.trim();
+    trip.insPhone = document.getElementById('tInsPhone').value.trim();
+    trip.notes = document.getElementById('tNotes').value.trim();
+    persist();
+    tripDay = '';
+    renderDayStrip(); renderTripSummary(); renderTripDayViews();
+    toast(t('toast.destSaved'));
   });
   document.getElementById('checkVersionBtn').addEventListener('click', () => {
     try {

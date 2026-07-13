@@ -197,29 +197,53 @@
   .file-status strong { font-variant-numeric: tabular-nums; }
   .file-actions { display: flex; flex-wrap: wrap; gap: var(--space-2); }
   .file-actions button { min-height: 40px; }
+  .settings-header-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: var(--space-3); }
+  .settings-header-row h3 { margin-bottom: 0; }
+  .settings-header-actions { display: flex; flex-direction: column; gap: 6px; align-items: stretch; }
+  #versionInfo { text-align: center; }
+  #settingsDialog { max-width: 640px; height: 85vh; display: flex; flex-direction: column; overflow: hidden; }
+  #settingsDialog:not([open]) { display: none; }
+  #settingsDialog > *:not(.settings-section) { flex: 0 0 auto; }
+  .settings-section { flex: 1 1 auto; min-height: 0; overflow-y: auto; margin-bottom: var(--space-4); padding-inline-end: 6px; }
+  .settings-section[hidden] { display: none; }
+  .settings-tabs { margin-bottom: 16px; }
+  .settings-tabs .tab { padding: 8px 12px; font-size: 14px; min-height: 40px; }
   .help-body { font-size: 14px; line-height: 1.75; max-height: 60vh; overflow-y: auto; padding-inline-end: 6px; }
   .help-section { margin-bottom: 18px; }
   .help-section h4 { font-size: 15px; font-weight: 600; margin-bottom: 6px; color: var(--color-fg); }
   .help-body p { color: var(--color-text-dim); }
+  .link-thumb { width: 48px; height: 48px; object-fit: cover; border-radius: 6px; display: block; }
 
-  /* Print-only elements (hidden on screen) */
-  .print-only { display: none; }
-  #printHeader { align-items: center; gap: 16px; margin-bottom: 20px; }
-  #printHeader .ph-title { font-size: 22px; font-weight: 700; }
-  #printHeader .ph-date { font-size: 14px; color: #555; }
+  /* Trip print / report dialog */
+  #reportDialog { max-width: 640px; }
+  .report-controls { display: flex; flex-wrap: wrap; gap: 10px; align-items: end; margin-bottom: 14px; }
+  .report-controls label { flex: 1 1 140px; }
+  .report-controls .btn-primary { min-height: 44px; }
+  .report-preview { max-height: 60vh; overflow: auto; border: 1px solid var(--color-border); border-radius: 8px; padding: 16px; background: var(--color-muted); }
+  #reportPrintArea { display: none; }
+
+  .rpt { background: #fff; color: #111827; padding: 24px; border-radius: 6px; }
+  .rpt-title-band { display: flex; align-items: center; gap: 14px; border-bottom: 3px solid #1E40AF; padding-bottom: 12px; margin-bottom: 12px; }
+  .rpt-title-band .rt-name { font-size: 22px; font-weight: 700; color: #0F172A; }
+  .rpt-title-band .rt-sub { font-size: 13px; color: #6B7280; }
+  .rpt-params { display: flex; flex-wrap: wrap; gap: 6px 20px; font-size: 13px; color: #374151; margin-bottom: 14px; }
+  .rpt-params strong { color: #111827; }
+  .rpt-empty { padding: 24px; text-align: center; color: #6B7280; }
+  #reportPrintArea .agenda-day { color: #1E3A8A !important; background: #EEF2FF !important; border-color: #C7D2FE !important; }
+  #reportPrintArea .agenda-time, #reportPrintArea .agenda-title, #reportPrintArea .agenda-sub, #reportPrintArea .agenda-cost { color: #111827 !important; }
+  #reportPrintArea table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  #reportPrintArea th { background: #1E40AF; color: #fff; text-align: start; padding: 7px 9px; font-weight: 600; }
+  #reportPrintArea td { padding: 6px 9px; border-bottom: 1px solid #E5E7EB; text-align: start; color: #111827; }
+  #reportPrintArea td.num { text-align: end; font-variant-numeric: tabular-nums; }
+  #reportPrintArea .rpt-group td { background: #EEF2FF; font-weight: 700; color: #1E3A8A; border-top: 1px solid #C7D2FE; }
+  #reportPrintArea .rpt-subtotal td { background: #F8FAFC; font-weight: 600; border-top: 1px solid #CBD5E1; }
+
   @media print {
     @page { margin: 1.2cm; }
     html, body { background: #fff !important; color: #000 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-    header, #toast, dialog, .header-actions, .add-form, form, .actions-cell, .file-hint, .empty, .tabs, .day-strip, .trip-datebar-head button { display: none !important; }
-    .container { max-width: 100% !important; padding: 0 !important; }
-    .print-only { display: flex !important; }
-    .tab-panel[hidden] { display: block !important; }
-    .panel, .card { background: #fff !important; color: #000 !important; border: 1px solid #bbb !important; box-shadow: none !important; break-inside: avoid; page-break-inside: avoid; margin-bottom: 12px; }
-    h2, .cat-label, .sub, th, td, .amount, .trip-dest, .agenda-title, .agenda-sub, .agenda-cost, .agenda-time { color: #000 !important; }
-    .amount-out, .amount.neg { color: #b42318 !important; }
-    .table-wrap { overflow: visible !important; }
-    table { width: 100% !important; }
-    tr { page-break-inside: avoid; }
+    body.report-printing .container, body.report-printing dialog, body.report-printing #toast { display: none !important; }
+    body.report-printing #reportPrintArea { display: block !important; }
+    #reportPrintArea table { font-size: 11px !important; }
   }
 
   @media (max-width: 600px) {
@@ -269,13 +293,6 @@
     </div>
   </header>
 
-  <div id="printHeader" class="print-only">
-    <div>
-      <div class="ph-title" data-i18n="app.title">אור — ניהול חופשה</div>
-      <div class="ph-date" id="printDate"></div>
-    </div>
-  </div>
-
   <section class="panel">
     <div class="trip-datebar-top">
       <span class="trip-dest" id="tripDestDisplay" hidden></span>
@@ -284,8 +301,8 @@
     <div class="trip-datebar-head">
       <button type="button" class="day-sq day-sq-all" id="tripAllDaysBtn" data-day="" hidden></button>
       <div class="day-strip" id="tripDayStrip"></div>
-      <button type="button" class="btn-primary" id="tripPickDatesBtn" data-i18n="trip.pickDatesBtn">בחירת תאריכים</button>
-      <button type="button" class="btn-edit" id="tripPickDestBtn" data-i18n="trip.pickDestBtn">בחירת יעד</button>
+      <button type="button" class="btn-primary" id="tripPickDatesBtn" data-i18n="trip.pickDatesBtn">בחר תאריכים</button>
+      <button type="button" class="btn-edit" id="tripPickDestBtn" data-i18n="trip.pickDestBtn">בחר יעד</button>
     </div>
   </section>
 
@@ -293,11 +310,11 @@
 
   <div class="tabs" id="mainTabs">
     <button type="button" class="tab active" data-tab="agenda" data-i18n="trip.tabAgenda">סדר יום</button>
-    <button type="button" class="tab" data-tab="flights" data-i18n="trip.tabFlights">טיסות</button>
-    <button type="button" class="tab" data-tab="hotels" data-i18n="trip.tabHotels">מלונות</button>
+    <button type="button" class="tab" data-tab="flights" data-i18n="trip.tabFlights">מידע על טיסות</button>
+    <button type="button" class="tab" data-tab="hotels" data-i18n="trip.tabHotels">מידע על בית מלון</button>
     <button type="button" class="tab" data-tab="restaurants" data-i18n="trip.tabRestaurants">מסעדות</button>
-    <button type="button" class="tab" data-tab="cars" data-i18n="trip.tabCars">רכב</button>
-    <button type="button" class="tab" data-tab="itinerary" data-i18n="trip.tabItinerary">מסלול</button>
+    <button type="button" class="tab" data-tab="cars" data-i18n="trip.tabCars">השכרת רכב</button>
+    <button type="button" class="tab" data-tab="itinerary" data-i18n="trip.tabItinerary">נקודות עניין</button>
     <button type="button" class="tab" data-tab="tripexp" data-i18n="trip.tabExpenses">הוצאות</button>
     <button type="button" class="tab" data-tab="triplinks" data-i18n="trip.tabLinks">קישורים</button>
   </div>
@@ -350,7 +367,7 @@
         <label><span data-i18n="field.coords">קואורדינטות</span> <input type="text" data-f="coords" dir="ltr" data-i18n-ph="trip.coordsPlaceholder" placeholder="31.7683,35.2137"></label>
         <label><span data-i18n="field.checkin">צ'ק אין</span> <input type="date" data-f="checkin"></label>
         <label><span data-i18n="field.checkout">צ'ק אאוט</span> <input type="date" data-f="checkout"></label>
-        <label><span data-i18n="field.reference">קוד הזמנה</span> <input type="text" data-f="ref" dir="ltr"></label>
+        <label><span data-i18n="field.referenceShort">אסמכתה</span> <input type="text" data-f="ref" dir="ltr"></label>
         <label><span data-i18n="field.costILS">עלות (₪)</span> <input type="number" data-f="cost" step="0.01" min="0"></label>
         <label><span data-i18n="field.notes">הערות</span> <input type="text" data-f="notes"></label>
         <button type="submit" class="btn-primary" data-i18n="common.add">הוספה</button>
@@ -376,7 +393,7 @@
         <label><span data-i18n="field.restaurantName">שם המסעדה</span> <input type="text" data-f="name"></label>
         <label><span data-i18n="field.address">כתובת</span> <input type="text" data-f="address"></label>
         <label><span data-i18n="field.coords">קואורדינטות</span> <input type="text" data-f="coords" dir="ltr"></label>
-        <label><span data-i18n="field.reference">הזמנה</span> <input type="text" data-f="ref" dir="ltr"></label>
+        <label><span data-i18n="field.referenceShort">אסמכתה</span> <input type="text" data-f="ref" dir="ltr"></label>
         <label><span data-i18n="field.costILS">עלות (₪)</span> <input type="number" data-f="cost" step="0.01" min="0"></label>
         <label><span data-i18n="field.notes">הערות</span> <input type="text" data-f="notes"></label>
         <button type="submit" class="btn-primary" data-i18n="common.add">הוספה</button>
@@ -404,7 +421,7 @@
         <label><span data-i18n="field.pickupDate">תאריך איסוף</span> <input type="date" data-f="pickupDate"></label>
         <label><span data-i18n="field.returnLoc">מיקום החזרה</span> <input type="text" data-f="returnLoc"></label>
         <label><span data-i18n="field.returnDate">תאריך החזרה</span> <input type="date" data-f="returnDate"></label>
-        <label><span data-i18n="field.reference">קוד הזמנה</span> <input type="text" data-f="ref" dir="ltr"></label>
+        <label><span data-i18n="field.referenceShort">אסמכתה</span> <input type="text" data-f="ref" dir="ltr"></label>
         <label><span data-i18n="field.costILS">עלות (₪)</span> <input type="number" data-f="cost" step="0.01" min="0"></label>
         <label><span data-i18n="field.notes">הערות</span> <input type="text" data-f="notes"></label>
         <button type="submit" class="btn-primary" data-i18n="common.add">הוספה</button>
@@ -414,7 +431,7 @@
       <h2 data-i18n="list.cars.title">כל השכרות הרכב</h2>
       <div class="table-wrap">
         <table><thead><tr>
-          <th data-i18n="field.carCompany">חברה</th><th data-i18n="field.pickupDate">איסוף</th><th data-i18n="field.returnDate">החזרה</th><th data-i18n="field.costILS">עלות</th><th data-i18n="common.actions">פעולות</th>
+          <th data-i18n="field.carCompany">חברה</th><th data-i18n="field.carType">סוג רכב</th><th data-i18n="field.pickupLoc">מיקום איסוף</th><th data-i18n="field.pickupDate">איסוף</th><th data-i18n="field.returnLoc">מיקום החזרה</th><th data-i18n="field.returnDate">החזרה</th><th data-i18n="field.costILS">עלות</th><th data-i18n="common.actions">פעולות</th>
         </tr></thead><tbody id="carsBody"></tbody></table>
         <div class="empty" id="carsEmpty" data-i18n="list.cars.empty" hidden>אין עדיין השכרות רכב.</div>
       </div>
@@ -425,6 +442,7 @@
   <div class="tab-panel" data-panel="itinerary" hidden>
     <section class="panel">
       <h2 data-i18n="trip.addPoiTitle">הוספת נקודת עניין</h2>
+      <p class="file-hint" data-i18n="trip.addPoiHint">מה עושים בכל יום: אטרקציות, מסעדות, מלונות ותחבורה — עם כתובת שנפתחת בגוגל מפות או Waze.</p>
       <form class="add-form" id="itineraryForm">
         <label><span data-i18n="field.date">תאריך</span> <input type="date" data-f="date" required></label>
         <label><span data-i18n="field.time">שעה</span> <input type="time" data-f="time"></label>
@@ -495,6 +513,7 @@
     <section class="panel">
       <h2 data-i18n="list.triplinks.addLabel">הוספת קישור</h2>
       <form class="add-form" id="triplinkForm">
+        <label><span data-i18n="field.image">תמונה</span> <input type="url" data-f="image" dir="ltr"></label>
         <label><span data-i18n="field.name">שם</span> <input type="text" data-f="name" required></label>
         <label><span data-i18n="field.url">קישור</span> <input type="url" data-f="url" dir="ltr" required></label>
         <label><span data-i18n="field.description">תיאור</span> <input type="text" data-f="description"></label>
@@ -504,7 +523,7 @@
     <section class="panel">
       <h2 data-i18n="list.triplinks.title">כל הקישורים</h2>
       <div class="table-wrap">
-        <table><thead><tr><th data-i18n="field.name">שם</th><th data-i18n="field.url">קישור</th><th data-i18n="field.description">תיאור</th><th data-i18n="common.actions">פעולות</th></tr></thead>
+        <table><thead><tr><th data-i18n="field.image">תמונה</th><th data-i18n="field.name">שם</th><th data-i18n="field.url">קישור</th><th data-i18n="field.description">תיאור</th><th data-i18n="common.actions">פעולות</th></tr></thead>
           <tbody id="triplinksBody"></tbody></table>
         <div class="empty" id="triplinksEmpty" data-i18n="list.triplinks.empty" hidden>אין עדיין קישורים.</div>
       </div>
@@ -539,35 +558,51 @@
   <p class="date-range-summary" id="tdDaysSummary" hidden></p>
   <p class="file-hint" style="margin-top:8px" data-i18n="trip.dates.hint">התאריכים יוצרים את פס הימים של הטיול — לחיצה על יום מסננת את המסלול.</p>
   <div class="dialog-actions">
-    <button type="button" class="btn-primary" id="tdSave" data-i18n="trip.dates.saveBtn">שמירת תאריכים</button>
+    <button type="button" class="btn-primary" id="tdSave" data-i18n="trip.dates.saveBtn">שמור תאריכים</button>
     <button type="button" class="btn-ghost" id="tdCancel" data-i18n="common.cancel">ביטול</button>
   </div>
 </dialog>
 
 <dialog id="settingsDialog">
-  <h3 data-i18n="settings.title">הגדרות</h3>
-  <div class="file-status" id="fileStatus"></div>
-  <div class="file-actions">
-    <button type="button" class="btn-edit" id="exportBtn" data-i18n="data.exportBtn">ייצוא לאקסל</button>
-    <button type="button" class="btn-edit" id="importBtn" data-i18n="data.importBtn">ייבוא מאקסל</button>
-    <button type="button" class="btn-danger" id="deleteAllBtn" data-i18n="data.deleteAllBtn">מחיקת כל הנתונים</button>
+  <div class="settings-header-row">
+    <h3 data-i18n="settings.title">הגדרות</h3>
+    <div class="settings-header-actions">
+      <button type="button" class="btn-ghost" id="checkVersionBtn" data-i18n="settings.data.checkVersionBtn">רענן את הדפדפן</button>
+      <button type="button" class="btn-ghost" id="closeSettings" data-i18n="common.close">סגור</button>
+    </div>
   </div>
-  <p class="file-hint" style="margin-top:8px" data-i18n="data.hint">הנתונים נשמרים בדפדפן הזה בלבד. מומלץ לייצא גיבוי לאקסל מדי פעם.</p>
-  <h4 style="margin-top:16px" data-i18n="settings.backupReminder.heading">תזכורת גיבוי</h4>
-  <p class="file-hint" data-i18n="settings.backupReminder.hint">כשעובר הזמן שבחרתם בלי ייצוא לאקסל, אור יזכיר לכם עם חלון קופץ. בדפדפנים מסוימים (למשל Safari באייפון) המידע המקומי עלול להימחק אחרי שבוע בלי שימוש, אלא אם שומרים קיצור דרך למסך הבית.</p>
-  <label><span data-i18n="settings.backupReminder.label">תדירות התזכורת</span>
-    <select id="backupReminderInterval">
-      <option value="5" data-i18n="settings.backupReminder.every5">כל 5 דקות</option>
-      <option value="10" data-i18n="settings.backupReminder.every10">כל 10 דקות</option>
-      <option value="15" data-i18n="settings.backupReminder.every15">כל 15 דקות</option>
-      <option value="30" data-i18n="settings.backupReminder.every30">כל 30 דקות</option>
-      <option value="60" data-i18n="settings.backupReminder.every60">כל שעה</option>
-      <option value="off" data-i18n="settings.backupReminder.off">בלי תזכורת</option>
-    </select>
-  </label>
-  <div class="dialog-actions">
-    <button type="button" class="btn-ghost" id="closeSettings" data-i18n="common.close">סגור</button>
+
+  <div class="tabs settings-tabs" id="settingsTabs">
+    <button type="button" class="tab active" data-stab="data" data-i18n="settings.tabs.data">נתונים מקומיים</button>
+    <button type="button" class="tab" data-stab="backup" data-i18n="settings.tabs.backup">תזכורת גיבוי</button>
   </div>
+
+  <section class="settings-section" id="settingsDataSection" data-stab="data">
+    <div class="file-status" id="fileStatus"></div>
+    <div class="file-actions">
+      <button type="button" class="btn-edit" id="exportBtn" data-i18n="data.exportBtn">ייצוא לאקסל</button>
+      <button type="button" class="btn-edit" id="shareBtn" data-i18n="settings.data.shareBtn">שיתוף</button>
+      <button type="button" class="btn-edit" id="importBtn" data-i18n="data.importBtn">ייבוא מאקסל</button>
+      <button type="button" class="btn-danger" id="deleteAllBtn" data-i18n="data.deleteAllBtn">מחיקת כל הנתונים</button>
+    </div>
+    <p class="file-hint" style="margin-top:8px" data-i18n="data.hint">הנתונים נשמרים בדפדפן הזה בלבד. מומלץ לייצא גיבוי לאקסל מדי פעם.</p>
+    <p class="file-hint" style="margin-top:4px" data-i18n-html="settings.data.shareHint">כפתור <strong>שיתוף</strong> פותח את תפריט השיתוף של המכשיר (וואטסאפ, מייל וכו') עם קובץ הגיבוי מוכן לשליחה. בדפדפנים שלא תומכים בשיתוף קבצים, הקובץ פשוט יורד — אפשר לצרף אותו ידנית.</p>
+  </section>
+
+  <section class="settings-section" id="settingsBackupSection" data-stab="backup" hidden>
+    <h4 data-i18n="settings.backupReminder.heading">תזכורת גיבוי</h4>
+    <p class="file-hint" data-i18n="settings.backupReminder.hint">כשעובר הזמן שבחרתם בלי ייצוא לאקסל, אור יזכיר לכם עם חלון קופץ. בדפדפנים מסוימים (למשל Safari באייפון) המידע המקומי עלול להימחק אחרי שבוע בלי שימוש, אלא אם שומרים קיצור דרך למסך הבית.</p>
+    <label><span data-i18n="settings.backupReminder.label">תדירות התזכורת</span>
+      <select id="backupReminderInterval">
+        <option value="5" data-i18n="settings.backupReminder.every5">כל 5 דקות</option>
+        <option value="10" data-i18n="settings.backupReminder.every10">כל 10 דקות</option>
+        <option value="15" data-i18n="settings.backupReminder.every15">כל 15 דקות</option>
+        <option value="30" data-i18n="settings.backupReminder.every30">כל 30 דקות</option>
+        <option value="60" data-i18n="settings.backupReminder.every60">כל שעה</option>
+        <option value="off" data-i18n="settings.backupReminder.off">בלי תזכורת</option>
+      </select>
+    </label>
+  </section>
 </dialog>
 
 <dialog id="backupReminderDialog">
@@ -581,7 +616,13 @@
 </dialog>
 
 <dialog id="helpDialog">
-  <h3 data-i18n="help.title">עזרה</h3>
+  <div class="settings-header-row">
+    <h3 data-i18n="help.title">עזרה</h3>
+    <div class="settings-header-actions">
+      <button type="button" class="btn-ghost" id="checkUpdateBtn" data-i18n="help.checkUpdateBtn">בדיקת עדכונים</button>
+      <span class="file-hint" id="versionInfo"></span>
+    </div>
+  </div>
   <div class="help-body">
     <div class="help-section">
       <h4 data-i18n="help.whatTitle">מה זה אור?</h4>
@@ -604,6 +645,21 @@
     <button type="button" class="btn-ghost" id="closeHelp" data-i18n="common.close">סגור</button>
   </div>
 </dialog>
+
+<dialog id="reportDialog">
+  <h3 id="reportTitle" data-i18n="report.tripTitle">בחירת טאב להדפסה</h3>
+  <div class="report-controls">
+    <label><span data-i18n="report.label">דוח</span> <select id="reportSelect"></select></label>
+    <button type="button" class="btn-primary" id="reportGenerate" data-i18n="report.generateBtn">הפק דוח</button>
+  </div>
+  <div class="dialog-actions">
+    <button type="button" class="btn-edit" id="reportPrint" data-i18n="report.printBtn">הדפסה / PDF</button>
+    <button type="button" class="btn-ghost" id="closeReport" data-i18n="common.close">סגור</button>
+  </div>
+  <div id="reportPreview" class="report-preview"><p class="file-hint" data-i18n="report.chooseHint">בחרו דוח ולחצו "הפק דוח".</p></div>
+</dialog>
+
+<div id="reportPrintArea"></div>
 
 <div id="toast" role="status" aria-live="polite"></div>
 
@@ -634,16 +690,16 @@ const I18N = {
   'header.backupClockNever': { he: 'טרם בוצע גיבוי — לחצו לפתיחת הגדרות', en: 'No backup yet - click to open settings', ru: 'Резервной копии ещё нет — нажмите, чтобы открыть настройки', ar: 'لم يتم إجراء نسخة احتياطية بعد — انقروا لفتح الإعدادات' },
 
   'trip.tabAgenda': { he: 'סדר יום', en: 'Agenda', ru: 'План дня', ar: 'جدول الأعمال' },
-  'trip.tabFlights': { he: 'טיסות', en: 'Flights', ru: 'Рейсы', ar: 'الرحلات' },
-  'trip.tabHotels': { he: 'מלונות', en: 'Hotels', ru: 'Отели', ar: 'الفنادق' },
+  'trip.tabFlights': { he: 'מידע על טיסות', en: 'Flight info', ru: 'Информация о рейсах', ar: 'معلومات الرحلات الجوية' },
+  'trip.tabHotels': { he: 'מידע על בית מלון', en: 'Hotel info', ru: 'Информация об отеле', ar: 'معلومات الفندق' },
   'trip.tabRestaurants': { he: 'מסעדות', en: 'Restaurants', ru: 'Рестораны', ar: 'المطاعم' },
-  'trip.tabCars': { he: 'רכב', en: 'Cars', ru: 'Автомобили', ar: 'السيارات' },
-  'trip.tabItinerary': { he: 'מסלול', en: 'Itinerary', ru: 'Маршрут', ar: 'المسار' },
+  'trip.tabCars': { he: 'השכרת רכב', en: 'Car rental', ru: 'Аренда автомобиля', ar: 'استئجار سيارة' },
+  'trip.tabItinerary': { he: 'נקודות עניין', en: 'Points of interest', ru: 'Достопримечательности', ar: 'معالم سياحية' },
   'trip.tabExpenses': { he: 'הוצאות', en: 'Expenses', ru: 'Расходы', ar: 'المصروفات' },
   'trip.tabLinks': { he: 'קישורים', en: 'Links', ru: 'Ссылки', ar: 'الروابط' },
 
-  'trip.pickDatesBtn': { he: 'בחירת תאריכים', en: 'Pick dates', ru: 'Выбрать даты', ar: 'اختيار التواريخ' },
-  'trip.pickDestBtn': { he: 'בחירת יעד', en: 'Pick destination', ru: 'Выбрать направление', ar: 'اختيار الوجهة' },
+  'trip.pickDatesBtn': { he: 'בחר תאריכים', en: 'Choose dates', ru: 'Выбрать даты', ar: 'اختيار التواريخ' },
+  'trip.pickDestBtn': { he: 'בחר יעד', en: 'Choose destination', ru: 'Выбрать направление', ar: 'اختيار الوجهة' },
   'trip.dest.title': { he: 'פרטי הטיול', en: 'Trip details', ru: 'Детали поездки', ar: 'تفاصيل الرحلة' },
   'trip.dest.label': { he: 'לאן טסים?', en: 'Where to?', ru: 'Куда едем?', ar: 'إلى أين؟' },
   'trip.dest.saveBtn': { he: 'שמירה', en: 'Save', ru: 'Сохранить', ar: 'حفظ' },
@@ -652,10 +708,11 @@ const I18N = {
   'trip.travelersLabel': { he: 'מספר נוסעים', en: 'Number of travelers', ru: 'Количество путешественников', ar: 'عدد المسافرين' },
   'trip.dates.title': { he: 'בחירת תאריכי הטיול', en: 'Pick trip dates', ru: 'Выбор дат поездки', ar: 'اختيار تواريخ الرحلة' },
   'trip.dates.hint': { he: 'התאריכים יוצרים את פס הימים של הטיול — לחיצה על יום מסננת את המסלול.', en: 'The dates create the trip\'s day strip - clicking a day filters the itinerary.', ru: 'Даты формируют полосу дней поездки — нажатие на день фильтрует маршрут.', ar: 'تُنشئ التواريخ شريط أيام الرحلة — النقر على يوم يصفي المسار.' },
-  'trip.dates.saveBtn': { he: 'שמירת תאריכים', en: 'Save dates', ru: 'Сохранить даты', ar: 'حفظ التواريخ' },
+  'trip.dates.saveBtn': { he: 'שמור תאריכים', en: 'Save dates', ru: 'Сохранить даты', ar: 'حفظ التواريخ' },
   'trip.dates.notChosen': { he: 'טרם נבחרו תאריכים', en: 'No dates chosen yet', ru: 'Даты ещё не выбраны', ar: 'لم يتم اختيار تواريخ بعد' },
   'trip.dates.required': { he: 'יש לבחור שני תאריכים', en: 'Both dates are required', ru: 'Необходимо выбрать обе даты', ar: 'يجب اختيار كلا التاريخين' },
   'trip.dates.endBeforeStartError': { he: 'תאריך הסיום לא יכול להיות לפני תאריך ההתחלה', en: 'End date cannot be before start date', ru: 'Дата окончания не может быть раньше даты начала', ar: 'لا يمكن أن يكون تاريخ الانتهاء قبل تاريخ البدء' },
+  'trip.date.pastError': { he: 'תאריך ההתחלה לא יכול להיות בעבר', en: 'Start date cannot be in the past', ru: 'Дата начала не может быть в прошлом', ar: 'لا يمكن أن يكون تاريخ البدء في الماضي' },
   'trip.dayStrip.showAllTitle': { he: 'הצגת כל הימים', en: 'Show all days', ru: 'Показать все дни', ar: 'عرض كل الأيام' },
   'trip.dayStrip.filterTitle': { he: 'סינון ליום זה', en: 'Filter to this day', ru: 'Фильтр по этому дню', ar: 'تصفية حسب هذا اليوم' },
   'trip.dayStrip.daysCount': { he: '{n} ימים', en: '{n} days', ru: '{n} дней', ar: '{n} أيام' },
@@ -680,6 +737,7 @@ const I18N = {
   'trip.agenda.activityKind': { he: 'פעילות', en: 'Activity', ru: 'Активность', ar: 'نشاط' },
 
   'trip.addPoiTitle': { he: 'הוספת נקודת עניין', en: 'Add point of interest', ru: 'Добавить интересное место', ar: 'إضافة نقطة اهتمام' },
+  'trip.addPoiHint': { he: 'מה עושים בכל יום: אטרקציות, מסעדות, מלונות ותחבורה — עם כתובת שנפתחת בגוגל מפות או Waze.', en: 'What you\'re doing each day: attractions, restaurants, hotels and transport - with an address that opens in Google Maps or Waze.', ru: 'Что вы делаете каждый день: достопримечательности, рестораны, отели и транспорт — с адресом, который открывается в Google Maps или Waze.', ar: 'ماذا تفعلون كل يوم: معالم سياحية ومطاعم وفنادق ونقل — مع عنوان يُفتح في خرائط جوجل أو Waze.' },
   'trip.dayByDayTitle': { he: 'מסלול יום אחר יום', en: 'Day-by-day itinerary', ru: 'Маршрут по дням', ar: 'المسار يوماً بيوم' },
   'trip.coordsPlaceholder': { he: '31.7683,35.2137', en: '31.7683,35.2137', ru: '31.7683,35.2137', ar: '31.7683,35.2137' },
 
@@ -700,7 +758,9 @@ const I18N = {
   'field.to': { he: 'יעד', en: 'To', ru: 'Куда', ar: 'إلى' },
   'field.departure': { he: 'שעת המראה', en: 'Departure time', ru: 'Время вылета', ar: 'وقت الإقلاع' },
   'field.arrival': { he: 'שעת נחיתה', en: 'Arrival time', ru: 'Время прибытия', ar: 'وقت الهبوط' },
-  'field.reference': { he: 'קוד הזמנה', en: 'Reference', ru: 'Номер брони', ar: 'رقم الحجز' },
+  'field.reference': { he: 'אסמכתה / כרטיס', en: 'Reference / ticket', ru: 'Номер брони / билет', ar: 'مرجع / تذكرة' },
+  'field.referenceShort': { he: 'אסמכתה', en: 'Reference', ru: 'Номер брони', ar: 'مرجع' },
+  'field.image': { he: 'תמונה', en: 'Image', ru: 'Изображение', ar: 'صورة' },
   'field.hotelName': { he: 'שם המלון', en: 'Hotel name', ru: 'Название отеля', ar: 'اسم الفندق' },
   'field.checkin': { he: "צ'ק אין", en: 'Check-in', ru: 'Заезд', ar: 'تسجيل الوصول' },
   'field.checkout': { he: "צ'ק אאוט", en: 'Check-out', ru: 'Выезд', ar: 'تسجيل المغادرة' },
@@ -744,18 +804,18 @@ const I18N = {
   'trip.budget.forWholeTrip': { he: 'לכל הטיול', en: 'For the whole trip', ru: 'На всю поездку', ar: 'للرحلة بأكملها' },
   'trip.budget.setInSettings': { he: 'לא הוגדר — לחצו "בחירת יעד"', en: 'Not set - click "Pick destination"', ru: 'Не задан — нажмите «Выбрать направление»', ar: 'غير محدد — انقروا "اختيار الوجهة"' },
   'trip.budget.travelersCount': { he: ' · {n} נוסעים', en: ' · {n} travelers', ru: ' · {n} путешественников', ar: ' · {n} مسافرين' },
-  'trip.spentSoFar': { he: 'הוצא עד כה', en: 'Spent so far', ru: 'Потрачено на данный момент', ar: 'المصروف حتى الآن' },
-  'trip.perPerson': { he: '{amount} לנוסע', en: '{amount} per traveler', ru: '{amount} на человека', ar: '{amount} للمسافر' },
-  'trip.categoriesSum': { he: 'סכום כל הקטגוריות', en: 'Sum of all categories', ru: 'Сумма всех категорий', ar: 'مجموع كل الفئات' },
+  'trip.spentSoFar': { he: 'הוצאות עד כה', en: 'Spent so far', ru: 'Потрачено на данный момент', ar: 'المصروفات حتى الآن' },
+  'trip.perPerson': { he: '{amount} לאדם', en: '{amount} per person', ru: '{amount} на человека', ar: '{amount} للشخص' },
+  'trip.categoriesSum': { he: 'טיסות + מלונות + מסלול + הוצאות', en: 'Flights + hotels + itinerary + expenses', ru: 'Перелёты + отели + маршрут + расходы', ar: 'رحلات طيران + فنادق + مسار + مصروفات' },
   'trip.remainingBudget': { he: 'יתרת תקציב', en: 'Remaining budget', ru: 'Остаток бюджета', ar: 'الميزانية المتبقية' },
   'trip.overBudget': { he: 'חריגה מהתקציב', en: 'Over budget', ru: 'Превышение бюджета', ar: 'تجاوز الميزانية' },
   'trip.withinBudget': { he: 'בתוך התקציב', en: 'Within budget', ru: 'В рамках бюджета', ar: 'ضمن الميزانية' },
 
   'list.flights.addLabel': { he: 'הוספת טיסה', en: 'Add flight', ru: 'Добавить рейс', ar: 'إضافة رحلة' },
-  'list.flights.title': { he: 'כל הטיסות', en: 'All flights', ru: 'Все рейсы', ar: 'كل الرحلات' },
+  'list.flights.title': { he: 'כרטיסי הטיסה', en: 'Flight tickets', ru: 'Авиабилеты', ar: 'تذاكر الطيران' },
   'list.flights.empty': { he: 'אין עדיין טיסות.', en: 'No flights yet.', ru: 'Рейсов пока нет.', ar: 'لا توجد رحلات بعد.' },
   'list.hotels.addLabel': { he: 'הוספת מלון', en: 'Add hotel', ru: 'Добавить отель', ar: 'إضافة فندق' },
-  'list.hotels.title': { he: 'כל המלונות', en: 'All hotels', ru: 'Все отели', ar: 'كل الفنادق' },
+  'list.hotels.title': { he: 'המלונות', en: 'Hotels', ru: 'Отели', ar: 'الفنادق' },
   'list.hotels.empty': { he: 'אין עדיין מלונות.', en: 'No hotels yet.', ru: 'Отелей пока нет.', ar: 'لا توجد فنادق بعد.' },
   'list.restaurants.addLabel': { he: 'הוספת מסעדה', en: 'Add restaurant', ru: 'Добавить ресторан', ar: 'إضافة مطعم' },
   'list.restaurants.title': { he: 'כל המסעדות', en: 'All restaurants', ru: 'Все рестораны', ar: 'كل المطاعم' },
@@ -768,7 +828,7 @@ const I18N = {
   'list.tripexp.title': { he: 'כל ההוצאות', en: 'All expenses', ru: 'Все расходы', ar: 'كل المصروفات' },
   'list.tripexp.empty': { he: 'אין עדיין הוצאות.', en: 'No expenses yet.', ru: 'Расходов пока нет.', ar: 'لا توجد مصروفات بعد.' },
   'list.triplinks.addLabel': { he: 'הוספת קישור', en: 'Add link', ru: 'Добавить ссылку', ar: 'إضافة رابط' },
-  'list.triplinks.title': { he: 'כל הקישורים', en: 'All links', ru: 'Все ссылки', ar: 'كل الروابط' },
+  'list.triplinks.title': { he: 'קישורים לבדיקה עתידית', en: 'Links to check later', ru: 'Ссылки для проверки позже', ar: 'روابط للمراجعة لاحقاً' },
   'list.triplinks.empty': { he: 'אין עדיין קישורים.', en: 'No links yet.', ru: 'Ссылок пока нет.', ar: 'لا توجد روابط بعد.' },
 
   'toast.added': { he: 'נוסף בהצלחה', en: 'Added successfully', ru: 'Успешно добавлено', ar: 'تمت الإضافة بنجاح' },
@@ -792,6 +852,14 @@ const I18N = {
   'data.fileStatusNever': { he: '{n} רשומות · טרם נשמר', en: '{n} records · never saved', ru: 'Записей: {n} · ещё не сохранено', ar: '{n} سجلات · لم يُحفظ بعد' },
 
   'settings.title': { he: 'הגדרות', en: 'Settings', ru: 'Настройки', ar: 'الإعدادات' },
+  'settings.tabs.data': { he: 'נתונים מקומיים', en: 'Local data', ru: 'Локальные данные', ar: 'البيانات المحلية' },
+  'settings.tabs.backup': { he: 'תזכורת גיבוי', en: 'Backup reminder', ru: 'Напоминание о резервной копии', ar: 'تذكير النسخ الاحتياطي' },
+  'settings.data.checkVersionBtn': { he: 'רענן את הדפדפן', en: 'Refresh the browser', ru: 'Обновить браузер', ar: 'تحديث المتصفح' },
+  'settings.data.shareBtn': { he: 'שיתוף', en: 'Share', ru: 'Поделиться', ar: 'مشاركة' },
+  'settings.data.shareHint': { he: 'כפתור <strong>שיתוף</strong> פותח את תפריט השיתוף של המכשיר (וואטסאפ, מייל וכו\') עם קובץ הגיבוי מוכן לשליחה. בדפדפנים שלא תומכים בשיתוף קבצים, הקובץ פשוט יורד — אפשר לצרף אותו ידנית.', en: 'The <strong>Share</strong> button opens the device\'s share menu (WhatsApp, email, etc.) with the backup file ready to send. On browsers that don\'t support file sharing, the file just downloads instead - you can attach it manually.', ru: 'Кнопка <strong>«Поделиться»</strong> открывает меню общего доступа устройства (WhatsApp, email и т.д.) с готовым к отправке файлом резервной копии. В браузерах, не поддерживающих обмен файлами, файл просто скачивается — его можно прикрепить вручную.', ar: 'يفتح زر <strong>المشاركة</strong> قائمة المشاركة الخاصة بالجهاز (واتساب، بريد إلكتروني، إلخ) مع ملف النسخة الاحتياطية جاهزاً للإرسال. في المتصفحات التي لا تدعم مشاركة الملفات، يتم تنزيل الملف ببساطة — يمكنكم إرفاقه يدوياً.' },
+  'settings.data.shareTitle': { he: 'גיבוי נתוני אור', en: 'Or data backup', ru: 'Резервная копия данных Or', ar: 'نسخة احتياطية لبيانات Or' },
+  'settings.data.shareText': { he: 'קובץ הגיבוי של אור — לפתיחה בטלפון/מחשב עם אור פתוח, דרך "ייבוא מאקסל" בהגדרות.', en: 'Or backup file - open it on a device with Or via "Import from Excel" in Settings.', ru: 'Файл резервной копии Or — откройте его на устройстве с Or через «Импорт из Excel» в настройках.', ar: 'ملف النسخة الاحتياطية لـ Or — افتحوه على جهاز مع Or عبر "استيراد من إكسل" في الإعدادات.' },
+  'settings.data.shareFallback': { he: 'הקובץ הורד — אפשר לשלוח אותו ידנית (וואטסאפ/מייל)', en: 'File downloaded - you can send it manually (WhatsApp/email)', ru: 'Файл скачан — вы можете отправить его вручную (WhatsApp/email)', ar: 'تم تنزيل الملف — يمكنكم إرساله يدوياً (واتساب/بريد إلكتروني)' },
   'settings.backupReminder.heading': { he: 'תזכורת גיבוי', en: 'Backup reminder', ru: 'Напоминание о резервной копии', ar: 'تذكير النسخ الاحتياطي' },
   'settings.backupReminder.hint': { he: 'כשעובר הזמן שבחרתם בלי ייצוא לאקסל, אור יזכיר לכם עם חלון קופץ. בדפדפנים מסוימים (למשל Safari באייפון) המידע המקומי עלול להימחק אחרי שבוע בלי שימוש, אלא אם שומרים קיצור דרך למסך הבית.', en: 'When the time you chose passes without exporting to Excel, Or reminds you with a popup. Some browsers (e.g. iOS Safari) can delete local data after a week of inactivity unless the app is saved to the home screen.', ru: 'Когда проходит выбранное время без экспорта в Excel, Ор напомнит вам всплывающим окном. Некоторые браузеры (например, Safari на iPhone) могут удалить локальные данные через неделю бездействия, если приложение не сохранено на главный экран.', ar: 'عندما يمر الوقت الذي اخترتموه دون تصدير إلى إكسل، سيذكركم أور بنافذة منبثقة. بعض المتصفحات (مثل Safari على آيفون) قد تحذف البيانات المحلية بعد أسبوع من عدم الاستخدام، ما لم يُحفظ التطبيق على الشاشة الرئيسية.' },
   'settings.backupReminder.label': { he: 'תדירות התזכורת', en: 'Reminder frequency', ru: 'Частота напоминаний', ar: 'وتيرة التذكير' },
@@ -807,6 +875,22 @@ const I18N = {
   'backup.reminderFrequencyHint': { he: 'אפשר לשנות את תדירות התזכורת הזו בכל עת דרך חלון ההגדרות.', en: 'You can change this reminder\'s frequency any time from the settings window.', ru: 'Вы можете изменить частоту этого напоминания в любое время в окне настроек.', ar: 'يمكنكم تغيير وتيرة هذا التذكير في أي وقت من نافذة الإعدادات.' },
 
   'help.title': { he: 'עזרה', en: 'Help', ru: 'Справка', ar: 'مساعدة' },
+  'help.checkUpdateBtn': { he: 'בדיקת עדכונים', en: 'Check for updates', ru: 'Проверить обновления', ar: 'التحقق من التحديثات' },
+  'help.versionLabel': { he: 'גרסה {v}', en: 'Version {v}', ru: 'Версия {v}', ar: 'الإصدار {v}' },
+  'toast.updateFound': { he: 'נמצאה גרסה חדשה ({v}) — מרעננים...', en: 'New version found ({v}) — refreshing...', ru: 'Найдена новая версия ({v}) — обновление...', ar: 'تم العثور على إصدار جديد ({v}) — جارٍ التحديث...' },
+  'toast.upToDate': { he: 'אתם על הגרסה העדכנית ביותר', en: 'You are on the latest version', ru: 'У вас последняя версия', ar: 'أنتم على أحدث إصدار' },
+  'toast.updateCheckFailed': { he: 'לא ניתן היה לבדוק עדכונים', en: 'Could not check for updates', ru: 'Не удалось проверить обновления', ar: 'تعذّر التحقق من التحديثات' },
+  'toast.clearingCache': { he: 'מנקים נתוני דפדפן ומרעננים...', en: 'Clearing browser data and refreshing...', ru: 'Очистка данных браузера и обновление...', ar: 'جارٍ مسح بيانات المتصفح والتحديث...' },
+
+  'report.tripTitle': { he: 'בחירת טאב להדפסה', en: 'Choose a tab to print', ru: 'Выберите вкладку для печати', ar: 'اختيار تبويب للطباعة' },
+  'report.tripNoDataMsg': { he: 'אין עדיין נתונים בטאב הזה.', en: 'No data in this tab yet.', ru: 'На этой вкладке пока нет данных.', ar: 'لا توجد بيانات في هذا التبويب بعد.' },
+  'report.label': { he: 'דוח', en: 'Report', ru: 'Отчёт', ar: 'تقرير' },
+  'report.generateBtn': { he: 'הפק דוח', en: 'Generate report', ru: 'Сформировать отчёт', ar: 'إنشاء تقرير' },
+  'report.printBtn': { he: 'הדפסה / PDF', en: 'Print / PDF', ru: 'Печать / PDF', ar: 'طباعة / PDF' },
+  'report.chooseHint': { he: 'בחרו טאב ולחצו "הפק דוח".', en: 'Choose a tab and click "Generate report".', ru: 'Выберите вкладку и нажмите «Сформировать отчёт».', ar: 'اختاروا تبويباً واضغطوا "إنشاء تقرير".' },
+  'report.generatedAt': { he: 'הופק', en: 'Generated', ru: 'Сформировано', ar: 'تم الإنشاء' },
+  'report.recordsLabel': { he: 'רשומות', en: 'Records', ru: 'Записей', ar: 'سجلات' },
+  'toast.generateFirst': { he: 'צריך קודם להפיק דוח', en: 'Generate a report first', ru: 'Сначала сформируйте отчёт', ar: 'يجب إنشاء تقرير أولاً' },
   'help.whatTitle': { he: 'מה זה אור?', en: 'What is Or?', ru: 'Что такое Ор?', ar: 'ما هو أور؟' },
   'help.whatBody': { he: 'אור הוא כלי לתכנון חופשות — טיסות, מלונות, מסעדות, השכרת רכב, מסלול יומי, הוצאות וקישורים שימושיים, הכל במקום אחד, ללא צורך בהתחברות או חשבון.', en: 'Or is a vacation-planning tool - flights, hotels, restaurants, car rentals, a daily itinerary, expenses and useful links, all in one place, no sign-in or account needed.', ru: 'Ор — инструмент планирования отпуска: рейсы, отели, рестораны, аренда авто, дневной маршрут, расходы и полезные ссылки — всё в одном месте, без входа в систему и без аккаунта.', ar: 'أور هي أداة لتخطيط الإجازات — رحلات وفنادق ومطاعم وتأجير سيارات ومسار يومي ومصروفات وروابط مفيدة، كل ذلك في مكان واحد، دون الحاجة لتسجيل الدخول أو حساب.' },
   'help.datesTitle': { he: 'יעד ותאריכים', en: 'Destination and dates', ru: 'Направление и даты', ar: 'الوجهة والتواريخ' },
@@ -816,6 +900,9 @@ const I18N = {
   'help.dataTitle': { he: 'שמירת נתונים וגיבוי', en: 'Data storage and backup', ru: 'Хранение данных и резервное копирование', ar: 'تخزين البيانات والنسخ الاحتياطي' },
   'help.dataBody': { he: 'הנתונים נשמרים רק בדפדפן הזה, במכשיר הזה — אין שרת וללא חשבון. אם מנקים היסטוריית גלישה, עוברים למכשיר אחר, או לא פותחים את האתר במשך שבוע ב-Safari באייפון בלי לשמור קיצור דרך למסך הבית — המידע עלול להיעלם. מומלץ לייצא גיבוי לאקסל מדי פעם דרך ההגדרות, ולייבא אותו בחזרה במידת הצורך.', en: 'Data is saved only in this browser, on this device - no server, no account. If you clear browsing data, switch devices, or don\'t open the site for a week on iPhone Safari without saving it to the home screen, the data may be lost. It\'s recommended to export a backup to Excel occasionally via Settings, and import it back if needed.', ru: 'Данные сохраняются только в этом браузере, на этом устройстве — нет сервера, нет аккаунта. Если вы очистите данные браузера, смените устройство или не будете открывать сайт неделю в Safari на iPhone, не сохранив его на главный экран, данные могут быть потеряны. Рекомендуется периодически экспортировать резервную копию в Excel через настройки и импортировать её обратно при необходимости.', ar: 'يتم حفظ البيانات فقط في هذا المتصفح، على هذا الجهاز — لا يوجد خادم ولا حساب. إذا مسحتم بيانات التصفح، أو انتقلتم لجهاز آخر، أو لم تفتحوا الموقع لمدة أسبوع في Safari على آيفون دون حفظه على الشاشة الرئيسية — قد تُفقد البيانات. يُنصح بتصدير نسخة احتياطية إلى إكسل بين الحين والآخر من الإعدادات، واستيرادها مرة أخرى عند الحاجة.' }
 };
+
+const APP_VERSION = '1.0.0';
+const APP_BUILT_AT = 'dev'; // bumped by hand alongside version.json on each deploy that should force a reload
 
 let currentLang = localStorage.getItem('or-lang') || 'he';
 
@@ -828,6 +915,7 @@ function t(key, vars) {
 function applyI18nDom(root) {
   const scope = root || document;
   scope.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
+  scope.querySelectorAll('[data-i18n-html]').forEach(el => { el.innerHTML = t(el.dataset.i18nHtml); });
   scope.querySelectorAll('[data-i18n-ph]').forEach(el => { el.placeholder = t(el.dataset.i18nPh); });
   scope.querySelectorAll('[data-i18n-aria]').forEach(el => { el.setAttribute('aria-label', t(el.dataset.i18nAria)); });
 }
@@ -883,8 +971,8 @@ function addTripexp(p) { const r = { id: nextId(tripexp), date: p.date, category
 function updateTripexp(id, p) { const r = tripexp.find(x => String(x.id) === String(id)); if (!r) return; Object.assign(r, { date: p.date, category: p.category, description: p.description || '', amount: Number(p.amount) || 0 }); persist(); }
 function deleteTripexp(id) { tripexp = tripexp.filter(x => String(x.id) !== String(id)); persist(); }
 
-function addTriplink(p) { const r = { id: nextId(triplinks), name: p.name, url: p.url, description: p.description || '' }; triplinks.push(r); persist(); return r; }
-function updateTriplink(id, p) { const r = triplinks.find(x => String(x.id) === String(id)); if (!r) return; Object.assign(r, { name: p.name, url: p.url, description: p.description || '' }); persist(); }
+function addTriplink(p) { const r = { id: nextId(triplinks), image: p.image || '', name: p.name, url: p.url, description: p.description || '' }; triplinks.push(r); persist(); return r; }
+function updateTriplink(id, p) { const r = triplinks.find(x => String(x.id) === String(id)); if (!r) return; Object.assign(r, { image: p.image || '', name: p.name, url: p.url, description: p.description || '' }); persist(); }
 function deleteTriplink(id) { triplinks = triplinks.filter(x => String(x.id) !== String(id)); persist(); }
 
 // --- Formatting helpers ---
@@ -1054,7 +1142,7 @@ function renderCarsTable() {
   const sorted = [...cars].sort((a, b) => b.id - a.id);
   document.getElementById('carsEmpty').hidden = sorted.length > 0;
   document.getElementById('carsBody').innerHTML = sorted.map(r => `<tr>
-      <td>${escapeHtml(r.company) || '—'}</td><td>${fmtDate(r.pickupDate)}</td><td>${fmtDate(r.returnDate)}</td><td class="num">${r.cost ? fmt(r.cost) : '—'}</td>
+      <td>${escapeHtml(r.company) || '—'}</td><td>${escapeHtml(r.cartype) || '—'}</td><td>${r.pickupLoc ? escapeHtml(r.pickupLoc) + ' ' + navLinks(r.pickupLoc, '') : '—'}</td><td>${fmtDate(r.pickupDate)}</td><td>${r.returnLoc ? escapeHtml(r.returnLoc) + ' ' + navLinks(r.returnLoc, '') : '—'}</td><td>${fmtDate(r.returnDate)}</td><td class="num">${r.cost ? fmt(r.cost) : '—'}</td>
       <td class="actions-cell"><button type="button" class="btn-edit" data-edit-car="${r.id}">${t('common.edit')}</button><button type="button" class="btn-danger" data-del-car="${r.id}">${t('common.delete')}</button></td>
     </tr>`).join('');
 }
@@ -1102,6 +1190,7 @@ function renderTriplinksTable() {
   const sorted = [...triplinks].sort((a, b) => b.id - a.id);
   document.getElementById('triplinksEmpty').hidden = sorted.length > 0;
   document.getElementById('triplinksBody').innerHTML = sorted.map(r => `<tr>
+      <td>${r.image ? `<img src="${escapeHtml(r.image)}" alt="" class="link-thumb" loading="lazy">` : '—'}</td>
       <td>${escapeHtml(r.name)}</td><td dir="ltr"><a href="${escapeHtml(r.url)}" target="_blank" rel="noopener" class="nav-link nl-maps">${escapeHtml(r.url)}</a></td><td>${escapeHtml(r.description) || '—'}</td>
       <td class="actions-cell"><button type="button" class="btn-edit" data-edit-triplink="${r.id}">${t('common.edit')}</button><button type="button" class="btn-danger" data-del-triplink="${r.id}">${t('common.delete')}</button></td>
     </tr>`).join('');
@@ -1203,7 +1292,7 @@ const SHEET_MATCH = {
   tripexp: /הוצא|expense|расход|مصروف/i,
   triplinks: /קישור|link|ссылк|رابط/i
 };
-function exportXlsx() {
+function buildWorkbook() {
   const wb = XLSX.utils.book_new();
 
   const tripHeader = [t('trip.dest.label'), t('field.dateFrom'), t('field.dateTo'), t('trip.budgetLabel'), t('trip.travelersLabel')];
@@ -1218,15 +1307,15 @@ function exportXlsx() {
   const flRows = flights.map(r => [r.id, r.date, r.flight, r.from, r.to, r.dep, r.arr, r.ref, r.cost, r.notes]);
   XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([flHeader, ...flRows]), t('trip.tabFlights'));
 
-  const hoHeader = ['id', t('field.hotelName'), t('field.address'), t('field.coords'), t('field.checkin'), t('field.checkout'), t('field.reference'), t('field.costILS'), t('field.notes')];
+  const hoHeader = ['id', t('field.hotelName'), t('field.address'), t('field.coords'), t('field.checkin'), t('field.checkout'), t('field.referenceShort'), t('field.costILS'), t('field.notes')];
   const hoRows = hotels.map(r => [r.id, r.name, r.address, r.coords, r.checkin, r.checkout, r.ref, r.cost, r.notes]);
   XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([hoHeader, ...hoRows]), t('trip.tabHotels'));
 
-  const reHeader = ['id', t('field.date'), t('field.restaurantName'), t('field.address'), t('field.coords'), t('field.reference'), t('field.costILS'), t('field.notes')];
+  const reHeader = ['id', t('field.date'), t('field.restaurantName'), t('field.address'), t('field.coords'), t('field.referenceShort'), t('field.costILS'), t('field.notes')];
   const reRows = restaurants.map(r => [r.id, r.date, r.name, r.address, r.coords, r.ref, r.cost, r.notes]);
   XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([reHeader, ...reRows]), t('trip.tabRestaurants'));
 
-  const caHeader = ['id', t('field.carCompany'), t('field.carType'), t('field.pickupLoc'), t('field.pickupDate'), t('field.returnLoc'), t('field.returnDate'), t('field.reference'), t('field.costILS'), t('field.notes')];
+  const caHeader = ['id', t('field.carCompany'), t('field.carType'), t('field.pickupLoc'), t('field.pickupDate'), t('field.returnLoc'), t('field.returnDate'), t('field.referenceShort'), t('field.costILS'), t('field.notes')];
   const caRows = cars.map(r => [r.id, r.company, r.cartype, r.pickupLoc, r.pickupDate, r.returnLoc, r.returnDate, r.ref, r.cost, r.notes]);
   XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([caHeader, ...caRows]), t('trip.tabCars'));
 
@@ -1234,19 +1323,28 @@ function exportXlsx() {
   const exRows = tripexp.map(r => [r.id, r.date, enumLabel('expCat', r.category), r.description, r.amount]);
   XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([exHeader, ...exRows]), t('trip.tabExpenses'));
 
-  const lkHeader = ['id', t('field.name'), t('field.url'), t('field.description')];
-  const lkRows = triplinks.map(r => [r.id, r.name, r.url, r.description]);
+  const lkHeader = ['id', t('field.image'), t('field.name'), t('field.url'), t('field.description')];
+  const lkRows = triplinks.map(r => [r.id, r.image, r.name, r.url, r.description]);
   XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([lkHeader, ...lkRows]), t('trip.tabLinks'));
 
-  XLSX.writeFile(wb, 'or.xlsx');
+  return wb;
+}
+function exportXlsx() {
+  XLSX.writeFile(buildWorkbook(), 'or.xlsx');
   recordBackupNow();
   toast(t('toast.exported'));
+}
+function buildXlsxBlob() {
+  return new Blob([XLSX.write(buildWorkbook(), { type: 'array', bookType: 'xlsx' })], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
 }
 function sheetRows(wb, kind) {
   const name = wb.SheetNames.find(n => SHEET_MATCH[kind].test(n));
   if (!name) return [];
+  // triplinks' 2nd column (index 1) is the optional "image" field, so the
+  // presence check must look at its 3rd column (index 2, the required name) instead.
+  const keyCol = kind === 'triplinks' ? 2 : 1;
   const rows = XLSX.utils.sheet_to_json(wb.Sheets[name], { header: 1 });
-  return rows.slice(1).filter(r => r && r.length && r[1] !== undefined && r[1] !== '');
+  return rows.slice(1).filter(r => r && r.length && r[keyCol] !== undefined && r[keyCol] !== '');
 }
 function asDateStr(v) { return v instanceof Date ? v.toISOString().slice(0, 10) : String(v || ''); }
 function importXlsxFromArrayBuffer(buf) {
@@ -1270,7 +1368,7 @@ function importXlsxFromArrayBuffer(buf) {
   const exRows = sheetRows(wb, 'tripexp');
   if (exRows.length) tripexp = exRows.map((r, i) => ({ id: Number(r[0]) || (i + 1), date: asDateStr(r[1]), category: enumKeyFromLabel('expCat', r[2], ['flights', 'lodging', 'food', 'attractions', 'transport', 'shopping', 'insurance', 'other'], 'other'), description: r[3] || '', amount: Number(r[4]) || 0 }));
   const lkRows = sheetRows(wb, 'triplinks');
-  if (lkRows.length) triplinks = lkRows.map((r, i) => ({ id: Number(r[0]) || (i + 1), name: r[1] || '', url: r[2] || '', description: r[3] || '' }));
+  if (lkRows.length) triplinks = lkRows.map((r, i) => ({ id: Number(r[0]) || (i + 1), image: r[1] || '', name: r[2] || '', url: r[3] || '', description: r[4] || '' }));
 
   persist();
   recordBackupNow();
@@ -1343,6 +1441,102 @@ function wireBackdropClose(dialog) {
   });
 }
 
+// --- Version tracking & update check ---
+// Compares the running APP_VERSION against version.json (served from the same
+// origin, bumped by hand alongside APP_VERSION on any deploy that should force
+// a reload) and reloads automatically when a newer build is live.
+function updateVersionDisplay() {
+  const el = document.getElementById('versionInfo');
+  if (el) el.textContent = t('help.versionLabel', { v: APP_VERSION });
+}
+async function checkForUpdate(explicit) {
+  try {
+    const res = await fetch('./version.json?_=' + Date.now(), { cache: 'no-store' });
+    if (!res.ok) throw new Error('version.json not found');
+    const data = await res.json();
+    const stale = (data.version && data.version !== APP_VERSION) ||
+      (data.builtAt && APP_BUILT_AT !== 'dev' && data.builtAt !== APP_BUILT_AT);
+    if (stale) {
+      if (!sessionStorage.getItem('or-auto-reloaded')) {
+        sessionStorage.setItem('or-auto-reloaded', '1');
+        toast(t('toast.updateFound', { v: data.version }));
+        setTimeout(() => window.location.reload(), 1800);
+      } else if (explicit) {
+        toast(t('toast.updateFound', { v: data.version }));
+      }
+    } else {
+      sessionStorage.removeItem('or-auto-reloaded');
+      if (explicit) toast(t('toast.upToDate'));
+    }
+  } catch (err) {
+    if (explicit) toast(t('toast.updateCheckFailed'), true);
+  }
+}
+
+// --- Settings dialog tabs ---
+function showSettingsTab(tab) {
+  document.querySelectorAll('#settingsTabs .tab').forEach(b => b.classList.toggle('active', b.dataset.stab === tab));
+  document.querySelectorAll('#settingsDialog .settings-section').forEach(sec => { sec.hidden = sec.dataset.stab !== tab; });
+}
+
+// --- Trip print dialog: unlike a recurring ledger, a trip just needs each of
+// its own tabs printed as-is, so instead of a date-range/group-by report we
+// let the user pick which tab's table (or the agenda) to print.
+const TRIP_PRINT_SECTIONS = [
+  { key: 'agenda', title: 'trip.tabAgenda', kind: 'agenda' },
+  { key: 'flights', title: 'trip.tabFlights', kind: 'list' },
+  { key: 'hotels', title: 'trip.tabHotels', kind: 'list' },
+  { key: 'restaurants', title: 'trip.tabRestaurants', kind: 'list' },
+  { key: 'cars', title: 'trip.tabCars', kind: 'list' },
+  { key: 'itinerary', title: 'trip.tabItinerary', kind: 'list' },
+  { key: 'tripexp', title: 'trip.tabExpenses', kind: 'list' },
+  { key: 'triplinks', title: 'trip.tabLinks', kind: 'list' }
+];
+let reportHtml = '';
+function generateTripSectionPreview() {
+  const key = document.getElementById('reportSelect').value;
+  const section = TRIP_PRINT_SECTIONS.find(s => s.key === key);
+  if (!section) return;
+  let bodyHtml = '', recordCount = 0;
+  if (section.kind === 'agenda') {
+    const box = document.getElementById('agendaBox');
+    recordCount = box ? box.querySelectorAll('.agenda-item').length : 0;
+    bodyHtml = recordCount && box ? box.outerHTML : '';
+  } else {
+    const tbody = document.getElementById(`${key}Body`);
+    const table = tbody ? tbody.closest('table') : null;
+    recordCount = tbody ? tbody.querySelectorAll('tr').length : 0;
+    if (table && recordCount) {
+      const clone = table.cloneNode(true);
+      // Edit/delete buttons are always the row's last cell - meaningless on paper.
+      clone.querySelectorAll('tr').forEach(tr => { if (tr.children.length) tr.children[tr.children.length - 1].remove(); });
+      bodyHtml = clone.outerHTML;
+    }
+  }
+  let html = `<div class="rpt">
+    <div class="rpt-title-band"><div><div class="rt-name">${escapeHtml(t(section.title))}</div><div class="rt-sub">${trip.destination ? escapeHtml(trip.destination) : escapeHtml(t('app.title'))}</div></div></div>
+    <div class="rpt-params"><span>${t('report.generatedAt')}: <strong>${fmtDateTime(new Date())}</strong></span><span>${t('report.recordsLabel')}: <strong>${recordCount}</strong></span></div>`;
+  html += recordCount ? bodyHtml : `<div class="rpt-empty">${t('report.tripNoDataMsg')}</div>`;
+  html += `</div>`;
+  reportHtml = html;
+  document.getElementById('reportPreview').innerHTML = html;
+}
+function openTripPrintDialog() {
+  const sel = document.getElementById('reportSelect');
+  sel.innerHTML = TRIP_PRINT_SECTIONS.map(s => `<option value="${s.key}">${escapeHtml(t(s.title))}</option>`).join('');
+  reportHtml = '';
+  document.getElementById('reportPreview').innerHTML = `<p class="file-hint">${t('report.chooseHint')}</p>`;
+  document.getElementById('reportDialog').showModal();
+}
+function printReport() {
+  if (!reportHtml) { toast(t('toast.generateFirst'), true); return; }
+  document.getElementById('reportPrintArea').innerHTML = reportHtml;
+  document.body.classList.add('report-printing');
+  window.addEventListener('afterprint', () => document.body.classList.remove('report-printing'), { once: true });
+  window.print();
+  setTimeout(() => document.body.classList.remove('report-printing'), 1500);
+}
+
 // --- Init ---
 function init() {
   applyTheme(localStorage.getItem('or-theme') === 'light' ? 'light' : 'dark');
@@ -1374,6 +1568,12 @@ function init() {
     const b = ev.target.closest('.day-sq');
     if (!b) return;
     tripDay = b.dataset.day || '';
+    if (tripDay) {
+      ['itineraryForm', 'tripexpForm', 'flightForm', 'restaurantForm'].forEach(formId => {
+        const f = document.querySelector(`#${formId} [data-f="date"]`);
+        if (f) f.value = tripDay;
+      });
+    }
     renderDayStrip();
     renderTripDayViews();
   });
@@ -1408,14 +1608,20 @@ function init() {
   document.getElementById('tripPickDatesBtn').addEventListener('click', () => {
     document.getElementById('tdFrom').value = trip.from || '';
     document.getElementById('tdTo').value = trip.to || '';
+    document.getElementById('tdFrom').min = todayISO();
+    document.getElementById('tdTo').min = trip.from || todayISO();
     updateTdDaysSummary();
     document.getElementById('tripDatesDialog').showModal();
   });
-  document.getElementById('tdFrom').addEventListener('change', updateTdDaysSummary);
+  document.getElementById('tdFrom').addEventListener('change', () => {
+    document.getElementById('tdTo').min = document.getElementById('tdFrom').value || todayISO();
+    updateTdDaysSummary();
+  });
   document.getElementById('tdTo').addEventListener('change', updateTdDaysSummary);
   document.getElementById('tdSave').addEventListener('click', () => {
     const from = document.getElementById('tdFrom').value, to = document.getElementById('tdTo').value;
     if (!from || !to) { toast(t('trip.dates.required'), true); return; }
+    if (from < todayISO()) { toast(t('trip.date.pastError'), true); return; }
     if (to < from) { toast(t('trip.dates.endBeforeStartError'), true); return; }
     trip.from = from; trip.to = to;
     persist();
@@ -1485,17 +1691,53 @@ function init() {
     langToggle.setAttribute('aria-expanded', 'false');
   });
 
-  // Print
-  document.getElementById('printBtn').addEventListener('click', () => {
-    document.getElementById('printDate').textContent = fmtDateTime(new Date().toISOString());
-    window.print();
-  });
+  // Print (trip print/report dialog)
+  document.getElementById('printBtn').addEventListener('click', openTripPrintDialog);
+  document.getElementById('reportGenerate').addEventListener('click', generateTripSectionPreview);
+  document.getElementById('reportPrint').addEventListener('click', printReport);
+  document.getElementById('closeReport').addEventListener('click', () => document.getElementById('reportDialog').close());
 
   // Settings / data
   const settingsDialog = document.getElementById('settingsDialog');
-  document.getElementById('settingsBtn').addEventListener('click', () => { renderFileStatus(); settingsDialog.showModal(); });
+  document.getElementById('settingsBtn').addEventListener('click', () => { renderFileStatus(); showSettingsTab('data'); settingsDialog.showModal(); });
   document.getElementById('closeSettings').addEventListener('click', () => settingsDialog.close());
+  document.getElementById('settingsTabs').addEventListener('click', ev => {
+    const b = ev.target.closest('.tab');
+    if (b) showSettingsTab(b.dataset.stab);
+  });
+  document.getElementById('checkVersionBtn').addEventListener('click', () => {
+    try {
+      document.cookie.split(';').forEach(c => {
+        const eq = c.indexOf('=');
+        const name = (eq > -1 ? c.slice(0, eq) : c).trim();
+        if (name) document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
+      });
+    } catch (e) { /* ignore */ }
+    if (window.caches && caches.keys) {
+      caches.keys().then(keys => Promise.all(keys.map(k => caches.delete(k)))).catch(() => {});
+    }
+    toast(t('toast.clearingCache'));
+    setTimeout(() => { location.href = location.pathname + '?_=' + Date.now(); }, 600);
+  });
   document.getElementById('exportBtn').addEventListener('click', exportXlsx);
+  document.getElementById('shareBtn').addEventListener('click', async () => {
+    try {
+      const file = new File([buildXlsxBlob()], 'or.xlsx', { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        try {
+          await navigator.share({ files: [file], title: t('settings.data.shareTitle'), text: t('settings.data.shareText') });
+          recordBackupNow();
+          return;
+        } catch (e) {
+          if (e.name === 'AbortError') return; // user closed the share sheet - not an error
+          throw e;
+        }
+      }
+      exportXlsx();
+      toast(t('settings.data.shareFallback'));
+      recordBackupNow();
+    } catch (err) { toast(err.message, true); }
+  });
   const fileInput = document.getElementById('fileInput');
   document.getElementById('importBtn').addEventListener('click', () => fileInput.click());
   fileInput.addEventListener('change', ev => {
@@ -1516,13 +1758,15 @@ function init() {
 
   // Help
   const helpDialog = document.getElementById('helpDialog');
-  document.getElementById('helpBtn').addEventListener('click', () => helpDialog.showModal());
+  document.getElementById('helpBtn').addEventListener('click', () => { updateVersionDisplay(); checkForUpdate(false); helpDialog.showModal(); });
   document.getElementById('closeHelp').addEventListener('click', () => helpDialog.close());
+  document.getElementById('checkUpdateBtn').addEventListener('click', () => checkForUpdate(true));
+  setTimeout(() => checkForUpdate(false), 4000); // quiet background check shortly after load
 
   // Backup reminder
   updateBackupClock();
   restartBackupReminderTimer();
-  document.getElementById('backupClock').addEventListener('click', () => { renderFileStatus(); settingsDialog.showModal(); });
+  document.getElementById('backupClock').addEventListener('click', () => { renderFileStatus(); showSettingsTab('backup'); settingsDialog.showModal(); });
   const backupReminderIntervalSelect = document.getElementById('backupReminderInterval');
   backupReminderIntervalSelect.value = localStorage.getItem(BACKUP_REMINDER_INTERVAL_KEY) || '10';
   backupReminderIntervalSelect.addEventListener('change', () => {
@@ -1535,10 +1779,11 @@ function init() {
   document.getElementById('openSettingsFromBackupReminder').addEventListener('click', () => {
     backupReminderDialog.close();
     renderFileStatus();
+    showSettingsTab('backup');
     settingsDialog.showModal();
   });
 
-  [settingsDialog, helpDialog, backupReminderDialog, document.getElementById('tripDestDialog'), document.getElementById('tripDatesDialog')].forEach(wireBackdropClose);
+  [settingsDialog, helpDialog, backupReminderDialog, document.getElementById('reportDialog'), document.getElementById('tripDestDialog'), document.getElementById('tripDatesDialog')].forEach(wireBackdropClose);
 }
 init();
 </script>

@@ -1,0 +1,8 @@
+name = "or"
+compatibility_date = "2026-07-13"
+
+# Pure static site - no server-side Worker code needed. This tells Cloudflare
+# to serve the files in this directory directly (index.html at the root),
+# instead of trying to run a Worker script that doesn't exist.
+[assets]
+directory = "./"

@@ -4,6 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>אור — ניהול חופשה</title>
+<link rel="icon" type="image/png" href="icon-512.png">
+<link rel="apple-touch-icon" href="icon-512.png">
+<link rel="manifest" href="manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Or">
 <meta name="theme-color" content="#0C1729">
 <meta name="mobile-web-app-capable" content="yes">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Hebrew:wght@300;400;500;700&family=Noto+Sans+Arabic:wght@300;400;500;700&display=swap" rel="stylesheet">
@@ -79,7 +85,7 @@
   .btn-danger:hover { background: rgba(220,38,38,0.15); }
   .btn-edit { background: transparent; color: var(--color-secondary); border: 1px solid var(--color-secondary); min-height: 36px; padding: 4px 12px; font-size: 13px; }
   .btn-edit:hover { background: rgba(59,130,246,0.15); }
-  .icon-btn { background: var(--color-card); color: var(--color-fg); border: 1px solid var(--color-border); min-width: 44px; min-height: 44px; padding: 0; display: inline-flex; align-items: center; justify-content: center; border-radius: 10px; }
+  .icon-btn { background: var(--color-card); color: var(--color-fg); border: 1px solid var(--color-border); min-width: 44px; min-height: 44px; padding: 0; display: inline-flex; align-items: center; justify-content: center; border-radius: 10px; text-decoration: none; cursor: pointer; }
   .icon-btn:hover { border-color: var(--color-secondary); color: var(--color-secondary); }
   #backupClock.is-stale { color: var(--color-destructive); border-color: var(--color-destructive); }
   [data-theme="light"] .icon-moon { display: none; }
@@ -226,7 +232,6 @@
 <div class="container">
   <header>
     <h1>
-      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
       <span data-i18n="app.title">אור — ניהול חופשה</span>
     </h1>
     <div class="header-actions">
@@ -258,6 +263,9 @@
       <button type="button" class="icon-btn help-btn" id="helpBtn" data-i18n-aria="header.helpBtn" aria-label="עזרה">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
       </button>
+      <a href="https://rlapp.net" target="_blank" rel="noopener" class="icon-btn" id="rlappBtn" data-i18n-aria="header.rlappBtn" aria-label="כל השירותים שלנו — RLAPP">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="6" height="6" rx="1.5"/><rect x="9.5" y="3" width="6" height="6" rx="1.5"/><rect x="16" y="3" width="6" height="6" rx="1.5"/><rect x="3" y="9.5" width="6" height="6" rx="1.5"/><rect x="9.5" y="9.5" width="6" height="6" rx="1.5"/><rect x="16" y="9.5" width="6" height="6" rx="1.5"/><rect x="3" y="16" width="6" height="6" rx="1.5"/><rect x="9.5" y="16" width="6" height="6" rx="1.5"/><rect x="16" y="16" width="6" height="6" rx="1.5"/></svg>
+      </a>
     </div>
   </header>
 
@@ -621,6 +629,7 @@ const I18N = {
   'header.printBtn': { he: 'הדפסה', en: 'Print', ru: 'Печать', ar: 'طباعة' },
   'header.settingsBtn': { he: 'הגדרות', en: 'Settings', ru: 'Настройки', ar: 'الإعدادات' },
   'header.helpBtn': { he: 'עזרה', en: 'Help', ru: 'Справка', ar: 'مساعدة' },
+  'header.rlappBtn': { he: 'כל השירותים שלנו — RLAPP', en: 'All our services — RLAPP', ru: 'Все наши сервисы — RLAPP', ar: 'كل خدماتنا — RLAPP' },
   'header.backupClockTitle': { he: 'זמן מאז הגיבוי האחרון', en: 'Time since last backup', ru: 'Время с последней резервной копии', ar: 'الوقت منذ آخر نسخة احتياطية' },
   'header.backupClockNever': { he: 'טרם בוצע גיבוי — לחצו לפתיחת הגדרות', en: 'No backup yet - click to open settings', ru: 'Резервной копии ещё нет — нажмите, чтобы открыть настройки', ar: 'لم يتم إجراء نسخة احتياطية بعد — انقروا لفتح الإعدادات' },
 

@@ -1,0 +1,17 @@
+{
+  "name": "אור — ניהול חופשה",
+  "short_name": "Or",
+  "description": "מערכת מקומית לניהול חופשה — מסלול, טיסות, מלונות ותקציב",
+  "lang": "he",
+  "dir": "rtl",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0F172A",
+  "theme_color": "#0C1729",
+  "icons": [
+    { "src": "icon-512.png", "sizes": "2048x2048", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "2048x2048", "type": "image/png", "purpose": "maskable" }
+  ]
+}

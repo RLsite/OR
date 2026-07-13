@@ -5,24 +5,1533 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>אור — ניהול חופשה</title>
 <meta name="theme-color" content="#0C1729">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Hebrew:wght@400;500;700&display=swap" rel="stylesheet">
+<meta name="mobile-web-app-capable" content="yes">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Hebrew:wght@300;400;500;700&family=Noto+Sans+Arabic:wght@300;400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
-  :root { --color-bg:#0F172A; --color-fg:#FFFFFF; --color-card:#16213E; --color-border:rgba(255,255,255,0.08); --color-secondary:#3B82F6; --color-text-dim:#94A3B8; }
-  * { box-sizing:border-box; margin:0; padding:0; }
-  body { background:var(--color-bg); color:var(--color-fg); font-family:'Noto Sans Hebrew',sans-serif; min-height:100dvh; display:flex; align-items:center; justify-content:center; padding:24px; }
-  .card { background:var(--color-card); border:1px solid var(--color-border); border-radius:16px; padding:40px 32px; max-width:440px; text-align:center; }
-  .icon { width:56px; height:56px; margin:0 auto 20px; color:var(--color-secondary); }
-  h1 { font-size:24px; font-weight:700; margin-bottom:8px; }
-  p { color:var(--color-text-dim); font-size:15px; line-height:1.6; }
-  .badge { display:inline-block; margin-top:20px; padding:6px 16px; border-radius:999px; background:rgba(59,130,246,0.15); border:1px solid var(--color-secondary); color:var(--color-secondary); font-size:13px; font-weight:600; }
+  :root {
+    --color-primary: #1E40AF;
+    --color-secondary: #3B82F6;
+    --color-accent: #059669;
+    --color-bg: #0F172A;
+    --color-fg: #FFFFFF;
+    --color-muted: #101A34;
+    --color-card: #16213E;
+    --color-border: rgba(255,255,255,0.08);
+    --color-destructive: #DC2626;
+    --color-text-dim: #94A3B8;
+    --color-success: #34D399;
+    --radius: 12px;
+    --space-1: 8px;
+    --space-2: 12px;
+    --space-3: 16px;
+    --space-4: 24px;
+    --space-5: 32px;
+  }
+  [data-theme="light"] {
+    --color-bg: #F1F5F9;
+    --color-fg: #0F172A;
+    --color-muted: #E9EEF5;
+    --color-card: #FFFFFF;
+    --color-border: rgba(15,23,42,0.12);
+    --color-text-dim: #64748B;
+    --color-success: #059669;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--color-bg); color: var(--color-fg);
+    transition: background 250ms ease-out, color 250ms ease-out;
+    font-family: 'Noto Sans Hebrew', sans-serif; font-size: 16px; line-height: 1.5; min-height: 100dvh;
+  }
+  body.lang-ar { font-family: 'Noto Sans Arabic', sans-serif; }
+  .container { max-width: 1100px; margin: 0 auto; padding: var(--space-4) var(--space-3); }
+
+  header { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); margin-bottom: var(--space-4); flex-wrap: wrap; }
+  header h1 { font-size: 22px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
+  header h1 svg { color: var(--color-secondary); }
+  .header-actions { display: flex; gap: var(--space-2); align-items: center; flex-wrap: wrap; }
+  .file-hint { color: var(--color-text-dim); font-size: 13px; }
+
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: var(--space-2); margin-bottom: var(--space-4); }
+  .card { background: var(--color-card); border: 1px solid var(--color-border); border-radius: var(--radius); padding: var(--space-3); display: flex; flex-direction: column; gap: 4px; }
+  .card .cat-label { display: flex; align-items: center; gap: 8px; color: var(--color-text-dim); font-size: 14px; font-weight: 500; }
+  .card .amount { font-size: 26px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .card .amount.neg { color: #F87171; }
+  [data-theme="light"] .card .amount.neg { color: #DC2626; }
+  .card .sub { font-size: 12px; color: var(--color-text-dim); }
+  .card.total { border-color: var(--color-accent); }
+  .card.total .amount { color: var(--color-success); }
+
+  .panel { background: var(--color-card); border: 1px solid var(--color-border); border-radius: var(--radius); padding: var(--space-3); margin-bottom: var(--space-4); }
+  .panel h2 { font-size: 16px; font-weight: 500; margin-bottom: var(--space-2); color: var(--color-text-dim); }
+
+  form.add-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: var(--space-2); align-items: end; }
+  label { display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: var(--color-text-dim); }
+  input, select, textarea { background: var(--color-muted); color: var(--color-fg); border: 1px solid var(--color-border); border-radius: 8px; padding: 10px 12px; font-family: inherit; font-size: 15px; min-height: 44px; }
+  input:focus, select:focus, button:focus { outline: 2px solid var(--color-secondary); outline-offset: 1px; }
+  button { cursor: pointer; border: none; border-radius: 8px; min-height: 44px; padding: 10px 20px; font-family: inherit; font-size: 15px; font-weight: 500; transition: background 200ms ease-out, transform 150ms ease-out; }
+  button:active { transform: scale(0.97); }
+  .btn-primary { background: var(--color-primary); color: #fff; }
+  .btn-primary:hover { background: var(--color-secondary); }
+  .btn-ghost { background: transparent; color: var(--color-text-dim); border: 1px solid var(--color-border); }
+  .btn-ghost:hover { border-color: var(--color-secondary); color: var(--color-secondary); }
+  .btn-danger { background: transparent; color: var(--color-destructive); border: 1px solid var(--color-destructive); min-height: 36px; padding: 4px 12px; font-size: 13px; }
+  .btn-danger:hover { background: rgba(220,38,38,0.15); }
+  .btn-edit { background: transparent; color: var(--color-secondary); border: 1px solid var(--color-secondary); min-height: 36px; padding: 4px 12px; font-size: 13px; }
+  .btn-edit:hover { background: rgba(59,130,246,0.15); }
+  .icon-btn { background: var(--color-card); color: var(--color-fg); border: 1px solid var(--color-border); min-width: 44px; min-height: 44px; padding: 0; display: inline-flex; align-items: center; justify-content: center; border-radius: 10px; }
+  .icon-btn:hover { border-color: var(--color-secondary); color: var(--color-secondary); }
+  #backupClock.is-stale { color: var(--color-destructive); border-color: var(--color-destructive); }
+  [data-theme="light"] .icon-moon { display: none; }
+  :root:not([data-theme="light"]) .icon-sun { display: none; }
+  .lang-code { font-size: 12px; font-weight: 700; letter-spacing: 0.02em; }
+  .lang-wrap { position: relative; display: inline-flex; align-items: center; }
+  .lang-menu { position: absolute; top: calc(100% + 8px); inset-inline-end: 0; z-index: 1000; background: var(--color-card); border: 1px solid var(--color-border); border-radius: var(--radius); padding: var(--space-1); min-width: 160px; box-shadow: 0 12px 40px rgba(0,0,0,0.45); display: flex; flex-direction: column; gap: 2px; }
+  .lang-menu[hidden] { display: none; }
+  .lang-item { display: flex; align-items: center; background: transparent; color: var(--color-fg); text-align: start; padding: 10px 12px; border-radius: 8px; min-height: 40px; font-size: 15px; }
+  .lang-item:hover { background: var(--color-muted); }
+  .lang-item.active { background: rgba(59,130,246,0.15); font-weight: 600; }
+
+  .amount-out { color: #F87171; }
+  [data-theme="light"] .amount-out { color: #DC2626; }
+  .type-badge { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 999px; font-size: 13px; white-space: nowrap; }
+  .st-normal { background: rgba(148,163,184,0.18); color: #94A3B8; }
+
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th, td { text-align: start; padding: 10px 12px; border-bottom: 1px solid var(--color-border); white-space: nowrap; }
+  th { color: var(--color-text-dim); font-weight: 500; font-size: 13px; }
+  td.num { font-variant-numeric: tabular-nums; font-weight: 500; }
+  tr:hover td { background: rgba(255,255,255,0.03); }
+  .actions-cell { display: flex; gap: 8px; }
+  .empty { text-align: center; color: var(--color-text-dim); padding: var(--space-5); }
+  .rpt-group td { background: rgba(59,130,246,0.10); font-weight: 700; color: var(--color-secondary); border-top: 1px solid rgba(59,130,246,0.25); }
+  .rpt-subtotal td { background: var(--color-muted); font-weight: 600; border-top: 1px solid var(--color-border); }
+
+  /* Tabs */
+  .tabs { display: flex; gap: 4px; margin-bottom: 20px; border-bottom: 1px solid var(--color-border); flex-wrap: wrap; }
+  .tab { background: transparent; color: var(--color-text-dim); border: none; border-bottom: 2px solid transparent; border-radius: 8px 8px 0 0; padding: 10px 20px; min-height: 44px; font-size: 15px; }
+  .tab:hover { color: var(--color-fg); }
+  .tab.active { color: var(--color-secondary); border-bottom-color: var(--color-secondary); font-weight: 600; }
+  .tab-panel[hidden] { display: none; }
+
+  /* Trip date bar & day strip */
+  .trip-datebar-top { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 10px; }
+  .trip-datebar-head { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .trip-dest { font-size: 26px; font-weight: 800; color: var(--color-fg); line-height: 1.2; }
+  .trip-dest[hidden] { display: none; }
+  .day-strip { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; flex: 1 1 240px; min-width: 0; cursor: grab; scrollbar-width: none; -ms-overflow-style: none; }
+  .day-strip::-webkit-scrollbar { display: none; }
+  .day-strip.dragging { cursor: grabbing; user-select: none; }
+  .day-strip:empty { display: none; }
+  .day-sq {
+    flex: 1 1 0; min-width: 66px; padding: 8px 6px; border-radius: 10px;
+    background: var(--color-muted); border: 1px solid var(--color-border);
+    color: var(--color-fg); text-align: center; cursor: pointer;
+    display: flex; flex-direction: column; gap: 2px; align-items: center;
+    transition: border-color 150ms, background 150ms;
+  }
+  .day-sq:hover { border-color: var(--color-secondary); }
+  .day-sq.active { background: rgba(59,130,246,0.18); border-color: var(--color-secondary); outline: 2px solid var(--color-secondary); outline-offset: -2px; }
+  .day-sq .dnum { font-weight: 700; font-size: 14px; }
+  .day-sq .dwd { font-size: 11px; color: var(--color-text-dim); }
+  .day-sq .ddate { font-size: 12px; font-variant-numeric: tabular-nums; }
+  .day-sq .ddot { width: 6px; height: 6px; border-radius: 50%; background: var(--color-accent); visibility: hidden; }
+  .day-sq.has-items .ddot { visibility: visible; }
+  .day-sq-all { flex: 0 0 auto; width: 88px; }
+  .day-sq-all[hidden] { display: none; }
+
+  /* Day-filter notice */
+  .day-notice { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; background: rgba(5,150,105,0.12); border: 1px solid rgba(5,150,105,0.4); border-radius: 10px; padding: 8px 14px; margin-bottom: 12px; font-size: 14px; }
+  .day-notice[hidden] { display: none; }
+  .day-notice-clear { background: transparent; border: 1px solid var(--color-accent); color: var(--color-success); border-radius: 999px; min-height: 28px; padding: 2px 12px; font-size: 13px; }
+
+  /* Daily agenda timeline */
+  .agenda { display: flex; flex-direction: column; }
+  .agenda-day { font-weight: 700; color: var(--color-secondary); background: rgba(59,130,246,0.10); border: 1px solid rgba(59,130,246,0.25); border-radius: 8px; padding: 6px 12px; margin: 14px 0 8px; font-size: 14px; }
+  .agenda-day:first-child { margin-top: 0; }
+  .agenda-item { display: flex; align-items: flex-start; gap: 10px; padding: 8px 4px; position: relative; border-inline-start: 2px solid var(--color-border); margin-inline-start: 56px; padding-inline-start: 14px; }
+  .agenda-time { position: absolute; inset-inline-start: -56px; top: 10px; width: 44px; text-align: end; font-variant-numeric: tabular-nums; font-size: 13px; color: var(--color-text-dim); font-weight: 600; }
+  .agenda-dot { position: absolute; inset-inline-start: -5px; top: 14px; width: 8px; height: 8px; border-radius: 50%; background: var(--color-secondary); }
+  .agenda-body { flex: 1; min-width: 0; }
+  .agenda-title { font-size: 15px; font-weight: 500; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .agenda-sub { font-size: 13px; color: var(--color-text-dim); margin-top: 2px; }
+  .agenda-cost { font-variant-numeric: tabular-nums; font-weight: 600; color: var(--color-fg); font-size: 14px; flex-shrink: 0; }
+
+  /* Navigation links (Google Maps / Waze) */
+  .nav-links { display: inline-flex; gap: 4px; margin-inline-start: 6px; vertical-align: middle; }
+  .nav-link { display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: 11px; text-decoration: none; border: 1px solid var(--color-border); }
+  .nl-maps { color: #34A853; background: rgba(52,168,83,0.12); }
+  .nl-waze { color: #33CCFF; background: rgba(51,204,255,0.12); }
+  [data-theme="light"] .nl-maps { color: #1e7e34; }
+  [data-theme="light"] .nl-waze { color: #0b7285; }
+
+  /* Date-range picker dialog */
+  .daterange-dialog { max-width: 340px; }
+  .date-range-picker { display: flex; align-items: center; gap: 6px; }
+  .date-range-field { flex: 1; min-width: 0; gap: 4px; background: var(--color-muted); border: 1px solid var(--color-border); border-radius: 12px; padding: 8px 10px; }
+  .date-range-field:focus-within { border-color: var(--color-secondary); }
+  .date-range-field input[type="date"] { background: transparent; border: none; padding: 0; min-height: auto; font-size: 15px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .date-range-field input[type="date"]:focus { outline: none; }
+  .date-range-arrow { color: var(--color-text-dim); font-size: 16px; flex-shrink: 0; }
+  [dir="ltr"] .date-range-arrow { transform: scaleX(-1); }
+  .date-range-summary { margin-top: 8px; font-size: 13px; font-weight: 600; color: var(--color-secondary); text-align: center; }
+  .date-range-summary[hidden] { display: none; }
+
+  #toast { position: fixed; bottom: 24px; right: 50%; transform: translateX(50%); background: var(--color-accent); color: #fff; padding: 12px 24px; border-radius: 8px; font-weight: 500; opacity: 0; pointer-events: none; transition: opacity 250ms ease-out; z-index: 100; }
+  #toast.show { opacity: 1; }
+  #toast.error { background: var(--color-destructive); }
+
+  dialog { background: var(--color-card); color: var(--color-fg); border: 1px solid var(--color-border); border-radius: var(--radius); padding: var(--space-4); max-width: 480px; width: 90%; margin: auto; }
+  dialog:not([open]) { display: none; }
+  dialog::backdrop { background: rgba(0,0,0,0.55); }
+  dialog h3 { margin-bottom: var(--space-3); }
+  .dialog-actions { display: flex; gap: var(--space-2); justify-content: flex-start; margin-top: var(--space-3); }
+  .file-status { background: var(--color-muted); border: 1px solid var(--color-border); border-radius: 8px; padding: var(--space-2); font-size: 14px; margin-bottom: var(--space-2); }
+  .file-status strong { font-variant-numeric: tabular-nums; }
+  .file-actions { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+  .file-actions button { min-height: 40px; }
+  .help-body { font-size: 14px; line-height: 1.75; max-height: 60vh; overflow-y: auto; padding-inline-end: 6px; }
+  .help-section { margin-bottom: 18px; }
+  .help-section h4 { font-size: 15px; font-weight: 600; margin-bottom: 6px; color: var(--color-fg); }
+  .help-body p { color: var(--color-text-dim); }
+
+  /* Print-only elements (hidden on screen) */
+  .print-only { display: none; }
+  #printHeader { align-items: center; gap: 16px; margin-bottom: 20px; }
+  #printHeader .ph-title { font-size: 22px; font-weight: 700; }
+  #printHeader .ph-date { font-size: 14px; color: #555; }
+  @media print {
+    @page { margin: 1.2cm; }
+    html, body { background: #fff !important; color: #000 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    header, #toast, dialog, .header-actions, .add-form, form, .actions-cell, .file-hint, .empty, .tabs, .day-strip, .trip-datebar-head button { display: none !important; }
+    .container { max-width: 100% !important; padding: 0 !important; }
+    .print-only { display: flex !important; }
+    .tab-panel[hidden] { display: block !important; }
+    .panel, .card { background: #fff !important; color: #000 !important; border: 1px solid #bbb !important; box-shadow: none !important; break-inside: avoid; page-break-inside: avoid; margin-bottom: 12px; }
+    h2, .cat-label, .sub, th, td, .amount, .trip-dest, .agenda-title, .agenda-sub, .agenda-cost, .agenda-time { color: #000 !important; }
+    .amount-out, .amount.neg { color: #b42318 !important; }
+    .table-wrap { overflow: visible !important; }
+    table { width: 100% !important; }
+    tr { page-break-inside: avoid; }
+  }
+
+  @media (max-width: 600px) {
+    header { flex-direction: column; align-items: stretch; }
+    .header-actions { justify-content: center; }
+  }
 </style>
 </head>
 <body>
-  <div class="card">
-    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-1 .1-1.3.5l-.4.6c-.4.6-.2 1.4.4 1.8L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.6 5.6c.4.6 1.2.8 1.8.4l.6-.4c.4-.3.6-.8.5-1.3Z"/></svg>
-    <h1>אור — ניהול חופשה</h1>
-    <p>תכנון טיולים וחופשות: טיסות, מלונות, מסעדות, השכרת רכב ולוח זמנים יומי, במקום אחד.</p>
-    <span class="badge">בקרוב</span>
+<div class="container">
+  <header>
+    <h1>
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+      <span data-i18n="app.title">אור — ניהול חופשה</span>
+    </h1>
+    <div class="header-actions">
+      <input type="file" id="fileInput" accept=".xlsx,.xls" hidden>
+      <button type="button" class="icon-btn" id="backupClock" data-i18n-aria="header.backupClockTitle" aria-label="זמן מאז הגיבוי האחרון — פתיחת הגדרות גיבוי">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+      </button>
+      <button type="button" class="icon-btn" id="printBtn" data-i18n-aria="header.printBtn" aria-label="הדפסה">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+      </button>
+      <button type="button" class="icon-btn" id="settingsBtn" data-i18n-aria="header.settingsBtn" aria-label="הגדרות">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </button>
+      <button type="button" class="icon-btn" id="themeToggle" data-i18n-aria="header.themeToggle" aria-label="החלפת עיצוב כהה / בהיר">
+        <svg class="icon-sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+        <svg class="icon-moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+      <div class="lang-wrap">
+        <button type="button" class="icon-btn" id="langToggle" data-i18n-aria="lang.toggleAria" aria-label="שינוי שפה" aria-haspopup="true" aria-expanded="false">
+          <span class="lang-code" id="langCode">עב</span>
+        </button>
+        <nav class="lang-menu" id="langMenu" hidden aria-label="שפה / Language / Язык / اللغة">
+          <button type="button" class="lang-item" data-lang="he">עברית</button>
+          <button type="button" class="lang-item" data-lang="en">English</button>
+          <button type="button" class="lang-item" data-lang="ru">Русский</button>
+          <button type="button" class="lang-item" data-lang="ar">العربية</button>
+        </nav>
+      </div>
+      <button type="button" class="icon-btn help-btn" id="helpBtn" data-i18n-aria="header.helpBtn" aria-label="עזרה">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <div id="printHeader" class="print-only">
+    <div>
+      <div class="ph-title" data-i18n="app.title">אור — ניהול חופשה</div>
+      <div class="ph-date" id="printDate"></div>
+    </div>
   </div>
+
+  <section class="panel">
+    <div class="trip-datebar-top">
+      <span class="trip-dest" id="tripDestDisplay" hidden></span>
+      <span class="file-hint" id="tripDatesLabel"></span>
+    </div>
+    <div class="trip-datebar-head">
+      <button type="button" class="day-sq day-sq-all" id="tripAllDaysBtn" data-day="" hidden></button>
+      <div class="day-strip" id="tripDayStrip"></div>
+      <button type="button" class="btn-primary" id="tripPickDatesBtn" data-i18n="trip.pickDatesBtn">בחירת תאריכים</button>
+      <button type="button" class="btn-edit" id="tripPickDestBtn" data-i18n="trip.pickDestBtn">בחירת יעד</button>
+    </div>
+  </section>
+
+  <div class="day-notice" id="tripDayNotice" hidden></div>
+
+  <div class="tabs" id="mainTabs">
+    <button type="button" class="tab active" data-tab="agenda" data-i18n="trip.tabAgenda">סדר יום</button>
+    <button type="button" class="tab" data-tab="flights" data-i18n="trip.tabFlights">טיסות</button>
+    <button type="button" class="tab" data-tab="hotels" data-i18n="trip.tabHotels">מלונות</button>
+    <button type="button" class="tab" data-tab="restaurants" data-i18n="trip.tabRestaurants">מסעדות</button>
+    <button type="button" class="tab" data-tab="cars" data-i18n="trip.tabCars">רכב</button>
+    <button type="button" class="tab" data-tab="itinerary" data-i18n="trip.tabItinerary">מסלול</button>
+    <button type="button" class="tab" data-tab="tripexp" data-i18n="trip.tabExpenses">הוצאות</button>
+    <button type="button" class="tab" data-tab="triplinks" data-i18n="trip.tabLinks">קישורים</button>
+  </div>
+
+  <!-- Agenda -->
+  <div class="tab-panel" data-panel="agenda">
+    <section class="panel">
+      <h2 data-i18n="trip.agendaTitle">סדר יום מלא</h2>
+      <p class="file-hint" data-i18n="trip.agendaHint">כל הטיסות, בתי המלון, המסעדות, הרכב והפעילויות ממוזגים לציר זמן אחד.</p>
+      <div class="agenda" id="agendaBox"></div>
+    </section>
+  </div>
+
+  <!-- Flights -->
+  <div class="tab-panel" data-panel="flights" hidden>
+    <section class="panel">
+      <h2 data-i18n="list.flights.addLabel">הוספת טיסה</h2>
+      <form class="add-form" id="flightForm">
+        <label><span data-i18n="field.date">תאריך</span> <input type="date" data-f="date"></label>
+        <label><span data-i18n="field.flightNo">מספר טיסה</span> <input type="text" data-f="flight" dir="ltr"></label>
+        <label><span data-i18n="field.from">מוצא</span> <input type="text" data-f="from" dir="ltr"></label>
+        <label><span data-i18n="field.to">יעד</span> <input type="text" data-f="to" dir="ltr"></label>
+        <label><span data-i18n="field.departure">שעת המראה</span> <input type="time" data-f="dep"></label>
+        <label><span data-i18n="field.arrival">שעת נחיתה</span> <input type="time" data-f="arr"></label>
+        <label><span data-i18n="field.reference">קוד הזמנה</span> <input type="text" data-f="ref" dir="ltr"></label>
+        <label><span data-i18n="field.costILS">עלות (₪)</span> <input type="number" data-f="cost" step="0.01" min="0"></label>
+        <label><span data-i18n="field.notes">הערות</span> <input type="text" data-f="notes"></label>
+        <button type="submit" class="btn-primary" data-i18n="common.add">הוספה</button>
+      </form>
+    </section>
+    <section class="panel">
+      <h2 data-i18n="list.flights.title">כל הטיסות</h2>
+      <div class="table-wrap">
+        <table><thead><tr>
+          <th data-i18n="field.date">תאריך</th><th data-i18n="field.flightNo">טיסה</th><th data-i18n="field.from">מוצא</th><th data-i18n="field.to">יעד</th>
+          <th data-i18n="field.departure">המראה</th><th data-i18n="field.arrival">נחיתה</th><th data-i18n="field.costILS">עלות</th><th data-i18n="common.actions">פעולות</th>
+        </tr></thead><tbody id="flightsBody"></tbody></table>
+        <div class="empty" id="flightsEmpty" data-i18n="list.flights.empty" hidden>אין עדיין טיסות.</div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Hotels -->
+  <div class="tab-panel" data-panel="hotels" hidden>
+    <section class="panel">
+      <h2 data-i18n="list.hotels.addLabel">הוספת מלון</h2>
+      <form class="add-form" id="hotelForm">
+        <label><span data-i18n="field.hotelName">שם המלון</span> <input type="text" data-f="name"></label>
+        <label><span data-i18n="field.address">כתובת</span> <input type="text" data-f="address"></label>
+        <label><span data-i18n="field.coords">קואורדינטות</span> <input type="text" data-f="coords" dir="ltr" data-i18n-ph="trip.coordsPlaceholder" placeholder="31.7683,35.2137"></label>
+        <label><span data-i18n="field.checkin">צ'ק אין</span> <input type="date" data-f="checkin"></label>
+        <label><span data-i18n="field.checkout">צ'ק אאוט</span> <input type="date" data-f="checkout"></label>
+        <label><span data-i18n="field.reference">קוד הזמנה</span> <input type="text" data-f="ref" dir="ltr"></label>
+        <label><span data-i18n="field.costILS">עלות (₪)</span> <input type="number" data-f="cost" step="0.01" min="0"></label>
+        <label><span data-i18n="field.notes">הערות</span> <input type="text" data-f="notes"></label>
+        <button type="submit" class="btn-primary" data-i18n="common.add">הוספה</button>
+      </form>
+    </section>
+    <section class="panel">
+      <h2 data-i18n="list.hotels.title">כל המלונות</h2>
+      <div class="table-wrap">
+        <table><thead><tr>
+          <th data-i18n="field.hotelName">שם</th><th data-i18n="field.address">כתובת</th><th data-i18n="field.checkin">צ'ק אין</th><th data-i18n="field.checkout">צ'ק אאוט</th><th data-i18n="field.costILS">עלות</th><th data-i18n="common.actions">פעולות</th>
+        </tr></thead><tbody id="hotelsBody"></tbody></table>
+        <div class="empty" id="hotelsEmpty" data-i18n="list.hotels.empty" hidden>אין עדיין מלונות.</div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Restaurants -->
+  <div class="tab-panel" data-panel="restaurants" hidden>
+    <section class="panel">
+      <h2 data-i18n="list.restaurants.addLabel">הוספת מסעדה</h2>
+      <form class="add-form" id="restaurantForm">
+        <label><span data-i18n="field.date">תאריך</span> <input type="date" data-f="date"></label>
+        <label><span data-i18n="field.restaurantName">שם המסעדה</span> <input type="text" data-f="name"></label>
+        <label><span data-i18n="field.address">כתובת</span> <input type="text" data-f="address"></label>
+        <label><span data-i18n="field.coords">קואורדינטות</span> <input type="text" data-f="coords" dir="ltr"></label>
+        <label><span data-i18n="field.reference">הזמנה</span> <input type="text" data-f="ref" dir="ltr"></label>
+        <label><span data-i18n="field.costILS">עלות (₪)</span> <input type="number" data-f="cost" step="0.01" min="0"></label>
+        <label><span data-i18n="field.notes">הערות</span> <input type="text" data-f="notes"></label>
+        <button type="submit" class="btn-primary" data-i18n="common.add">הוספה</button>
+      </form>
+    </section>
+    <section class="panel">
+      <h2 data-i18n="list.restaurants.title">כל המסעדות</h2>
+      <div class="table-wrap">
+        <table><thead><tr>
+          <th data-i18n="field.date">תאריך</th><th data-i18n="field.restaurantName">שם</th><th data-i18n="field.address">כתובת</th><th data-i18n="field.costILS">עלות</th><th data-i18n="common.actions">פעולות</th>
+        </tr></thead><tbody id="restaurantsBody"></tbody></table>
+        <div class="empty" id="restaurantsEmpty" data-i18n="list.restaurants.empty" hidden>אין עדיין מסעדות.</div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Cars -->
+  <div class="tab-panel" data-panel="cars" hidden>
+    <section class="panel">
+      <h2 data-i18n="list.cars.addLabel">הוספת השכרת רכב</h2>
+      <form class="add-form" id="carForm">
+        <label><span data-i18n="field.carCompany">חברת השכרה</span> <input type="text" data-f="company"></label>
+        <label><span data-i18n="field.carType">סוג רכב</span> <input type="text" data-f="cartype"></label>
+        <label><span data-i18n="field.pickupLoc">מיקום איסוף</span> <input type="text" data-f="pickupLoc"></label>
+        <label><span data-i18n="field.pickupDate">תאריך איסוף</span> <input type="date" data-f="pickupDate"></label>
+        <label><span data-i18n="field.returnLoc">מיקום החזרה</span> <input type="text" data-f="returnLoc"></label>
+        <label><span data-i18n="field.returnDate">תאריך החזרה</span> <input type="date" data-f="returnDate"></label>
+        <label><span data-i18n="field.reference">קוד הזמנה</span> <input type="text" data-f="ref" dir="ltr"></label>
+        <label><span data-i18n="field.costILS">עלות (₪)</span> <input type="number" data-f="cost" step="0.01" min="0"></label>
+        <label><span data-i18n="field.notes">הערות</span> <input type="text" data-f="notes"></label>
+        <button type="submit" class="btn-primary" data-i18n="common.add">הוספה</button>
+      </form>
+    </section>
+    <section class="panel">
+      <h2 data-i18n="list.cars.title">כל השכרות הרכב</h2>
+      <div class="table-wrap">
+        <table><thead><tr>
+          <th data-i18n="field.carCompany">חברה</th><th data-i18n="field.pickupDate">איסוף</th><th data-i18n="field.returnDate">החזרה</th><th data-i18n="field.costILS">עלות</th><th data-i18n="common.actions">פעולות</th>
+        </tr></thead><tbody id="carsBody"></tbody></table>
+        <div class="empty" id="carsEmpty" data-i18n="list.cars.empty" hidden>אין עדיין השכרות רכב.</div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Itinerary -->
+  <div class="tab-panel" data-panel="itinerary" hidden>
+    <section class="panel">
+      <h2 data-i18n="trip.addPoiTitle">הוספת נקודת עניין</h2>
+      <form class="add-form" id="itineraryForm">
+        <label><span data-i18n="field.date">תאריך</span> <input type="date" data-f="date" required></label>
+        <label><span data-i18n="field.time">שעה</span> <input type="time" data-f="time"></label>
+        <label><span data-i18n="field.category">קטגוריה</span>
+          <select data-f="category">
+            <option value="attraction" data-i18n="enum.itiCat.attraction">אטרקציה</option>
+            <option value="restaurant" data-i18n="enum.itiCat.restaurant">מסעדה</option>
+            <option value="hotel" data-i18n="enum.itiCat.hotel">מלון</option>
+            <option value="transport" data-i18n="enum.itiCat.transport">תחבורה</option>
+            <option value="shopping" data-i18n="enum.itiCat.shopping">קניות</option>
+            <option value="other" data-i18n="enum.itiCat.other">אחר</option>
+          </select>
+        </label>
+        <label><span data-i18n="field.name">שם</span> <input type="text" data-f="name" required></label>
+        <label><span data-i18n="field.address">כתובת</span> <input type="text" data-f="address"></label>
+        <label><span data-i18n="field.coords">קואורדינטות</span> <input type="text" data-f="coords" dir="ltr"></label>
+        <label><span data-i18n="field.costILS">עלות (₪)</span> <input type="number" data-f="cost" step="0.01" min="0"></label>
+        <label><span data-i18n="field.notes">הערות</span> <input type="text" data-f="notes"></label>
+        <button type="submit" class="btn-primary" data-i18n="common.add">הוספה</button>
+      </form>
+    </section>
+    <section class="panel">
+      <h2 data-i18n="trip.dayByDayTitle">מסלול יום אחר יום</h2>
+      <div class="table-wrap">
+        <table><thead><tr><th data-i18n="field.time">שעה</th><th data-i18n="field.category">קטגוריה</th><th data-i18n="field.name">שם</th><th data-i18n="field.address">כתובת</th><th data-i18n="field.costILS">עלות</th><th data-i18n="common.actions">פעולות</th></tr></thead>
+          <tbody id="itineraryBody"></tbody></table>
+        <div class="empty" id="itineraryEmpty" data-i18n="list.itinerary.empty" hidden>אין עדיין נקודות עניין.</div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Expenses -->
+  <div class="tab-panel" data-panel="tripexp" hidden>
+    <section class="cards" id="tripSummary"></section>
+    <section class="panel">
+      <h2 data-i18n="list.tripexp.addLabel">הוספת הוצאה</h2>
+      <form class="add-form" id="tripexpForm">
+        <label><span data-i18n="field.date">תאריך</span> <input type="date" data-f="date" required></label>
+        <label><span data-i18n="field.category">קטגוריה</span>
+          <select data-f="category">
+            <option value="flights" data-i18n="enum.expCat.flights">טיסות</option>
+            <option value="lodging" data-i18n="enum.expCat.lodging">לינה</option>
+            <option value="food" data-i18n="enum.expCat.food">אוכל</option>
+            <option value="attractions" data-i18n="enum.expCat.attractions">אטרקציות</option>
+            <option value="transport" data-i18n="enum.expCat.transport">תחבורה</option>
+            <option value="shopping" data-i18n="enum.expCat.shopping">קניות</option>
+            <option value="insurance" data-i18n="enum.expCat.insurance">ביטוח</option>
+            <option value="other" data-i18n="enum.expCat.other">אחר</option>
+          </select>
+        </label>
+        <label><span data-i18n="field.description">תיאור</span> <input type="text" data-f="description"></label>
+        <label><span data-i18n="field.amountILS">סכום (₪)</span> <input type="number" data-f="amount" step="0.01" min="0" required></label>
+        <button type="submit" class="btn-primary" data-i18n="common.add">הוספה</button>
+      </form>
+    </section>
+    <section class="panel">
+      <h2 data-i18n="list.tripexp.title">כל ההוצאות</h2>
+      <div class="table-wrap">
+        <table><thead><tr><th data-i18n="field.date">תאריך</th><th data-i18n="field.category">קטגוריה</th><th data-i18n="field.description">תיאור</th><th data-i18n="field.amountILS">סכום</th><th data-i18n="common.actions">פעולות</th></tr></thead>
+          <tbody id="tripexpBody"></tbody></table>
+        <div class="empty" id="tripexpEmpty" data-i18n="list.tripexp.empty" hidden>אין עדיין הוצאות.</div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Links -->
+  <div class="tab-panel" data-panel="triplinks" hidden>
+    <section class="panel">
+      <h2 data-i18n="list.triplinks.addLabel">הוספת קישור</h2>
+      <form class="add-form" id="triplinkForm">
+        <label><span data-i18n="field.name">שם</span> <input type="text" data-f="name" required></label>
+        <label><span data-i18n="field.url">קישור</span> <input type="url" data-f="url" dir="ltr" required></label>
+        <label><span data-i18n="field.description">תיאור</span> <input type="text" data-f="description"></label>
+        <button type="submit" class="btn-primary" data-i18n="common.add">הוספה</button>
+      </form>
+    </section>
+    <section class="panel">
+      <h2 data-i18n="list.triplinks.title">כל הקישורים</h2>
+      <div class="table-wrap">
+        <table><thead><tr><th data-i18n="field.name">שם</th><th data-i18n="field.url">קישור</th><th data-i18n="field.description">תיאור</th><th data-i18n="common.actions">פעולות</th></tr></thead>
+          <tbody id="triplinksBody"></tbody></table>
+        <div class="empty" id="triplinksEmpty" data-i18n="list.triplinks.empty" hidden>אין עדיין קישורים.</div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<dialog id="tripDestDialog">
+  <h3 data-i18n="trip.dest.title">פרטי הטיול</h3>
+  <label><span data-i18n="trip.dest.label">לאן טסים?</span> <input type="text" id="tdDest" data-i18n-ph="settings.trip.destPh" placeholder="למשל: לונדון, אנגליה"></label>
+  <label style="margin-top:10px"><span data-i18n="trip.budgetLabel">תקציב כולל (₪)</span> <input type="number" id="tdBudget" min="0" step="0.01"></label>
+  <label style="margin-top:10px"><span data-i18n="trip.travelersLabel">מספר נוסעים</span> <input type="number" id="tdTravelers" min="0" step="1"></label>
+  <div class="dialog-actions" style="margin-top:12px">
+    <button type="button" class="btn-primary" id="tdDestSave" data-i18n="trip.dest.saveBtn">שמירה</button>
+    <button type="button" class="btn-ghost" id="tdDestCancel" data-i18n="common.cancel">ביטול</button>
+  </div>
+</dialog>
+
+<dialog id="tripDatesDialog" class="daterange-dialog">
+  <h3 data-i18n="trip.dates.title">בחירת תאריכי הטיול</h3>
+  <div class="date-range-picker">
+    <label class="date-range-field">
+      <span data-i18n="field.dateFrom">מתאריך</span>
+      <input type="date" id="tdFrom">
+    </label>
+    <span class="date-range-arrow" aria-hidden="true">←</span>
+    <label class="date-range-field">
+      <span data-i18n="field.dateTo">עד תאריך</span>
+      <input type="date" id="tdTo">
+    </label>
+  </div>
+  <p class="date-range-summary" id="tdDaysSummary" hidden></p>
+  <p class="file-hint" style="margin-top:8px" data-i18n="trip.dates.hint">התאריכים יוצרים את פס הימים של הטיול — לחיצה על יום מסננת את המסלול.</p>
+  <div class="dialog-actions">
+    <button type="button" class="btn-primary" id="tdSave" data-i18n="trip.dates.saveBtn">שמירת תאריכים</button>
+    <button type="button" class="btn-ghost" id="tdCancel" data-i18n="common.cancel">ביטול</button>
+  </div>
+</dialog>
+
+<dialog id="settingsDialog">
+  <h3 data-i18n="settings.title">הגדרות</h3>
+  <div class="file-status" id="fileStatus"></div>
+  <div class="file-actions">
+    <button type="button" class="btn-edit" id="exportBtn" data-i18n="data.exportBtn">ייצוא לאקסל</button>
+    <button type="button" class="btn-edit" id="importBtn" data-i18n="data.importBtn">ייבוא מאקסל</button>
+    <button type="button" class="btn-danger" id="deleteAllBtn" data-i18n="data.deleteAllBtn">מחיקת כל הנתונים</button>
+  </div>
+  <p class="file-hint" style="margin-top:8px" data-i18n="data.hint">הנתונים נשמרים בדפדפן הזה בלבד. מומלץ לייצא גיבוי לאקסל מדי פעם.</p>
+  <h4 style="margin-top:16px" data-i18n="settings.backupReminder.heading">תזכורת גיבוי</h4>
+  <p class="file-hint" data-i18n="settings.backupReminder.hint">כשעובר הזמן שבחרתם בלי ייצוא לאקסל, אור יזכיר לכם עם חלון קופץ. בדפדפנים מסוימים (למשל Safari באייפון) המידע המקומי עלול להימחק אחרי שבוע בלי שימוש, אלא אם שומרים קיצור דרך למסך הבית.</p>
+  <label><span data-i18n="settings.backupReminder.label">תדירות התזכורת</span>
+    <select id="backupReminderInterval">
+      <option value="5" data-i18n="settings.backupReminder.every5">כל 5 דקות</option>
+      <option value="10" data-i18n="settings.backupReminder.every10">כל 10 דקות</option>
+      <option value="15" data-i18n="settings.backupReminder.every15">כל 15 דקות</option>
+      <option value="30" data-i18n="settings.backupReminder.every30">כל 30 דקות</option>
+      <option value="60" data-i18n="settings.backupReminder.every60">כל שעה</option>
+      <option value="off" data-i18n="settings.backupReminder.off">בלי תזכורת</option>
+    </select>
+  </label>
+  <div class="dialog-actions">
+    <button type="button" class="btn-ghost" id="closeSettings" data-i18n="common.close">סגור</button>
+  </div>
+</dialog>
+
+<dialog id="backupReminderDialog">
+  <h3 data-i18n="backup.reminderTitle">עדיין לא בוצע גיבוי</h3>
+  <p class="file-hint" data-i18n="backup.reminderHint">עבר הזמן שבחרתם בלי גיבוי עדכני. מומלץ לייצא גיבוי לאקסל מההגדרות.</p>
+  <p class="file-hint" data-i18n="backup.reminderFrequencyHint">אפשר לשנות את תדירות התזכורת הזו בכל עת דרך חלון ההגדרות.</p>
+  <div class="dialog-actions">
+    <button type="button" class="btn-primary" id="openSettingsFromBackupReminder" data-i18n="settings.title">הגדרות</button>
+    <button type="button" class="btn-ghost" id="closeBackupReminder" data-i18n="common.close">סגור</button>
+  </div>
+</dialog>
+
+<dialog id="helpDialog">
+  <h3 data-i18n="help.title">עזרה</h3>
+  <div class="help-body">
+    <div class="help-section">
+      <h4 data-i18n="help.whatTitle">מה זה אור?</h4>
+      <p data-i18n="help.whatBody">אור הוא כלי לתכנון חופשות — טיסות, מלונות, מסעדות, השכרת רכב, מסלול יומי, הוצאות וקישורים שימושיים, הכל במקום אחד, ללא צורך בהתחברות או חשבון.</p>
+    </div>
+    <div class="help-section">
+      <h4 data-i18n="help.datesTitle">יעד ותאריכים</h4>
+      <p data-i18n="help.datesBody">לחצו "בחירת יעד" כדי לקבוע לאן טסים, תקציב ומספר נוסעים. לחצו "בחירת תאריכים" כדי לפתוח את פס הימים — לחיצה על יום מסננת את הסדר-יום, המסלול, הטיסות וההוצאות לאותו יום בלבד.</p>
+    </div>
+    <div class="help-section">
+      <h4 data-i18n="help.agendaTitle">סדר יום</h4>
+      <p data-i18n="help.agendaBody">טאב "סדר יום" ממזג אוטומטית את כל הטיסות, הצ'ק אין/אאוט במלונות, ארוחות, איסוף/החזרת רכב ונקודות העניין לציר זמן אחד, לפי תאריך ושעה.</p>
+    </div>
+    <div class="help-section">
+      <h4 data-i18n="help.dataTitle">שמירת נתונים וגיבוי</h4>
+      <p data-i18n="help.dataBody">הנתונים נשמרים רק בדפדפן הזה, במכשיר הזה — אין שרת וללא חשבון. אם מנקים היסטוריית גלישה, עוברים למכשיר אחר, או לא פותחים את האתר במשך שבוע ב-Safari באייפון בלי לשמור קיצור דרך למסך הבית — המידע עלול להיעלם. מומלץ לייצא גיבוי לאקסל מדי פעם דרך ההגדרות, ולייבא אותו בחזרה במידת הצורך.</p>
+    </div>
+  </div>
+  <div class="dialog-actions">
+    <button type="button" class="btn-ghost" id="closeHelp" data-i18n="common.close">סגור</button>
+  </div>
+</dialog>
+
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+const LANG_ORDER = ['he', 'en', 'ru', 'ar'];
+const RTL_LANGS = ['he', 'ar'];
+const MONTH_NAMES = {
+  he: ['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'],
+  en: ['January','February','March','April','May','June','July','August','September','October','November','December'],
+  ru: ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'],
+  ar: ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر']
+};
+const WEEKDAY_SHORT = {
+  he: ['א׳','ב׳','ג׳','ד׳','ה׳','ו׳','ש׳'],
+  en: ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],
+  ru: ['Вс','Пн','Вт','Ср','Чт','Пт','Сб'],
+  ar: ['أحد','إثن','ثلا','أرب','خمي','جمع','سبت']
+};
+const I18N = {
+  'app.title': { he: 'אור — ניהול חופשה', en: 'Or — Vacation Planning', ru: 'Ор — Планирование отпуска', ar: 'أور — تخطيط الإجازة' },
+  'header.themeToggle': { he: 'החלפת עיצוב כהה / בהיר', en: 'Toggle dark / light theme', ru: 'Переключить тёмную / светлую тему', ar: 'تبديل الوضع الداكن / الفاتح' },
+  'lang.toggleAria': { he: 'שינוי שפה / Change language / Изменить язык', en: 'Change language', ru: 'Изменить язык', ar: 'تغيير اللغة' },
+  'header.printBtn': { he: 'הדפסה', en: 'Print', ru: 'Печать', ar: 'طباعة' },
+  'header.settingsBtn': { he: 'הגדרות', en: 'Settings', ru: 'Настройки', ar: 'الإعدادات' },
+  'header.helpBtn': { he: 'עזרה', en: 'Help', ru: 'Справка', ar: 'مساعدة' },
+  'header.backupClockTitle': { he: 'זמן מאז הגיבוי האחרון', en: 'Time since last backup', ru: 'Время с последней резервной копии', ar: 'الوقت منذ آخر نسخة احتياطية' },
+  'header.backupClockNever': { he: 'טרם בוצע גיבוי — לחצו לפתיחת הגדרות', en: 'No backup yet - click to open settings', ru: 'Резервной копии ещё нет — нажмите, чтобы открыть настройки', ar: 'لم يتم إجراء نسخة احتياطية بعد — انقروا لفتح الإعدادات' },
+
+  'trip.tabAgenda': { he: 'סדר יום', en: 'Agenda', ru: 'План дня', ar: 'جدول الأعمال' },
+  'trip.tabFlights': { he: 'טיסות', en: 'Flights', ru: 'Рейсы', ar: 'الرحلات' },
+  'trip.tabHotels': { he: 'מלונות', en: 'Hotels', ru: 'Отели', ar: 'الفنادق' },
+  'trip.tabRestaurants': { he: 'מסעדות', en: 'Restaurants', ru: 'Рестораны', ar: 'المطاعم' },
+  'trip.tabCars': { he: 'רכב', en: 'Cars', ru: 'Автомобили', ar: 'السيارات' },
+  'trip.tabItinerary': { he: 'מסלול', en: 'Itinerary', ru: 'Маршрут', ar: 'المسار' },
+  'trip.tabExpenses': { he: 'הוצאות', en: 'Expenses', ru: 'Расходы', ar: 'المصروفات' },
+  'trip.tabLinks': { he: 'קישורים', en: 'Links', ru: 'Ссылки', ar: 'الروابط' },
+
+  'trip.pickDatesBtn': { he: 'בחירת תאריכים', en: 'Pick dates', ru: 'Выбрать даты', ar: 'اختيار التواريخ' },
+  'trip.pickDestBtn': { he: 'בחירת יעד', en: 'Pick destination', ru: 'Выбрать направление', ar: 'اختيار الوجهة' },
+  'trip.dest.title': { he: 'פרטי הטיול', en: 'Trip details', ru: 'Детали поездки', ar: 'تفاصيل الرحلة' },
+  'trip.dest.label': { he: 'לאן טסים?', en: 'Where to?', ru: 'Куда едем?', ar: 'إلى أين؟' },
+  'trip.dest.saveBtn': { he: 'שמירה', en: 'Save', ru: 'Сохранить', ar: 'حفظ' },
+  'trip.dest.saved': { he: 'היעד נשמר: {dest}', en: 'Destination saved: {dest}', ru: 'Направление сохранено: {dest}', ar: 'تم حفظ الوجهة: {dest}' },
+  'trip.budgetLabel': { he: 'תקציב כולל (₪)', en: 'Total budget (₪)', ru: 'Общий бюджет (₪)', ar: 'الميزانية الإجمالية (₪)' },
+  'trip.travelersLabel': { he: 'מספר נוסעים', en: 'Number of travelers', ru: 'Количество путешественников', ar: 'عدد المسافرين' },
+  'trip.dates.title': { he: 'בחירת תאריכי הטיול', en: 'Pick trip dates', ru: 'Выбор дат поездки', ar: 'اختيار تواريخ الرحلة' },
+  'trip.dates.hint': { he: 'התאריכים יוצרים את פס הימים של הטיול — לחיצה על יום מסננת את המסלול.', en: 'The dates create the trip\'s day strip - clicking a day filters the itinerary.', ru: 'Даты формируют полосу дней поездки — нажатие на день фильтрует маршрут.', ar: 'تُنشئ التواريخ شريط أيام الرحلة — النقر على يوم يصفي المسار.' },
+  'trip.dates.saveBtn': { he: 'שמירת תאריכים', en: 'Save dates', ru: 'Сохранить даты', ar: 'حفظ التواريخ' },
+  'trip.dates.notChosen': { he: 'טרם נבחרו תאריכים', en: 'No dates chosen yet', ru: 'Даты ещё не выбраны', ar: 'لم يتم اختيار تواريخ بعد' },
+  'trip.dates.required': { he: 'יש לבחור שני תאריכים', en: 'Both dates are required', ru: 'Необходимо выбрать обе даты', ar: 'يجب اختيار كلا التاريخين' },
+  'trip.dates.endBeforeStartError': { he: 'תאריך הסיום לא יכול להיות לפני תאריך ההתחלה', en: 'End date cannot be before start date', ru: 'Дата окончания не может быть раньше даты начала', ar: 'لا يمكن أن يكون تاريخ الانتهاء قبل تاريخ البدء' },
+  'trip.dayStrip.showAllTitle': { he: 'הצגת כל הימים', en: 'Show all days', ru: 'Показать все дни', ar: 'عرض كل الأيام' },
+  'trip.dayStrip.filterTitle': { he: 'סינון ליום זה', en: 'Filter to this day', ru: 'Фильтр по этому дню', ar: 'تصفية حسب هذا اليوم' },
+  'trip.dayStrip.daysCount': { he: '{n} ימים', en: '{n} days', ru: '{n} дней', ar: '{n} أيام' },
+  'trip.dayStrip.dayN': { he: 'יום {n}', en: 'Day {n}', ru: 'День {n}', ar: 'اليوم {n}' },
+  'trip.dayNPrefix': { he: 'יום {n} — ', en: 'Day {n} — ', ru: 'День {n} — ', ar: 'اليوم {n} — ' },
+  'trip.dailyTotal': { he: 'סה"כ ליום', en: 'Daily total', ru: 'Итого за день', ar: 'إجمالي اليوم' },
+  'trip.dayNotice.showing': { he: 'מוצג: {day}', en: 'Showing: {day}', ru: 'Показано: {day}', ar: 'معروض: {day}' },
+  'trip.dayNotice.showAllBtn': { he: 'הצגת כל הימים', en: 'Show all days', ru: 'Показать все дни', ar: 'عرض كل الأيام' },
+  'common.all': { he: 'הכל', en: 'All', ru: 'Все', ar: 'الكل' },
+
+  'trip.agendaTitle': { he: 'סדר יום מלא', en: 'Full agenda', ru: 'Полный план дня', ar: 'جدول الأعمال الكامل' },
+  'trip.agendaHint': { he: 'כל הטיסות, בתי המלון, המסעדות, הרכב והפעילויות ממוזגים לציר זמן אחד.', en: 'All flights, hotel check-in/out, restaurants, car pickup/return and activities merged into one timeline.', ru: 'Все рейсы, заезд/выезд из отелей, рестораны, получение/возврат авто и мероприятия объединены в одну временную шкалу.', ar: 'يتم دمج كل الرحلات وتسجيل الوصول/المغادرة من الفنادق والمطاعم واستلام/إعادة السيارة والأنشطة في جدول زمني واحد.' },
+  'trip.agenda.noActivitiesYet': { he: 'אין עדיין פעילויות. הוסיפו טיסות, מלונות, מסעדות או נקודות עניין.', en: 'No activities yet. Add flights, hotels, restaurants or points of interest.', ru: 'Пока нет активностей. Добавьте рейсы, отели, рестораны или интересные места.', ar: 'لا توجد أنشطة بعد. أضيفوا رحلات أو فنادق أو مطاعم أو نقاط اهتمام.' },
+  'trip.agenda.noActivitiesToday': { he: 'אין פעילויות ביום זה.', en: 'No activities on this day.', ru: 'В этот день нет активностей.', ar: 'لا توجد أنشطة في هذا اليوم.' },
+  'trip.agenda.flightKind': { he: 'טיסה', en: 'Flight', ru: 'Рейс', ar: 'رحلة' },
+  'trip.agenda.landingPrefix': { he: 'נחיתה ', en: 'Landing ', ru: 'Прибытие ', ar: 'الهبوط ' },
+  'trip.agenda.checkinPrefix': { he: 'צ׳ק אין: ', en: 'Check-in: ', ru: 'Заезд: ', ar: 'تسجيل الوصول: ' },
+  'trip.agenda.checkoutPrefix': { he: 'צ׳ק אאוט: ', en: 'Check-out: ', ru: 'Выезд: ', ar: 'تسجيل المغادرة: ' },
+  'trip.agenda.carKind': { he: 'רכב', en: 'Car', ru: 'Автомобиль', ar: 'سيارة' },
+  'trip.agenda.carPickupPrefix': { he: 'איסוף רכב: ', en: 'Car pickup: ', ru: 'Получение авто: ', ar: 'استلام السيارة: ' },
+  'trip.agenda.carReturnPrefix': { he: 'החזרת רכב: ', en: 'Car return: ', ru: 'Возврат авто: ', ar: 'إعادة السيارة: ' },
+  'trip.agenda.activityKind': { he: 'פעילות', en: 'Activity', ru: 'Активность', ar: 'نشاط' },
+
+  'trip.addPoiTitle': { he: 'הוספת נקודת עניין', en: 'Add point of interest', ru: 'Добавить интересное место', ar: 'إضافة نقطة اهتمام' },
+  'trip.dayByDayTitle': { he: 'מסלול יום אחר יום', en: 'Day-by-day itinerary', ru: 'Маршрут по дням', ar: 'المسار يوماً بيوم' },
+  'trip.coordsPlaceholder': { he: '31.7683,35.2137', en: '31.7683,35.2137', ru: '31.7683,35.2137', ar: '31.7683,35.2137' },
+
+  'nav.mapsLabel': { he: 'מפות', en: 'Maps', ru: 'Карты', ar: 'خرائط' },
+  'nav.mapsTitle': { he: 'פתיחה ב-Google Maps', en: 'Open in Google Maps', ru: 'Открыть в Google Maps', ar: 'فتح في خرائط جوجل' },
+  'nav.wazeTitle': { he: 'פתיחה ב-Waze', en: 'Open in Waze', ru: 'Открыть в Waze', ar: 'فتح في Waze' },
+
+  'field.name': { he: 'שם', en: 'Name', ru: 'Имя', ar: 'الاسم' },
+  'field.date': { he: 'תאריך', en: 'Date', ru: 'Дата', ar: 'التاريخ' },
+  'field.time': { he: 'שעה', en: 'Time', ru: 'Время', ar: 'الوقت' },
+  'field.category': { he: 'קטגוריה', en: 'Category', ru: 'Категория', ar: 'الفئة' },
+  'field.address': { he: 'כתובת', en: 'Address', ru: 'Адрес', ar: 'العنوان' },
+  'field.coords': { he: 'קואורדינטות', en: 'Coordinates', ru: 'Координаты', ar: 'الإحداثيات' },
+  'field.costILS': { he: 'עלות (₪)', en: 'Cost (₪)', ru: 'Стоимость (₪)', ar: 'التكلفة (₪)' },
+  'field.notes': { he: 'הערות', en: 'Notes', ru: 'Примечания', ar: 'ملاحظات' },
+  'field.flightNo': { he: 'מספר טיסה', en: 'Flight no.', ru: 'Номер рейса', ar: 'رقم الرحلة' },
+  'field.from': { he: 'מוצא', en: 'From', ru: 'Откуда', ar: 'من' },
+  'field.to': { he: 'יעד', en: 'To', ru: 'Куда', ar: 'إلى' },
+  'field.departure': { he: 'שעת המראה', en: 'Departure time', ru: 'Время вылета', ar: 'وقت الإقلاع' },
+  'field.arrival': { he: 'שעת נחיתה', en: 'Arrival time', ru: 'Время прибытия', ar: 'وقت الهبوط' },
+  'field.reference': { he: 'קוד הזמנה', en: 'Reference', ru: 'Номер брони', ar: 'رقم الحجز' },
+  'field.hotelName': { he: 'שם המלון', en: 'Hotel name', ru: 'Название отеля', ar: 'اسم الفندق' },
+  'field.checkin': { he: "צ'ק אין", en: 'Check-in', ru: 'Заезд', ar: 'تسجيل الوصول' },
+  'field.checkout': { he: "צ'ק אאוט", en: 'Check-out', ru: 'Выезд', ar: 'تسجيل المغادرة' },
+  'field.restaurantName': { he: 'שם המסעדה', en: 'Restaurant name', ru: 'Название ресторана', ar: 'اسم المطعم' },
+  'field.carCompany': { he: 'חברת השכרה', en: 'Rental company', ru: 'Компания проката', ar: 'شركة التأجير' },
+  'field.carType': { he: 'סוג רכב', en: 'Car type', ru: 'Тип автомобиля', ar: 'نوع السيارة' },
+  'field.pickupLoc': { he: 'מיקום איסוף', en: 'Pickup location', ru: 'Место получения', ar: 'موقع الاستلام' },
+  'field.pickupDate': { he: 'תאריך איסוף', en: 'Pickup date', ru: 'Дата получения', ar: 'تاريخ الاستلام' },
+  'field.returnLoc': { he: 'מיקום החזרה', en: 'Return location', ru: 'Место возврата', ar: 'موقع الإعادة' },
+  'field.returnDate': { he: 'תאריך החזרה', en: 'Return date', ru: 'Дата возврата', ar: 'تاريخ الإعادة' },
+  'field.description': { he: 'תיאור', en: 'Description', ru: 'Описание', ar: 'الوصف' },
+  'field.amountILS': { he: 'סכום (₪)', en: 'Amount (₪)', ru: 'Сумма (₪)', ar: 'المبلغ (₪)' },
+  'field.url': { he: 'קישור', en: 'URL', ru: 'Ссылка', ar: 'الرابط' },
+  'field.dateFrom': { he: 'מתאריך', en: 'From date', ru: 'С даты', ar: 'من تاريخ' },
+  'field.dateTo': { he: 'עד תאריך', en: 'To date', ru: 'До даты', ar: 'إلى تاريخ' },
+
+  'enum.itiCat.attraction': { he: 'אטרקציה', en: 'Attraction', ru: 'Достопримечательность', ar: 'معلم سياحي' },
+  'enum.itiCat.restaurant': { he: 'מסעדה', en: 'Restaurant', ru: 'Ресторан', ar: 'مطعم' },
+  'enum.itiCat.hotel': { he: 'מלון', en: 'Hotel', ru: 'Отель', ar: 'فندق' },
+  'enum.itiCat.transport': { he: 'תחבורה', en: 'Transport', ru: 'Транспорт', ar: 'نقل' },
+  'enum.itiCat.shopping': { he: 'קניות', en: 'Shopping', ru: 'Покупки', ar: 'تسوق' },
+  'enum.itiCat.other': { he: 'אחר', en: 'Other', ru: 'Другое', ar: 'أخرى' },
+  'enum.expCat.flights': { he: 'טיסות', en: 'Flights', ru: 'Рейсы', ar: 'رحلات' },
+  'enum.expCat.lodging': { he: 'לינה', en: 'Lodging', ru: 'Проживание', ar: 'إقامة' },
+  'enum.expCat.food': { he: 'אוכל', en: 'Food', ru: 'Еда', ar: 'طعام' },
+  'enum.expCat.attractions': { he: 'אטרקציות', en: 'Attractions', ru: 'Достопримечательности', ar: 'معالم سياحية' },
+  'enum.expCat.transport': { he: 'תחבורה', en: 'Transport', ru: 'Транспорт', ar: 'نقل' },
+  'enum.expCat.shopping': { he: 'קניות', en: 'Shopping', ru: 'Покупки', ar: 'تسوق' },
+  'enum.expCat.insurance': { he: 'ביטוח', en: 'Insurance', ru: 'Страховка', ar: 'تأمين' },
+  'enum.expCat.other': { he: 'אחר', en: 'Other', ru: 'Другое', ar: 'أخرى' },
+
+  'common.add': { he: 'הוספה', en: 'Add', ru: 'Добавить', ar: 'إضافة' },
+  'common.update': { he: 'עדכון', en: 'Update', ru: 'Обновить', ar: 'تحديث' },
+  'common.actions': { he: 'פעולות', en: 'Actions', ru: 'Действия', ar: 'إجراءات' },
+  'common.edit': { he: 'עריכה', en: 'Edit', ru: 'Изменить', ar: 'تعديل' },
+  'common.delete': { he: 'מחיקה', en: 'Delete', ru: 'Удалить', ar: 'حذف' },
+  'common.close': { he: 'סגור', en: 'Close', ru: 'Закрыть', ar: 'إغلاق' },
+  'common.cancel': { he: 'ביטול', en: 'Cancel', ru: 'Отмена', ar: 'إلغاء' },
+  'common.total': { he: 'סה"כ', en: 'Total', ru: 'Всего', ar: 'الإجمالي' },
+
+  'trip.budget.forWholeTrip': { he: 'לכל הטיול', en: 'For the whole trip', ru: 'На всю поездку', ar: 'للرحلة بأكملها' },
+  'trip.budget.setInSettings': { he: 'לא הוגדר — לחצו "בחירת יעד"', en: 'Not set - click "Pick destination"', ru: 'Не задан — нажмите «Выбрать направление»', ar: 'غير محدد — انقروا "اختيار الوجهة"' },
+  'trip.budget.travelersCount': { he: ' · {n} נוסעים', en: ' · {n} travelers', ru: ' · {n} путешественников', ar: ' · {n} مسافرين' },
+  'trip.spentSoFar': { he: 'הוצא עד כה', en: 'Spent so far', ru: 'Потрачено на данный момент', ar: 'المصروف حتى الآن' },
+  'trip.perPerson': { he: '{amount} לנוסע', en: '{amount} per traveler', ru: '{amount} на человека', ar: '{amount} للمسافر' },
+  'trip.categoriesSum': { he: 'סכום כל הקטגוריות', en: 'Sum of all categories', ru: 'Сумма всех категорий', ar: 'مجموع كل الفئات' },
+  'trip.remainingBudget': { he: 'יתרת תקציב', en: 'Remaining budget', ru: 'Остаток бюджета', ar: 'الميزانية المتبقية' },
+  'trip.overBudget': { he: 'חריגה מהתקציב', en: 'Over budget', ru: 'Превышение бюджета', ar: 'تجاوز الميزانية' },
+  'trip.withinBudget': { he: 'בתוך התקציב', en: 'Within budget', ru: 'В рамках бюджета', ar: 'ضمن الميزانية' },
+
+  'list.flights.addLabel': { he: 'הוספת טיסה', en: 'Add flight', ru: 'Добавить рейс', ar: 'إضافة رحلة' },
+  'list.flights.title': { he: 'כל הטיסות', en: 'All flights', ru: 'Все рейсы', ar: 'كل الرحلات' },
+  'list.flights.empty': { he: 'אין עדיין טיסות.', en: 'No flights yet.', ru: 'Рейсов пока нет.', ar: 'لا توجد رحلات بعد.' },
+  'list.hotels.addLabel': { he: 'הוספת מלון', en: 'Add hotel', ru: 'Добавить отель', ar: 'إضافة فندق' },
+  'list.hotels.title': { he: 'כל המלונות', en: 'All hotels', ru: 'Все отели', ar: 'كل الفنادق' },
+  'list.hotels.empty': { he: 'אין עדיין מלונות.', en: 'No hotels yet.', ru: 'Отелей пока нет.', ar: 'لا توجد فنادق بعد.' },
+  'list.restaurants.addLabel': { he: 'הוספת מסעדה', en: 'Add restaurant', ru: 'Добавить ресторан', ar: 'إضافة مطعم' },
+  'list.restaurants.title': { he: 'כל המסעדות', en: 'All restaurants', ru: 'Все рестораны', ar: 'كل المطاعم' },
+  'list.restaurants.empty': { he: 'אין עדיין מסעדות.', en: 'No restaurants yet.', ru: 'Ресторанов пока нет.', ar: 'لا توجد مطاعم بعد.' },
+  'list.cars.addLabel': { he: 'הוספת השכרת רכב', en: 'Add car rental', ru: 'Добавить аренду авто', ar: 'إضافة تأجير سيارة' },
+  'list.cars.title': { he: 'כל השכרות הרכב', en: 'All car rentals', ru: 'Все аренды авто', ar: 'كل تأجيرات السيارات' },
+  'list.cars.empty': { he: 'אין עדיין השכרות רכב.', en: 'No car rentals yet.', ru: 'Аренд авто пока нет.', ar: 'لا توجد تأجيرات سيارات بعد.' },
+  'list.itinerary.empty': { he: 'אין עדיין נקודות עניין.', en: 'No points of interest yet.', ru: 'Интересных мест пока нет.', ar: 'لا توجد نقاط اهتمام بعد.' },
+  'list.tripexp.addLabel': { he: 'הוספת הוצאה', en: 'Add expense', ru: 'Добавить расход', ar: 'إضافة مصروف' },
+  'list.tripexp.title': { he: 'כל ההוצאות', en: 'All expenses', ru: 'Все расходы', ar: 'كل المصروفات' },
+  'list.tripexp.empty': { he: 'אין עדיין הוצאות.', en: 'No expenses yet.', ru: 'Расходов пока нет.', ar: 'لا توجد مصروفات بعد.' },
+  'list.triplinks.addLabel': { he: 'הוספת קישור', en: 'Add link', ru: 'Добавить ссылку', ar: 'إضافة رابط' },
+  'list.triplinks.title': { he: 'כל הקישורים', en: 'All links', ru: 'Все ссылки', ar: 'كل الروابط' },
+  'list.triplinks.empty': { he: 'אין עדיין קישורים.', en: 'No links yet.', ru: 'Ссылок пока нет.', ar: 'لا توجد روابط بعد.' },
+
+  'toast.added': { he: 'נוסף בהצלחה', en: 'Added successfully', ru: 'Успешно добавлено', ar: 'تمت الإضافة بنجاح' },
+  'toast.updated': { he: 'עודכן בהצלחה', en: 'Updated successfully', ru: 'Успешно обновлено', ar: 'تم التحديث بنجاح' },
+  'toast.deleted': { he: 'נמחק בהצלחה', en: 'Deleted successfully', ru: 'Успешно удалено', ar: 'تم الحذف بنجاح' },
+  'toast.destSaved': { he: 'פרטי הטיול נשמרו', en: 'Trip details saved', ru: 'Данные поездки сохранены', ar: 'تم حفظ تفاصيل الرحلة' },
+  'toast.tripDatesSaved': { he: 'התאריכים נשמרו', en: 'Dates saved', ru: 'Даты сохранены', ar: 'تم حفظ التواريخ' },
+  'toast.exported': { he: 'קובץ הגיבוי (or.xlsx) יורד', en: 'Backup file (or.xlsx) is downloading', ru: 'Файл резервной копии (or.xlsx) загружается', ar: 'جارٍ تنزيل ملف النسخة الاحتياطية (or.xlsx)' },
+  'toast.imported': { he: 'הנתונים נטענו בהצלחה', en: 'Data loaded successfully', ru: 'Данные успешно загружены', ar: 'تم تحميل البيانات بنجاح' },
+  'toast.allDataDeleted': { he: 'כל הנתונים נמחקו', en: 'All data deleted', ru: 'Все данные удалены', ar: 'تم حذف كل البيانات' },
+
+  'confirm.deleteRecord': { he: 'למחוק את הרשומה?', en: 'Delete this record?', ru: 'Удалить эту запись?', ar: 'هل تريد حذف هذا السجل؟' },
+  'confirm.deleteAllData': { he: 'למחוק את כל הנתונים? הפעולה לא ניתנת לביטול.', en: 'Delete all data? This cannot be undone.', ru: 'Удалить все данные? Это действие нельзя отменить.', ar: 'حذف كل البيانات؟ لا يمكن التراجع عن هذا الإجراء.' },
+  'err.requiredFields': { he: 'יש למלא את השדות החובה', en: 'Required fields must be filled', ru: 'Необходимо заполнить обязательные поля', ar: 'يجب ملء الحقول المطلوبة' },
+
+  'data.exportBtn': { he: 'ייצוא לאקסל', en: 'Export to Excel', ru: 'Экспорт в Excel', ar: 'تصدير إلى إكسل' },
+  'data.importBtn': { he: 'ייבוא מאקסל', en: 'Import from Excel', ru: 'Импорт из Excel', ar: 'استيراد من إكسل' },
+  'data.deleteAllBtn': { he: 'מחיקת כל הנתונים', en: 'Delete all data', ru: 'Удалить все данные', ar: 'حذف كل البيانات' },
+  'data.hint': { he: 'הנתונים נשמרים בדפדפן הזה בלבד. מומלץ לייצא גיבוי לאקסל מדי פעם.', en: 'Data is saved in this browser only. It\'s recommended to export a backup to Excel occasionally.', ru: 'Данные сохраняются только в этом браузере. Рекомендуется периодически экспортировать резервную копию в Excel.', ar: 'يتم حفظ البيانات في هذا المتصفح فقط. يُنصح بتصدير نسخة احتياطية إلى إكسل بين الحين والآخر.' },
+  'data.fileStatus': { he: '{n} רשומות · נשמר לאחרונה: {t}', en: '{n} records · last saved: {t}', ru: 'Записей: {n} · последнее сохранение: {t}', ar: '{n} سجلات · آخر حفظ: {t}' },
+  'data.fileStatusNever': { he: '{n} רשומות · טרם נשמר', en: '{n} records · never saved', ru: 'Записей: {n} · ещё не сохранено', ar: '{n} سجلات · لم يُحفظ بعد' },
+
+  'settings.title': { he: 'הגדרות', en: 'Settings', ru: 'Настройки', ar: 'الإعدادات' },
+  'settings.backupReminder.heading': { he: 'תזכורת גיבוי', en: 'Backup reminder', ru: 'Напоминание о резервной копии', ar: 'تذكير النسخ الاحتياطي' },
+  'settings.backupReminder.hint': { he: 'כשעובר הזמן שבחרתם בלי ייצוא לאקסל, אור יזכיר לכם עם חלון קופץ. בדפדפנים מסוימים (למשל Safari באייפון) המידע המקומי עלול להימחק אחרי שבוע בלי שימוש, אלא אם שומרים קיצור דרך למסך הבית.', en: 'When the time you chose passes without exporting to Excel, Or reminds you with a popup. Some browsers (e.g. iOS Safari) can delete local data after a week of inactivity unless the app is saved to the home screen.', ru: 'Когда проходит выбранное время без экспорта в Excel, Ор напомнит вам всплывающим окном. Некоторые браузеры (например, Safari на iPhone) могут удалить локальные данные через неделю бездействия, если приложение не сохранено на главный экран.', ar: 'عندما يمر الوقت الذي اخترتموه دون تصدير إلى إكسل، سيذكركم أور بنافذة منبثقة. بعض المتصفحات (مثل Safari على آيفون) قد تحذف البيانات المحلية بعد أسبوع من عدم الاستخدام، ما لم يُحفظ التطبيق على الشاشة الرئيسية.' },
+  'settings.backupReminder.label': { he: 'תדירות התזכורת', en: 'Reminder frequency', ru: 'Частота напоминаний', ar: 'وتيرة التذكير' },
+  'settings.backupReminder.every5': { he: 'כל 5 דקות', en: 'Every 5 minutes', ru: 'Каждые 5 минут', ar: 'كل 5 دقائق' },
+  'settings.backupReminder.every10': { he: 'כל 10 דקות', en: 'Every 10 minutes', ru: 'Каждые 10 минут', ar: 'كل 10 دقائق' },
+  'settings.backupReminder.every15': { he: 'כל 15 דקות', en: 'Every 15 minutes', ru: 'Каждые 15 минут', ar: 'كل 15 دقيقة' },
+  'settings.backupReminder.every30': { he: 'כל 30 דקות', en: 'Every 30 minutes', ru: 'Каждые 30 минут', ar: 'كل 30 دقيقة' },
+  'settings.backupReminder.every60': { he: 'כל שעה', en: 'Every hour', ru: 'Каждый час', ar: 'كل ساعة' },
+  'settings.backupReminder.off': { he: 'בלי תזכורת', en: 'No reminder', ru: 'Без напоминания', ar: 'بدون تذكير' },
+  'settings.trip.destPh': { he: 'למשל: לונדון, אנגליה', en: 'e.g. London, England', ru: 'напр. Лондон, Англия', ar: 'مثال: لندن، إنجلترا' },
+  'backup.reminderTitle': { he: 'עדיין לא בוצע גיבוי', en: 'Backup not done yet', ru: 'Резервная копия ещё не создана', ar: 'لم يتم إجراء نسخة احتياطية بعد' },
+  'backup.reminderHint': { he: 'עבר הזמן שבחרתם בלי גיבוי עדכני. מומלץ לייצא גיבוי לאקסל מההגדרות.', en: 'The time you chose has passed without a fresh backup. Consider exporting a backup to Excel from Settings.', ru: 'Прошло выбранное вами время без свежей резервной копии. Рекомендуем экспортировать резервную копию в Excel в настройках.', ar: 'مرّ الوقت الذي اخترتموه دون نسخة احتياطية حديثة. يُنصح بتصدير نسخة احتياطية إلى إكسل من الإعدادات.' },
+  'backup.reminderFrequencyHint': { he: 'אפשר לשנות את תדירות התזכורת הזו בכל עת דרך חלון ההגדרות.', en: 'You can change this reminder\'s frequency any time from the settings window.', ru: 'Вы можете изменить частоту этого напоминания в любое время в окне настроек.', ar: 'يمكنكم تغيير وتيرة هذا التذكير في أي وقت من نافذة الإعدادات.' },
+
+  'help.title': { he: 'עזרה', en: 'Help', ru: 'Справка', ar: 'مساعدة' },
+  'help.whatTitle': { he: 'מה זה אור?', en: 'What is Or?', ru: 'Что такое Ор?', ar: 'ما هو أور؟' },
+  'help.whatBody': { he: 'אור הוא כלי לתכנון חופשות — טיסות, מלונות, מסעדות, השכרת רכב, מסלול יומי, הוצאות וקישורים שימושיים, הכל במקום אחד, ללא צורך בהתחברות או חשבון.', en: 'Or is a vacation-planning tool - flights, hotels, restaurants, car rentals, a daily itinerary, expenses and useful links, all in one place, no sign-in or account needed.', ru: 'Ор — инструмент планирования отпуска: рейсы, отели, рестораны, аренда авто, дневной маршрут, расходы и полезные ссылки — всё в одном месте, без входа в систему и без аккаунта.', ar: 'أور هي أداة لتخطيط الإجازات — رحلات وفنادق ومطاعم وتأجير سيارات ومسار يومي ومصروفات وروابط مفيدة، كل ذلك في مكان واحد، دون الحاجة لتسجيل الدخول أو حساب.' },
+  'help.datesTitle': { he: 'יעד ותאריכים', en: 'Destination and dates', ru: 'Направление и даты', ar: 'الوجهة والتواريخ' },
+  'help.datesBody': { he: 'לחצו "בחירת יעד" כדי לקבוע לאן טסים, תקציב ומספר נוסעים. לחצו "בחירת תאריכים" כדי לפתוח את פס הימים — לחיצה על יום מסננת את הסדר-יום, המסלול, הטיסות וההוצאות לאותו יום בלבד.', en: 'Click "Pick destination" to set where you\'re going, a budget and traveler count. Click "Pick dates" to open the day strip - clicking a day filters the agenda, itinerary, flights and expenses to that day only.', ru: 'Нажмите «Выбрать направление», чтобы указать, куда вы едете, бюджет и количество путешественников. Нажмите «Выбрать даты», чтобы открыть полосу дней — нажатие на день фильтрует план дня, маршрут, рейсы и расходы только для этого дня.', ar: 'انقروا "اختيار الوجهة" لتحديد إلى أين تذهبون والميزانية وعدد المسافرين. انقروا "اختيار التواريخ" لفتح شريط الأيام — النقر على يوم يصفي جدول الأعمال والمسار والرحلات والمصروفات لذلك اليوم فقط.' },
+  'help.agendaTitle': { he: 'סדר יום', en: 'Agenda', ru: 'План дня', ar: 'جدول الأعمال' },
+  'help.agendaBody': { he: 'טאב "סדר יום" ממזג אוטומטית את כל הטיסות, הצ\'ק אין/אאוט במלונות, ארוחות, איסוף/החזרת רכב ונקודות העניין לציר זמן אחד, לפי תאריך ושעה.', en: 'The "Agenda" tab automatically merges all flights, hotel check-in/out, meals, car pickup/return and points of interest into one timeline, by date and time.', ru: 'Вкладка «План дня» автоматически объединяет все рейсы, заезд/выезд из отелей, приёмы пищи, получение/возврат авто и интересные места в одну временную шкалу по дате и времени.', ar: 'تدمج علامة تبويب "جدول الأعمال" تلقائياً كل الرحلات وتسجيل الوصول/المغادرة من الفنادق والوجبات واستلام/إعادة السيارة ونقاط الاهتمام في جدول زمني واحد، حسب التاريخ والوقت.' },
+  'help.dataTitle': { he: 'שמירת נתונים וגיבוי', en: 'Data storage and backup', ru: 'Хранение данных и резервное копирование', ar: 'تخزين البيانات والنسخ الاحتياطي' },
+  'help.dataBody': { he: 'הנתונים נשמרים רק בדפדפן הזה, במכשיר הזה — אין שרת וללא חשבון. אם מנקים היסטוריית גלישה, עוברים למכשיר אחר, או לא פותחים את האתר במשך שבוע ב-Safari באייפון בלי לשמור קיצור דרך למסך הבית — המידע עלול להיעלם. מומלץ לייצא גיבוי לאקסל מדי פעם דרך ההגדרות, ולייבא אותו בחזרה במידת הצורך.', en: 'Data is saved only in this browser, on this device - no server, no account. If you clear browsing data, switch devices, or don\'t open the site for a week on iPhone Safari without saving it to the home screen, the data may be lost. It\'s recommended to export a backup to Excel occasionally via Settings, and import it back if needed.', ru: 'Данные сохраняются только в этом браузере, на этом устройстве — нет сервера, нет аккаунта. Если вы очистите данные браузера, смените устройство или не будете открывать сайт неделю в Safari на iPhone, не сохранив его на главный экран, данные могут быть потеряны. Рекомендуется периодически экспортировать резервную копию в Excel через настройки и импортировать её обратно при необходимости.', ar: 'يتم حفظ البيانات فقط في هذا المتصفح، على هذا الجهاز — لا يوجد خادم ولا حساب. إذا مسحتم بيانات التصفح، أو انتقلتم لجهاز آخر، أو لم تفتحوا الموقع لمدة أسبوع في Safari على آيفون دون حفظه على الشاشة الرئيسية — قد تُفقد البيانات. يُنصح بتصدير نسخة احتياطية إلى إكسل بين الحين والآخر من الإعدادات، واستيرادها مرة أخرى عند الحاجة.' }
+};
+
+let currentLang = localStorage.getItem('or-lang') || 'he';
+
+function t(key, vars) {
+  const entry = I18N[key];
+  let s = entry ? (entry[currentLang] || entry.he) : key;
+  if (vars) for (const k in vars) s = s.replaceAll('{' + k + '}', vars[k]);
+  return s;
+}
+function applyI18nDom(root) {
+  const scope = root || document;
+  scope.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
+  scope.querySelectorAll('[data-i18n-ph]').forEach(el => { el.placeholder = t(el.dataset.i18nPh); });
+  scope.querySelectorAll('[data-i18n-aria]').forEach(el => { el.setAttribute('aria-label', t(el.dataset.i18nAria)); });
+}
+
+// --- Storage (own key, separate from YURI's) ---
+const STORE_KEY = 'or-store-v1';
+function loadDB() {
+  try {
+    const raw = localStorage.getItem(STORE_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch (e) { /* fall through to fresh store */ }
+  return { trip: {}, itinerary: [], flights: [], hotels: [], restaurants: [], cars: [], tripexp: [], triplinks: [] };
+}
+function saveDB(s) {
+  s.savedAt = new Date().toISOString();
+  localStorage.setItem(STORE_KEY, JSON.stringify(s));
+}
+let db = loadDB();
+let trip = db.trip || {};
+let itinerary = db.itinerary || [];
+let flights = db.flights || [];
+let hotels = db.hotels || [];
+let restaurants = db.restaurants || [];
+let cars = db.cars || [];
+let tripexp = db.tripexp || [];
+let triplinks = db.triplinks || [];
+let tripDay = ''; // '' = all days
+function persist() { saveDB({ trip, itinerary, flights, hotels, restaurants, cars, tripexp, triplinks }); }
+function nextId(arr) { return arr.reduce((max, e) => Math.max(max, Number(e.id) || 0), 0) + 1; }
+
+// --- CRUD ---
+function addItinerary(p) { const r = { id: nextId(itinerary), date: p.date, time: p.time || '', category: p.category || 'other', name: p.name, address: p.address || '', coords: p.coords || '', cost: Number(p.cost) || 0, notes: p.notes || '' }; itinerary.push(r); persist(); return r; }
+function updateItinerary(id, p) { const r = itinerary.find(x => String(x.id) === String(id)); if (!r) return; Object.assign(r, { date: p.date, time: p.time || '', category: p.category, name: p.name, address: p.address || '', coords: p.coords || '', cost: Number(p.cost) || 0, notes: p.notes || '' }); persist(); }
+function deleteItinerary(id) { itinerary = itinerary.filter(x => String(x.id) !== String(id)); persist(); }
+
+function addFlight(p) { const r = { id: nextId(flights), date: p.date || '', flight: p.flight || '', from: p.from || '', to: p.to || '', dep: p.dep || '', arr: p.arr || '', ref: p.ref || '', cost: Number(p.cost) || 0, notes: p.notes || '' }; flights.push(r); persist(); return r; }
+function updateFlight(id, p) { const r = flights.find(x => String(x.id) === String(id)); if (!r) return; Object.assign(r, { date: p.date || '', flight: p.flight || '', from: p.from || '', to: p.to || '', dep: p.dep || '', arr: p.arr || '', ref: p.ref || '', cost: Number(p.cost) || 0, notes: p.notes || '' }); persist(); }
+function deleteFlight(id) { flights = flights.filter(x => String(x.id) !== String(id)); persist(); }
+
+function addHotel(p) { const r = { id: nextId(hotels), name: p.name || '', address: p.address || '', coords: p.coords || '', checkin: p.checkin || '', checkout: p.checkout || '', ref: p.ref || '', cost: Number(p.cost) || 0, notes: p.notes || '' }; hotels.push(r); persist(); return r; }
+function updateHotel(id, p) { const r = hotels.find(x => String(x.id) === String(id)); if (!r) return; Object.assign(r, { name: p.name || '', address: p.address || '', coords: p.coords || '', checkin: p.checkin || '', checkout: p.checkout || '', ref: p.ref || '', cost: Number(p.cost) || 0, notes: p.notes || '' }); persist(); }
+function deleteHotel(id) { hotels = hotels.filter(x => String(x.id) !== String(id)); persist(); }
+
+function addRestaurant(p) { const r = { id: nextId(restaurants), date: p.date || '', name: p.name || '', address: p.address || '', coords: p.coords || '', ref: p.ref || '', cost: Number(p.cost) || 0, notes: p.notes || '' }; restaurants.push(r); persist(); return r; }
+function updateRestaurant(id, p) { const r = restaurants.find(x => String(x.id) === String(id)); if (!r) return; Object.assign(r, { date: p.date || '', name: p.name || '', address: p.address || '', coords: p.coords || '', ref: p.ref || '', cost: Number(p.cost) || 0, notes: p.notes || '' }); persist(); }
+function deleteRestaurant(id) { restaurants = restaurants.filter(x => String(x.id) !== String(id)); persist(); }
+
+function addCar(p) { const r = { id: nextId(cars), company: p.company || '', cartype: p.cartype || '', pickupLoc: p.pickupLoc || '', pickupDate: p.pickupDate || '', returnLoc: p.returnLoc || '', returnDate: p.returnDate || '', ref: p.ref || '', cost: Number(p.cost) || 0, notes: p.notes || '' }; cars.push(r); persist(); return r; }
+function updateCar(id, p) { const r = cars.find(x => String(x.id) === String(id)); if (!r) return; Object.assign(r, { company: p.company || '', cartype: p.cartype || '', pickupLoc: p.pickupLoc || '', pickupDate: p.pickupDate || '', returnLoc: p.returnLoc || '', returnDate: p.returnDate || '', ref: p.ref || '', cost: Number(p.cost) || 0, notes: p.notes || '' }); persist(); }
+function deleteCar(id) { cars = cars.filter(x => String(x.id) !== String(id)); persist(); }
+
+function addTripexp(p) { const r = { id: nextId(tripexp), date: p.date, category: p.category || 'other', description: p.description || '', amount: Number(p.amount) || 0 }; tripexp.push(r); persist(); return r; }
+function updateTripexp(id, p) { const r = tripexp.find(x => String(x.id) === String(id)); if (!r) return; Object.assign(r, { date: p.date, category: p.category, description: p.description || '', amount: Number(p.amount) || 0 }); persist(); }
+function deleteTripexp(id) { tripexp = tripexp.filter(x => String(x.id) !== String(id)); persist(); }
+
+function addTriplink(p) { const r = { id: nextId(triplinks), name: p.name, url: p.url, description: p.description || '' }; triplinks.push(r); persist(); return r; }
+function updateTriplink(id, p) { const r = triplinks.find(x => String(x.id) === String(id)); if (!r) return; Object.assign(r, { name: p.name, url: p.url, description: p.description || '' }); persist(); }
+function deleteTriplink(id) { triplinks = triplinks.filter(x => String(x.id) !== String(id)); persist(); }
+
+// --- Formatting helpers ---
+const fmt = n => '₪' + Number(n).toLocaleString('he-IL', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+function fmtDate(dateInput, opts) {
+  if (!dateInput) return '—';
+  const d = dateInput instanceof Date ? dateInput : new Date(dateInput);
+  if (isNaN(d)) return '—';
+  if (opts && opts.weekday) {
+    const wd = { he: ['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'], en: ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'], ru: ['воскресенье','понедельник','вторник','среда','четверг','пятница','суббота'], ar: ['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'] }[currentLang][d.getDay()];
+    return `${wd}, ${d.getDate()}.${d.getMonth() + 1}`;
+  }
+  const dd = String(d.getDate()).padStart(2, '0');
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  const yy = String(d.getFullYear()).slice(-2);
+  return `${dd}/${mm}/${yy}`;
+}
+const pad2 = n => String(n).padStart(2, '0');
+const todayISO = () => { const d = new Date(); return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()); };
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+function toast(msg, isError) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'show' + (isError ? ' error' : '');
+  setTimeout(() => el.className = '', 3500);
+}
+function enumLabel(kind, key) { return t('enum.' + kind + '.' + key); }
+function enumKeyFromLabel(kind, label, keys, fallback) {
+  for (const key of keys) {
+    for (const lang of LANG_ORDER) {
+      if (I18N['enum.' + kind + '.' + key][lang] === label) return key;
+    }
+  }
+  return fallback;
+}
+function navLinks(address, coords) {
+  if (!address && !coords) return '';
+  const c = coords ? String(coords).trim() : '';
+  const mapsQ = encodeURIComponent(c || address);
+  const wazeParam = c ? `ll=${encodeURIComponent(c)}` : `q=${encodeURIComponent(address)}`;
+  return `<span class="nav-links">` +
+    `<a href="https://www.google.com/maps/search/?api=1&query=${mapsQ}" target="_blank" rel="noopener" title="${t('nav.mapsTitle')}" class="nav-link nl-maps">${t('nav.mapsLabel')}</a>` +
+    `<a href="https://waze.com/ul?${wazeParam}&navigate=yes" target="_blank" rel="noopener" title="${t('nav.wazeTitle')}" class="nav-link nl-waze">Waze</a></span>`;
+}
+
+// --- Rendering ---
+function renderApp() {
+  renderDayStrip();
+  renderAgenda();
+  renderFlightsTable();
+  renderHotelsTable();
+  renderRestaurantsTable();
+  renderCarsTable();
+  renderItineraryTable();
+  renderTripexpTable();
+  renderTriplinksTable();
+  renderTripSummary();
+  updateTripDayNotice();
+  renderFileStatus();
+}
+
+function updateTripDestHead() {
+  const disp = document.getElementById('tripDestDisplay');
+  disp.textContent = trip.destination || '';
+  disp.hidden = !trip.destination;
+}
+
+function renderDayStrip() {
+  const strip = document.getElementById('tripDayStrip');
+  const allBtn = document.getElementById('tripAllDaysBtn');
+  updateTripDestHead();
+  const label = document.getElementById('tripDatesLabel');
+  if (!trip.from || !trip.to || trip.to < trip.from) {
+    strip.innerHTML = '';
+    allBtn.hidden = true;
+    tripDay = '';
+    label.textContent = t('trip.dates.notChosen');
+    return;
+  }
+  const days = [];
+  const [fy, fm, fd] = trip.from.split('-').map(Number);
+  const [ty, tm, td] = trip.to.split('-').map(Number);
+  const cur = new Date(fy, fm - 1, fd), end = new Date(ty, tm - 1, td);
+  while (cur <= end && days.length < 120) {
+    days.push({ iso: cur.getFullYear() + '-' + pad2(cur.getMonth() + 1) + '-' + pad2(cur.getDate()), n: days.length + 1, wd: WEEKDAY_SHORT[currentLang][cur.getDay()], dm: cur.getDate() + '.' + (cur.getMonth() + 1) });
+    cur.setDate(cur.getDate() + 1);
+  }
+  if (tripDay && !days.some(x => x.iso === tripDay)) tripDay = '';
+  const has = new Set(itinerary.map(r => r.date));
+  allBtn.hidden = false;
+  allBtn.classList.toggle('active', tripDay === '');
+  allBtn.title = t('trip.dayStrip.showAllTitle');
+  allBtn.innerHTML = `<span class="dnum">${t('common.all')}</span><span class="dwd">${t('trip.dayStrip.daysCount', { n: days.length })}</span><span class="ddate">&nbsp;</span><span class="ddot"></span>`;
+  strip.innerHTML = days.map(x => `<button type="button" class="day-sq${tripDay === x.iso ? ' active' : ''}${has.has(x.iso) ? ' has-items' : ''}" data-day="${x.iso}" title="${t('trip.dayStrip.filterTitle')}"><span class="dnum">${t('trip.dayStrip.dayN', { n: x.n })}</span><span class="dwd">${x.wd}</span><span class="ddate">${x.dm}</span><span class="ddot"></span></button>`).join('');
+  label.textContent = `${fmtDate(trip.from)} – ${fmtDate(trip.to)} · ${t('trip.dayStrip.daysCount', { n: days.length })}`;
+}
+
+function renderAgenda() {
+  const box = document.getElementById('agendaBox');
+  let ev = [];
+  flights.forEach(f => { if (!f.date) return; ev.push({ date: f.date, time: f.dep || '', kind: t('trip.agenda.flightKind'), title: f.flight || t('trip.agenda.flightKind'), sub: [(f.from && f.to) ? f.from + ' ← ' + f.to : (f.from || f.to || ''), f.arr ? t('trip.agenda.landingPrefix') + f.arr : ''].filter(Boolean).join(' · '), cost: f.cost }); });
+  hotels.forEach(h => {
+    if (h.checkin) ev.push({ date: h.checkin, time: '', kind: t('trip.tabHotels'), title: t('trip.agenda.checkinPrefix') + (h.name || ''), address: h.address, coords: h.coords });
+    if (h.checkout) ev.push({ date: h.checkout, time: '', kind: t('trip.tabHotels'), title: t('trip.agenda.checkoutPrefix') + (h.name || ''), address: h.address, coords: h.coords });
+  });
+  restaurants.forEach(r => { if (r.date) ev.push({ date: r.date, time: '', kind: t('trip.tabRestaurants'), title: r.name || '', address: r.address, coords: r.coords, cost: r.cost }); });
+  cars.forEach(c => {
+    if (c.pickupDate) ev.push({ date: c.pickupDate, time: '', kind: t('trip.agenda.carKind'), title: t('trip.agenda.carPickupPrefix') + (c.company || ''), sub: c.cartype, address: c.pickupLoc, cost: c.cost });
+    if (c.returnDate) ev.push({ date: c.returnDate, time: '', kind: t('trip.agenda.carKind'), title: t('trip.agenda.carReturnPrefix') + (c.company || ''), address: c.returnLoc });
+  });
+  itinerary.forEach(p => { ev.push({ date: p.date, time: p.time || '', kind: p.category ? enumLabel('itiCat', p.category) : t('trip.agenda.activityKind'), title: p.name || '', sub: p.notes, address: p.address, coords: p.coords, cost: p.cost }); });
+  if (tripDay) ev = ev.filter(e => e.date === tripDay);
+  ev.sort((a, b) => a.date === b.date ? String(a.time).localeCompare(String(b.time)) : (a.date > b.date ? 1 : -1));
+  if (!ev.length) { box.innerHTML = `<div class="empty">${tripDay ? t('trip.agenda.noActivitiesToday') : t('trip.agenda.noActivitiesYet')}</div>`; return; }
+  const dayNo = d => trip.from ? Math.round((new Date(d) - new Date(trip.from)) / 86400000) + 1 : null;
+  let html = '', cur = null;
+  ev.forEach(e => {
+    if (e.date !== cur) {
+      cur = e.date;
+      const n = dayNo(e.date);
+      html += `<div class="agenda-day">${n && n > 0 ? t('trip.dayNPrefix', { n }) : ''}${fmtDate(e.date, { weekday: true })}</div>`;
+    }
+    html += `<div class="agenda-item">
+      <span class="agenda-time">${escapeHtml(e.time) || '—'}</span>
+      <span class="agenda-dot"></span>
+      <div class="agenda-body">
+        <div class="agenda-title"><span class="type-badge st-normal">${escapeHtml(e.kind)}</span> ${escapeHtml(e.title)}</div>
+        ${e.sub ? `<div class="agenda-sub">${escapeHtml(e.sub)}</div>` : ''}
+        ${e.address ? `<div class="agenda-sub">${escapeHtml(e.address)} ${navLinks(e.address, e.coords)}</div>` : ''}
+      </div>
+      ${e.cost ? `<span class="agenda-cost">${fmt(e.cost)}</span>` : ''}
+    </div>`;
+  });
+  box.innerHTML = html;
+}
+
+function renderFlightsTable() {
+  const rows = tripDay ? flights.filter(r => r.date === tripDay) : flights;
+  const sorted = [...rows].sort((a, b) => b.id - a.id);
+  document.getElementById('flightsEmpty').hidden = sorted.length > 0;
+  document.getElementById('flightsBody').innerHTML = sorted.map(r => `<tr>
+      <td>${fmtDate(r.date)}</td><td dir="ltr">${escapeHtml(r.flight) || '—'}</td><td dir="ltr">${escapeHtml(r.from) || '—'}</td><td dir="ltr">${escapeHtml(r.to) || '—'}</td>
+      <td class="num">${escapeHtml(r.dep) || '—'}</td><td class="num">${escapeHtml(r.arr) || '—'}</td><td class="num">${r.cost ? fmt(r.cost) : '—'}</td>
+      <td class="actions-cell"><button type="button" class="btn-edit" data-edit-flight="${r.id}">${t('common.edit')}</button><button type="button" class="btn-danger" data-del-flight="${r.id}">${t('common.delete')}</button></td>
+    </tr>`).join('');
+}
+function renderHotelsTable() {
+  const sorted = [...hotels].sort((a, b) => b.id - a.id);
+  document.getElementById('hotelsEmpty').hidden = sorted.length > 0;
+  document.getElementById('hotelsBody').innerHTML = sorted.map(r => `<tr>
+      <td>${escapeHtml(r.name) || '—'}</td><td>${r.address ? escapeHtml(r.address) + ' ' + navLinks(r.address, r.coords) : '—'}</td><td>${fmtDate(r.checkin)}</td><td>${fmtDate(r.checkout)}</td><td class="num">${r.cost ? fmt(r.cost) : '—'}</td>
+      <td class="actions-cell"><button type="button" class="btn-edit" data-edit-hotel="${r.id}">${t('common.edit')}</button><button type="button" class="btn-danger" data-del-hotel="${r.id}">${t('common.delete')}</button></td>
+    </tr>`).join('');
+}
+function renderRestaurantsTable() {
+  const rows = tripDay ? restaurants.filter(r => r.date === tripDay) : restaurants;
+  const sorted = [...rows].sort((a, b) => b.id - a.id);
+  document.getElementById('restaurantsEmpty').hidden = sorted.length > 0;
+  document.getElementById('restaurantsBody').innerHTML = sorted.map(r => `<tr>
+      <td>${fmtDate(r.date)}</td><td>${escapeHtml(r.name) || '—'}</td><td>${r.address ? escapeHtml(r.address) + ' ' + navLinks(r.address, r.coords) : '—'}</td><td class="num">${r.cost ? fmt(r.cost) : '—'}</td>
+      <td class="actions-cell"><button type="button" class="btn-edit" data-edit-restaurant="${r.id}">${t('common.edit')}</button><button type="button" class="btn-danger" data-del-restaurant="${r.id}">${t('common.delete')}</button></td>
+    </tr>`).join('');
+}
+function renderCarsTable() {
+  const sorted = [...cars].sort((a, b) => b.id - a.id);
+  document.getElementById('carsEmpty').hidden = sorted.length > 0;
+  document.getElementById('carsBody').innerHTML = sorted.map(r => `<tr>
+      <td>${escapeHtml(r.company) || '—'}</td><td>${fmtDate(r.pickupDate)}</td><td>${fmtDate(r.returnDate)}</td><td class="num">${r.cost ? fmt(r.cost) : '—'}</td>
+      <td class="actions-cell"><button type="button" class="btn-edit" data-edit-car="${r.id}">${t('common.edit')}</button><button type="button" class="btn-danger" data-del-car="${r.id}">${t('common.delete')}</button></td>
+    </tr>`).join('');
+}
+function renderItineraryTable() {
+  let rows = [...itinerary].sort((a, b) => a.date === b.date ? String(a.time || '').localeCompare(String(b.time || '')) : (a.date > b.date ? 1 : -1));
+  if (tripDay) rows = rows.filter(r => r.date === tripDay);
+  document.getElementById('itineraryEmpty').hidden = rows.length > 0;
+  const dayNo = d => trip.from ? Math.round((new Date(d) - new Date(trip.from)) / 86400000) + 1 : null;
+  let html = '', curDate = null, dayCost = 0;
+  const flushDay = () => { if (curDate != null && dayCost > 0) html += `<tr class="rpt-subtotal"><td></td><td></td><td>${t('trip.dailyTotal')}</td><td></td><td class="num">${fmt(dayCost)}</td><td></td></tr>`; };
+  rows.forEach(r => {
+    if (r.date !== curDate) {
+      flushDay();
+      curDate = r.date; dayCost = 0;
+      const n = dayNo(r.date);
+      html += `<tr class="rpt-group"><td colspan="6">${n && n > 0 ? t('trip.dayNPrefix', { n }) : ''}${fmtDate(r.date, { weekday: true })}</td></tr>`;
+    }
+    dayCost += Number(r.cost) || 0;
+    html += `<tr>
+      <td class="num">${escapeHtml(r.time) || '—'}</td>
+      <td><span class="type-badge st-normal">${r.category ? enumLabel('itiCat', r.category) : '—'}</span></td>
+      <td>${escapeHtml(r.name)}</td>
+      <td>${r.address ? escapeHtml(r.address) + ' ' + navLinks(r.address, r.coords) : '—'}</td>
+      <td class="num">${r.cost ? fmt(r.cost) : '—'}</td>
+      <td class="actions-cell"><button type="button" class="btn-edit" data-edit-itinerary="${r.id}">${t('common.edit')}</button><button type="button" class="btn-danger" data-del-itinerary="${r.id}">${t('common.delete')}</button></td>
+    </tr>`;
+  });
+  flushDay();
+  document.getElementById('itineraryBody').innerHTML = html;
+}
+function tripTotalSpent() {
+  const sum = (arr, f) => (arr || []).reduce((s, r) => s + (Number(r[f]) || 0), 0);
+  return sum(tripexp, 'amount') + sum(flights, 'cost') + sum(hotels, 'cost') + sum(restaurants, 'cost') + sum(cars, 'cost') + sum(itinerary, 'cost');
+}
+function renderTripexpTable() {
+  const rows = tripDay ? tripexp.filter(r => r.date === tripDay) : tripexp;
+  const sorted = [...rows].sort((a, b) => a.date === b.date ? b.id - a.id : (a.date > b.date ? -1 : 1));
+  document.getElementById('tripexpEmpty').hidden = sorted.length > 0;
+  document.getElementById('tripexpBody').innerHTML = sorted.map(r => `<tr>
+      <td>${fmtDate(r.date)}</td><td><span class="type-badge st-normal">${enumLabel('expCat', r.category)}</span></td><td>${escapeHtml(r.description)}</td><td class="num amount-out">${fmt(r.amount)}</td>
+      <td class="actions-cell"><button type="button" class="btn-edit" data-edit-tripexp="${r.id}">${t('common.edit')}</button><button type="button" class="btn-danger" data-del-tripexp="${r.id}">${t('common.delete')}</button></td>
+    </tr>`).join('');
+}
+function renderTriplinksTable() {
+  const sorted = [...triplinks].sort((a, b) => b.id - a.id);
+  document.getElementById('triplinksEmpty').hidden = sorted.length > 0;
+  document.getElementById('triplinksBody').innerHTML = sorted.map(r => `<tr>
+      <td>${escapeHtml(r.name)}</td><td dir="ltr"><a href="${escapeHtml(r.url)}" target="_blank" rel="noopener" class="nav-link nl-maps">${escapeHtml(r.url)}</a></td><td>${escapeHtml(r.description) || '—'}</td>
+      <td class="actions-cell"><button type="button" class="btn-edit" data-edit-triplink="${r.id}">${t('common.edit')}</button><button type="button" class="btn-danger" data-del-triplink="${r.id}">${t('common.delete')}</button></td>
+    </tr>`).join('');
+}
+function renderTripSummary() {
+  const budget = Number(trip.budget) || 0;
+  const spent = tripTotalSpent();
+  const travelers = Number(trip.travelers) || 0;
+  const left = budget - spent;
+  document.getElementById('tripSummary').innerHTML = `
+    <div class="card"><span class="cat-label">${t('trip.budgetLabel')}</span><span class="amount">${budget ? fmt(budget) : '—'}</span><span class="sub">${budget ? t('trip.budget.forWholeTrip') : t('trip.budget.setInSettings')}${travelers ? t('trip.budget.travelersCount', { n: travelers }) : ''}</span></div>
+    <div class="card"><span class="cat-label">${t('trip.spentSoFar')}</span><span class="amount amount-out">${fmt(spent)}</span><span class="sub">${travelers ? t('trip.perPerson', { amount: fmt(spent / travelers) }) : t('trip.categoriesSum')}</span></div>
+    <div class="card total"><span class="cat-label">${t('trip.remainingBudget')}</span><span class="amount${left < 0 ? ' neg' : ''}">${budget ? fmt(left) : '—'}</span><span class="sub">${budget ? (left < 0 ? t('trip.overBudget') : t('trip.withinBudget')) : ''}</span></div>`;
+}
+function updateTripDayNotice() {
+  const el = document.getElementById('tripDayNotice');
+  if (!tripDay) { el.hidden = true; return; }
+  let n = null;
+  if (trip.from) n = Math.round((new Date(tripDay) - new Date(trip.from)) / 86400000) + 1;
+  el.hidden = false;
+  const dayText = (n && n > 0 ? t('trip.dayStrip.dayN', { n }) + ' — ' : '') + fmtDate(tripDay, { weekday: true });
+  el.innerHTML = t('trip.dayNotice.showing', { day: dayText }) + `<button type="button" class="day-notice-clear" id="tripDayClear">${t('trip.dayNotice.showAllBtn')}</button>`;
+  document.getElementById('tripDayClear').addEventListener('click', () => { tripDay = ''; renderDayStrip(); renderTripDayViews(); });
+}
+function renderTripDayViews() {
+  renderAgenda();
+  renderItineraryTable();
+  renderFlightsTable();
+  renderRestaurantsTable();
+  renderTripexpTable();
+  updateTripDayNotice();
+}
+
+function renderFileStatus() {
+  const el = document.getElementById('fileStatus');
+  if (!el) return;
+  const d = loadDB();
+  const n = itinerary.length + flights.length + hotels.length + restaurants.length + cars.length + tripexp.length + triplinks.length;
+  el.textContent = d.savedAt ? t('data.fileStatus', { n, t: fmtDateTime(d.savedAt) }) : t('data.fileStatusNever', { n });
+}
+function fmtDateTime(iso) {
+  const d = new Date(iso);
+  if (isNaN(d)) return '';
+  return `${fmtDate(d)} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+}
+
+// --- Generic form wiring for simple entities ---
+function wireEntityForm(formId, { add, update, onSubmitted }) {
+  const form = document.getElementById(formId);
+  const submitBtn = form.querySelector('[type=submit]');
+  form.addEventListener('submit', ev => {
+    ev.preventDefault();
+    const payload = {};
+    form.querySelectorAll('[data-f]').forEach(el => { payload[el.dataset.f] = el.value; });
+    const requiredOk = [...form.querySelectorAll('[data-f][required]')].every(el => el.value !== '');
+    if (!requiredOk) { toast(t('err.requiredFields'), true); return; }
+    const editId = form.dataset.editing;
+    if (editId) { update(editId, payload); delete form.dataset.editing; submitBtn.textContent = t('common.add'); toast(t('toast.updated')); }
+    else { add(payload); toast(t('toast.added')); }
+    form.reset();
+    onSubmitted();
+    renderApp();
+  });
+}
+function loadRecordIntoForm(formId, rec) {
+  const form = document.getElementById(formId);
+  form.querySelectorAll('[data-f]').forEach(el => { el.value = rec[el.dataset.f] ?? ''; });
+  form.dataset.editing = rec.id;
+  form.querySelector('[type=submit]').textContent = t('common.update');
+  form.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+// --- Theme / language ---
+function applyTheme(theme) {
+  if (theme === 'light') document.documentElement.dataset.theme = 'light';
+  else delete document.documentElement.dataset.theme;
+  localStorage.setItem('or-theme', theme);
+}
+function applyLang(lang, rerender) {
+  currentLang = LANG_ORDER.includes(lang) ? lang : 'he';
+  localStorage.setItem('or-lang', currentLang);
+  document.documentElement.lang = currentLang;
+  document.documentElement.dir = RTL_LANGS.includes(currentLang) ? 'rtl' : 'ltr';
+  document.body.classList.toggle('lang-ar', currentLang === 'ar');
+  document.getElementById('langCode').textContent = { he: 'עב', en: 'EN', ru: 'RU', ar: 'AR' }[currentLang];
+  document.querySelectorAll('.lang-item').forEach(b => b.classList.toggle('active', b.dataset.lang === currentLang));
+  applyI18nDom();
+  if (rerender) renderApp();
+}
+
+// --- Excel export / import (8 sheets incl. trip info) ---
+const SHEET_MATCH = {
+  trip: /פרטי הטיול|trip info|инфо о поездке|معلومات الرحلة/i,
+  itinerary: /מסלול|itinerary|маршрут|مسار/i,
+  flights: /טיס|flight|рейс|رحل/i,
+  hotels: /מלונ|hotel|отел|فند/i,
+  restaurants: /מסעד|restaurant|ресторан|مطعم/i,
+  cars: /רכב|car|автомоб|سيار/i,
+  tripexp: /הוצא|expense|расход|مصروف/i,
+  triplinks: /קישור|link|ссылк|رابط/i
+};
+function exportXlsx() {
+  const wb = XLSX.utils.book_new();
+
+  const tripHeader = [t('trip.dest.label'), t('field.dateFrom'), t('field.dateTo'), t('trip.budgetLabel'), t('trip.travelersLabel')];
+  const tripRow = [trip.destination || '', trip.from || '', trip.to || '', trip.budget || 0, trip.travelers || 0];
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([tripHeader, tripRow]), 'Trip info');
+
+  const itiHeader = ['id', t('field.date'), t('field.time'), t('field.category'), t('field.name'), t('field.address'), t('field.coords'), t('field.costILS'), t('field.notes')];
+  const itiRows = itinerary.map(r => [r.id, r.date, r.time, enumLabel('itiCat', r.category), r.name, r.address, r.coords, r.cost, r.notes]);
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([itiHeader, ...itiRows]), t('trip.tabItinerary'));
+
+  const flHeader = ['id', t('field.date'), t('field.flightNo'), t('field.from'), t('field.to'), t('field.departure'), t('field.arrival'), t('field.reference'), t('field.costILS'), t('field.notes')];
+  const flRows = flights.map(r => [r.id, r.date, r.flight, r.from, r.to, r.dep, r.arr, r.ref, r.cost, r.notes]);
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([flHeader, ...flRows]), t('trip.tabFlights'));
+
+  const hoHeader = ['id', t('field.hotelName'), t('field.address'), t('field.coords'), t('field.checkin'), t('field.checkout'), t('field.reference'), t('field.costILS'), t('field.notes')];
+  const hoRows = hotels.map(r => [r.id, r.name, r.address, r.coords, r.checkin, r.checkout, r.ref, r.cost, r.notes]);
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([hoHeader, ...hoRows]), t('trip.tabHotels'));
+
+  const reHeader = ['id', t('field.date'), t('field.restaurantName'), t('field.address'), t('field.coords'), t('field.reference'), t('field.costILS'), t('field.notes')];
+  const reRows = restaurants.map(r => [r.id, r.date, r.name, r.address, r.coords, r.ref, r.cost, r.notes]);
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([reHeader, ...reRows]), t('trip.tabRestaurants'));
+
+  const caHeader = ['id', t('field.carCompany'), t('field.carType'), t('field.pickupLoc'), t('field.pickupDate'), t('field.returnLoc'), t('field.returnDate'), t('field.reference'), t('field.costILS'), t('field.notes')];
+  const caRows = cars.map(r => [r.id, r.company, r.cartype, r.pickupLoc, r.pickupDate, r.returnLoc, r.returnDate, r.ref, r.cost, r.notes]);
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([caHeader, ...caRows]), t('trip.tabCars'));
+
+  const exHeader = ['id', t('field.date'), t('field.category'), t('field.description'), t('field.amountILS')];
+  const exRows = tripexp.map(r => [r.id, r.date, enumLabel('expCat', r.category), r.description, r.amount]);
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([exHeader, ...exRows]), t('trip.tabExpenses'));
+
+  const lkHeader = ['id', t('field.name'), t('field.url'), t('field.description')];
+  const lkRows = triplinks.map(r => [r.id, r.name, r.url, r.description]);
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([lkHeader, ...lkRows]), t('trip.tabLinks'));
+
+  XLSX.writeFile(wb, 'or.xlsx');
+  recordBackupNow();
+  toast(t('toast.exported'));
+}
+function sheetRows(wb, kind) {
+  const name = wb.SheetNames.find(n => SHEET_MATCH[kind].test(n));
+  if (!name) return [];
+  const rows = XLSX.utils.sheet_to_json(wb.Sheets[name], { header: 1 });
+  return rows.slice(1).filter(r => r && r.length && r[1] !== undefined && r[1] !== '');
+}
+function asDateStr(v) { return v instanceof Date ? v.toISOString().slice(0, 10) : String(v || ''); }
+function importXlsxFromArrayBuffer(buf) {
+  const wb = XLSX.read(buf, { type: 'array' });
+
+  const tripName = wb.SheetNames.find(n => SHEET_MATCH.trip.test(n));
+  if (tripName) {
+    const rows = XLSX.utils.sheet_to_json(wb.Sheets[tripName], { header: 1 });
+    if (rows[1]) trip = { destination: rows[1][0] || '', from: asDateStr(rows[1][1]), to: asDateStr(rows[1][2]), budget: Number(rows[1][3]) || 0, travelers: Number(rows[1][4]) || 0 };
+  }
+  const itiRows = sheetRows(wb, 'itinerary');
+  if (itiRows.length) itinerary = itiRows.map((r, i) => ({ id: Number(r[0]) || (i + 1), date: asDateStr(r[1]), time: r[2] || '', category: enumKeyFromLabel('itiCat', r[3], ['attraction', 'restaurant', 'hotel', 'transport', 'shopping', 'other'], 'other'), name: r[4] || '', address: r[5] || '', coords: r[6] || '', cost: Number(r[7]) || 0, notes: r[8] || '' }));
+  const flRows = sheetRows(wb, 'flights');
+  if (flRows.length) flights = flRows.map((r, i) => ({ id: Number(r[0]) || (i + 1), date: asDateStr(r[1]), flight: r[2] || '', from: r[3] || '', to: r[4] || '', dep: r[5] || '', arr: r[6] || '', ref: r[7] || '', cost: Number(r[8]) || 0, notes: r[9] || '' }));
+  const hoRows = sheetRows(wb, 'hotels');
+  if (hoRows.length) hotels = hoRows.map((r, i) => ({ id: Number(r[0]) || (i + 1), name: r[1] || '', address: r[2] || '', coords: r[3] || '', checkin: asDateStr(r[4]), checkout: asDateStr(r[5]), ref: r[6] || '', cost: Number(r[7]) || 0, notes: r[8] || '' }));
+  const reRows = sheetRows(wb, 'restaurants');
+  if (reRows.length) restaurants = reRows.map((r, i) => ({ id: Number(r[0]) || (i + 1), date: asDateStr(r[1]), name: r[2] || '', address: r[3] || '', coords: r[4] || '', ref: r[5] || '', cost: Number(r[6]) || 0, notes: r[7] || '' }));
+  const caRows = sheetRows(wb, 'cars');
+  if (caRows.length) cars = caRows.map((r, i) => ({ id: Number(r[0]) || (i + 1), company: r[1] || '', cartype: r[2] || '', pickupLoc: r[3] || '', pickupDate: asDateStr(r[4]), returnLoc: r[5] || '', returnDate: asDateStr(r[6]), ref: r[7] || '', cost: Number(r[8]) || 0, notes: r[9] || '' }));
+  const exRows = sheetRows(wb, 'tripexp');
+  if (exRows.length) tripexp = exRows.map((r, i) => ({ id: Number(r[0]) || (i + 1), date: asDateStr(r[1]), category: enumKeyFromLabel('expCat', r[2], ['flights', 'lodging', 'food', 'attractions', 'transport', 'shopping', 'insurance', 'other'], 'other'), description: r[3] || '', amount: Number(r[4]) || 0 }));
+  const lkRows = sheetRows(wb, 'triplinks');
+  if (lkRows.length) triplinks = lkRows.map((r, i) => ({ id: Number(r[0]) || (i + 1), name: r[1] || '', url: r[2] || '', description: r[3] || '' }));
+
+  persist();
+  recordBackupNow();
+  toast(t('toast.imported'));
+  tripDay = '';
+  renderApp();
+}
+
+// --- Backup reminder ---
+const BACKUP_CLOCK_KEY = 'or-last-backup-time';
+const BACKUP_REMINDER_INTERVAL_KEY = 'or-backup-reminder-interval-min';
+function getBackupReminderIntervalMin() {
+  const v = localStorage.getItem(BACKUP_REMINDER_INTERVAL_KEY);
+  if (v === 'off') return 0;
+  const n = Number(v);
+  return [5, 10, 15, 30, 60].includes(n) ? n : 10;
+}
+function recordBackupNow() { localStorage.setItem(BACKUP_CLOCK_KEY, new Date().toISOString()); updateBackupClock(); }
+function getLastBackupTime() { const v = localStorage.getItem(BACKUP_CLOCK_KEY); return v ? new Date(v) : null; }
+function updateBackupClock() {
+  const btn = document.getElementById('backupClock');
+  if (!btn) return;
+  const last = getLastBackupTime();
+  if (!last) { btn.title = t('header.backupClockNever'); btn.classList.add('is-stale'); return; }
+  const elapsedSec = Math.max(0, Math.floor((Date.now() - last.getTime()) / 1000));
+  const pad = n => String(n).padStart(2, '0');
+  const timeStr = `${pad(Math.floor(elapsedSec / 3600))}:${pad(Math.floor((elapsedSec % 3600) / 60))}:${pad(elapsedSec % 60)}`;
+  btn.title = `${t('header.backupClockTitle')}: ${timeStr}`;
+  const intervalMin = getBackupReminderIntervalMin();
+  btn.classList.toggle('is-stale', intervalMin > 0 && elapsedSec >= intervalMin * 60);
+}
+setInterval(updateBackupClock, 1000);
+function checkBackupReminder() {
+  const last = getLastBackupTime();
+  const dlg = document.getElementById('backupReminderDialog');
+  if (!dlg || dlg.open) return;
+  const intervalMin = getBackupReminderIntervalMin();
+  if (!intervalMin) return;
+  if (!last || Date.now() - last.getTime() >= intervalMin * 60 * 1000) dlg.showModal();
+}
+let backupReminderTimer = null;
+let backupReminderFirstCheckTimer = null;
+const BACKUP_REMINDER_FIRST_CHECK_MS = 60 * 1000;
+function restartBackupReminderTimer() {
+  if (backupReminderTimer) clearInterval(backupReminderTimer);
+  if (backupReminderFirstCheckTimer) clearTimeout(backupReminderFirstCheckTimer);
+  backupReminderTimer = null;
+  backupReminderFirstCheckTimer = null;
+  const intervalMin = getBackupReminderIntervalMin();
+  if (!intervalMin) return;
+  backupReminderFirstCheckTimer = setTimeout(checkBackupReminder, Math.min(BACKUP_REMINDER_FIRST_CHECK_MS, intervalMin * 60 * 1000));
+  backupReminderTimer = setInterval(checkBackupReminder, intervalMin * 60 * 1000);
+}
+
+// --- Drag-to-scroll for the day strip ---
+function wireDragToScroll(el) {
+  if (!el) return;
+  let isDown = false, startX = 0, scrollLeft = 0;
+  el.addEventListener('mousedown', ev => { isDown = true; el.classList.add('dragging'); startX = ev.pageX; scrollLeft = el.scrollLeft; });
+  el.addEventListener('mouseleave', () => { isDown = false; el.classList.remove('dragging'); });
+  el.addEventListener('mouseup', () => { isDown = false; el.classList.remove('dragging'); });
+  el.addEventListener('mousemove', ev => { if (!isDown) return; ev.preventDefault(); el.scrollLeft = scrollLeft - (ev.pageX - startX); });
+}
+
+function wireBackdropClose(dialog) {
+  dialog.addEventListener('click', ev => {
+    const r = dialog.getBoundingClientRect();
+    const inside = ev.clientX >= r.left && ev.clientX <= r.right && ev.clientY >= r.top && ev.clientY <= r.bottom;
+    if (!inside) dialog.close();
+  });
+}
+
+// --- Init ---
+function init() {
+  applyTheme(localStorage.getItem('or-theme') === 'light' ? 'light' : 'dark');
+  applyLang(currentLang, false);
+  applyI18nDom();
+
+  wireEntityForm('itineraryForm', { add: addItinerary, update: updateItinerary, onSubmitted: () => {} });
+  wireEntityForm('flightForm', { add: addFlight, update: updateFlight, onSubmitted: () => {} });
+  wireEntityForm('hotelForm', { add: addHotel, update: updateHotel, onSubmitted: () => {} });
+  wireEntityForm('restaurantForm', { add: addRestaurant, update: updateRestaurant, onSubmitted: () => {} });
+  wireEntityForm('carForm', { add: addCar, update: updateCar, onSubmitted: () => {} });
+  wireEntityForm('tripexpForm', { add: addTripexp, update: updateTripexp, onSubmitted: () => {} });
+  wireEntityForm('triplinkForm', { add: addTriplink, update: updateTriplink, onSubmitted: () => {} });
+
+  renderApp();
+
+  // Tabs
+  const tabs = document.getElementById('mainTabs');
+  tabs.addEventListener('click', ev => {
+    const btn = ev.target.closest('.tab');
+    if (!btn) return;
+    tabs.querySelectorAll('.tab').forEach(b => b.classList.toggle('active', b === btn));
+    document.querySelectorAll('.tab-panel').forEach(p => { p.hidden = p.dataset.panel !== btn.dataset.tab; });
+  });
+
+  // Day strip
+  wireDragToScroll(document.getElementById('tripDayStrip'));
+  document.querySelector('.trip-datebar-head').closest('.panel').addEventListener('click', ev => {
+    const b = ev.target.closest('.day-sq');
+    if (!b) return;
+    tripDay = b.dataset.day || '';
+    renderDayStrip();
+    renderTripDayViews();
+  });
+
+  // Trip dest/budget dialog
+  document.getElementById('tripPickDestBtn').addEventListener('click', () => {
+    document.getElementById('tdDest').value = trip.destination || '';
+    document.getElementById('tdBudget').value = trip.budget || '';
+    document.getElementById('tdTravelers').value = trip.travelers || '';
+    document.getElementById('tripDestDialog').showModal();
+  });
+  document.getElementById('tdDestSave').addEventListener('click', () => {
+    trip.destination = document.getElementById('tdDest').value.trim();
+    trip.budget = Number(document.getElementById('tdBudget').value) || 0;
+    trip.travelers = Number(document.getElementById('tdTravelers').value) || 0;
+    persist();
+    document.getElementById('tripDestDialog').close();
+    renderDayStrip(); renderTripSummary();
+    toast(t('toast.destSaved'));
+  });
+  document.getElementById('tdDestCancel').addEventListener('click', () => document.getElementById('tripDestDialog').close());
+
+  // Trip dates dialog
+  function updateTdDaysSummary() {
+    const from = document.getElementById('tdFrom').value, to = document.getElementById('tdTo').value;
+    const summary = document.getElementById('tdDaysSummary');
+    if (!from || !to || to < from) { summary.hidden = true; return; }
+    const n = Math.round((new Date(to) - new Date(from)) / 86400000) + 1;
+    summary.textContent = t('trip.dayStrip.daysCount', { n });
+    summary.hidden = false;
+  }
+  document.getElementById('tripPickDatesBtn').addEventListener('click', () => {
+    document.getElementById('tdFrom').value = trip.from || '';
+    document.getElementById('tdTo').value = trip.to || '';
+    updateTdDaysSummary();
+    document.getElementById('tripDatesDialog').showModal();
+  });
+  document.getElementById('tdFrom').addEventListener('change', updateTdDaysSummary);
+  document.getElementById('tdTo').addEventListener('change', updateTdDaysSummary);
+  document.getElementById('tdSave').addEventListener('click', () => {
+    const from = document.getElementById('tdFrom').value, to = document.getElementById('tdTo').value;
+    if (!from || !to) { toast(t('trip.dates.required'), true); return; }
+    if (to < from) { toast(t('trip.dates.endBeforeStartError'), true); return; }
+    trip.from = from; trip.to = to;
+    persist();
+    document.getElementById('tripDatesDialog').close();
+    tripDay = '';
+    renderDayStrip(); renderTripSummary(); renderTripDayViews();
+    toast(t('toast.tripDatesSaved'));
+  });
+  document.getElementById('tdCancel').addEventListener('click', () => document.getElementById('tripDatesDialog').close());
+
+  // Table row actions (edit/delete) per entity
+  document.getElementById('flightsBody').addEventListener('click', ev => {
+    const editId = ev.target.dataset.editFlight, delId = ev.target.dataset.delFlight;
+    if (editId) loadRecordIntoForm('flightForm', flights.find(x => String(x.id) === editId));
+    if (delId) { if (!confirm(t('confirm.deleteRecord'))) return; deleteFlight(delId); toast(t('toast.deleted')); renderApp(); }
+  });
+  document.getElementById('hotelsBody').addEventListener('click', ev => {
+    const editId = ev.target.dataset.editHotel, delId = ev.target.dataset.delHotel;
+    if (editId) loadRecordIntoForm('hotelForm', hotels.find(x => String(x.id) === editId));
+    if (delId) { if (!confirm(t('confirm.deleteRecord'))) return; deleteHotel(delId); toast(t('toast.deleted')); renderApp(); }
+  });
+  document.getElementById('restaurantsBody').addEventListener('click', ev => {
+    const editId = ev.target.dataset.editRestaurant, delId = ev.target.dataset.delRestaurant;
+    if (editId) loadRecordIntoForm('restaurantForm', restaurants.find(x => String(x.id) === editId));
+    if (delId) { if (!confirm(t('confirm.deleteRecord'))) return; deleteRestaurant(delId); toast(t('toast.deleted')); renderApp(); }
+  });
+  document.getElementById('carsBody').addEventListener('click', ev => {
+    const editId = ev.target.dataset.editCar, delId = ev.target.dataset.delCar;
+    if (editId) loadRecordIntoForm('carForm', cars.find(x => String(x.id) === editId));
+    if (delId) { if (!confirm(t('confirm.deleteRecord'))) return; deleteCar(delId); toast(t('toast.deleted')); renderApp(); }
+  });
+  document.getElementById('itineraryBody').addEventListener('click', ev => {
+    const editId = ev.target.dataset.editItinerary, delId = ev.target.dataset.delItinerary;
+    if (editId) loadRecordIntoForm('itineraryForm', itinerary.find(x => String(x.id) === editId));
+    if (delId) { if (!confirm(t('confirm.deleteRecord'))) return; deleteItinerary(delId); toast(t('toast.deleted')); renderApp(); }
+  });
+  document.getElementById('tripexpBody').addEventListener('click', ev => {
+    const editId = ev.target.dataset.editTripexp, delId = ev.target.dataset.delTripexp;
+    if (editId) loadRecordIntoForm('tripexpForm', tripexp.find(x => String(x.id) === editId));
+    if (delId) { if (!confirm(t('confirm.deleteRecord'))) return; deleteTripexp(delId); toast(t('toast.deleted')); renderApp(); }
+  });
+  document.getElementById('triplinksBody').addEventListener('click', ev => {
+    const editId = ev.target.dataset.editTriplink, delId = ev.target.dataset.delTriplink;
+    if (editId) loadRecordIntoForm('triplinkForm', triplinks.find(x => String(x.id) === editId));
+    if (delId) { if (!confirm(t('confirm.deleteRecord'))) return; deleteTriplink(delId); toast(t('toast.deleted')); renderApp(); }
+  });
+
+  // Theme / language
+  document.getElementById('themeToggle').addEventListener('click', () => {
+    applyTheme(document.documentElement.dataset.theme === 'light' ? 'dark' : 'light');
+  });
+  const langToggle = document.getElementById('langToggle');
+  const langMenu = document.getElementById('langMenu');
+  langToggle.addEventListener('click', () => {
+    const willOpen = langMenu.hidden;
+    langMenu.hidden = !willOpen;
+    langToggle.setAttribute('aria-expanded', String(willOpen));
+  });
+  document.addEventListener('click', ev => {
+    if (!langMenu.hidden && !ev.target.closest('.lang-wrap')) { langMenu.hidden = true; langToggle.setAttribute('aria-expanded', 'false'); }
+  });
+  langMenu.addEventListener('click', ev => {
+    const b = ev.target.closest('.lang-item');
+    if (!b) return;
+    applyLang(b.dataset.lang, true);
+    langMenu.hidden = true;
+    langToggle.setAttribute('aria-expanded', 'false');
+  });
+
+  // Print
+  document.getElementById('printBtn').addEventListener('click', () => {
+    document.getElementById('printDate').textContent = fmtDateTime(new Date().toISOString());
+    window.print();
+  });
+
+  // Settings / data
+  const settingsDialog = document.getElementById('settingsDialog');
+  document.getElementById('settingsBtn').addEventListener('click', () => { renderFileStatus(); settingsDialog.showModal(); });
+  document.getElementById('closeSettings').addEventListener('click', () => settingsDialog.close());
+  document.getElementById('exportBtn').addEventListener('click', exportXlsx);
+  const fileInput = document.getElementById('fileInput');
+  document.getElementById('importBtn').addEventListener('click', () => fileInput.click());
+  fileInput.addEventListener('change', ev => {
+    const file = ev.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => { try { importXlsxFromArrayBuffer(e.target.result); } catch (err) { toast(err.message, true); } };
+    reader.readAsArrayBuffer(file);
+    fileInput.value = '';
+  });
+  document.getElementById('deleteAllBtn').addEventListener('click', () => {
+    if (!confirm(t('confirm.deleteAllData'))) return;
+    trip = {}; itinerary = []; flights = []; hotels = []; restaurants = []; cars = []; tripexp = []; triplinks = []; tripDay = '';
+    persist();
+    toast(t('toast.allDataDeleted'));
+    renderApp();
+  });
+
+  // Help
+  const helpDialog = document.getElementById('helpDialog');
+  document.getElementById('helpBtn').addEventListener('click', () => helpDialog.showModal());
+  document.getElementById('closeHelp').addEventListener('click', () => helpDialog.close());
+
+  // Backup reminder
+  updateBackupClock();
+  restartBackupReminderTimer();
+  document.getElementById('backupClock').addEventListener('click', () => { renderFileStatus(); settingsDialog.showModal(); });
+  const backupReminderIntervalSelect = document.getElementById('backupReminderInterval');
+  backupReminderIntervalSelect.value = localStorage.getItem(BACKUP_REMINDER_INTERVAL_KEY) || '10';
+  backupReminderIntervalSelect.addEventListener('change', () => {
+    localStorage.setItem(BACKUP_REMINDER_INTERVAL_KEY, backupReminderIntervalSelect.value);
+    restartBackupReminderTimer();
+    updateBackupClock();
+  });
+  const backupReminderDialog = document.getElementById('backupReminderDialog');
+  document.getElementById('closeBackupReminder').addEventListener('click', () => backupReminderDialog.close());
+  document.getElementById('openSettingsFromBackupReminder').addEventListener('click', () => {
+    backupReminderDialog.close();
+    renderFileStatus();
+    settingsDialog.showModal();
+  });
+
+  [settingsDialog, helpDialog, backupReminderDialog, document.getElementById('tripDestDialog'), document.getElementById('tripDatesDialog')].forEach(wireBackdropClose);
+}
+init();
+</script>
 </body>
 </html>

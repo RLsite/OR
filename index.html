@@ -742,6 +742,9 @@
     padding: var(--space-4); max-width: 420px; width: 90%;
     margin: auto;
   }
+  /* Auto-popping backup reminder opens NON-modally (show(), not showModal) so its
+     backdrop never sits over the tabs and swallows clicks. Pin it fixed-centered. */
+  #backupReminderDialog[open] { position: fixed; inset: 0; margin: auto; z-index: 50; }
   .daterange-dialog { max-width: 340px; }
   .date-range-picker { display: flex; align-items: center; gap: 6px; }
   .date-range-field {
@@ -4035,7 +4038,7 @@ function checkBackupReminder() {
   if (!dlg || dlg.open) return;
   const intervalMin = getBackupReminderIntervalMin();
   if (!intervalMin) return; // reminder disabled
-  if (!last || Date.now() - last.getTime() >= intervalMin * 60 * 1000) dlg.showModal();
+  if (!last || Date.now() - last.getTime() >= intervalMin * 60 * 1000) dlg.show();
 }
 // Restartable (not a fixed setInterval) so changing the interval in Settings
 // takes effect immediately instead of only after the page reloads - the tick

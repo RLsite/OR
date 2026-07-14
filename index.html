@@ -1818,6 +1818,31 @@
 <div id="toast" role="status" aria-live="polite"></div>
 
 <script>
+// --- Storage resilience — must run before ANY localStorage access ---
+// Some browsers (Edge/Chrome with cookies/site-data blocked, strict privacy
+// modes, private windows) throw "Access is denied" on every localStorage
+// access. That crashed boot on the first read and left the page stuck on the
+// default view (looked like the wrong tool / "nothing works"). Fall back to an
+// in-memory store so the app still runs — no cross-visit persistence, but it
+// no longer crashes and the correct tool loads.
+(function () {
+  try {
+    var probe = '__ls_probe__';
+    window.localStorage.setItem(probe, '1');
+    window.localStorage.removeItem(probe);
+  } catch (e) {
+    var mem = {};
+    var shim = {
+      getItem: function (key) { return Object.prototype.hasOwnProperty.call(mem, key) ? mem[key] : null; },
+      setItem: function (key, val) { mem[key] = String(val); },
+      removeItem: function (key) { delete mem[key]; },
+      clear: function () { for (var key in mem) { delete mem[key]; } },
+      key: function (i) { var ks = Object.keys(mem); return i < ks.length ? ks[i] : null; }
+    };
+    Object.defineProperty(shim, 'length', { get: function () { return Object.keys(mem).length; } });
+    try { Object.defineProperty(window, 'localStorage', { configurable: true, value: shim }); } catch (e2) { /* can't redefine — nothing more we can do */ }
+  }
+})();
 const CATS = ['ארנונה', 'מים', 'חשמל', 'גז'];
 const CAT_COLORS = { 'ארנונה': '#3B82F6', 'מים': '#06B6D4', 'חשמל': '#F59E0B', 'גז': '#EF4444' };
 const CAT_I18N_KEY = { 'ארנונה': 'cat.arnona', 'מים': 'cat.water', 'חשמל': 'cat.electricity', 'גז': 'cat.gas' };

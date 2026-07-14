@@ -194,6 +194,21 @@
   .home-btn svg { color: var(--color-secondary); }
   .help-btn svg { color: var(--color-accent); }
   .help-btn:hover { border-color: var(--color-accent); color: var(--color-accent); }
+  /* RLAPP.net shortcut — a designed gradient pill that stands out from the plain
+     icon buttons, signalling "all our services". Links to the parent portal. */
+  .rlapp-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    height: 44px; padding: 0 14px; border-radius: 10px;
+    background: linear-gradient(135deg, #3B82F6, #1E40AF);
+    color: #fff; font-weight: 800; font-size: 12.5px; letter-spacing: 0.4px;
+    text-decoration: none; white-space: nowrap; flex-shrink: 0;
+    box-shadow: 0 2px 10px rgba(37,99,235,0.35);
+    transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
+  }
+  .rlapp-btn:hover { transform: translateY(-1px); box-shadow: 0 5px 16px rgba(37,99,235,0.5); filter: brightness(1.08); }
+  .rlapp-btn:active { transform: translateY(0); box-shadow: 0 2px 8px rgba(37,99,235,0.4); }
+  .rlapp-btn svg { flex-shrink: 0; }
+  @media (max-width: 640px) { .rlapp-btn span { display: none; } .rlapp-btn { padding: 0 12px; } }
   #helpDialog { max-width: 640px; width: 92%; }
   #helpTabs { margin-bottom: 12px; }
   /* #helpDialog is a flex column (title/tabs fixed, body fills remaining space)
@@ -1101,6 +1116,10 @@
           <button type="button" class="lang-item" data-lang="ar">العربية</button>
         </nav>
       </div>
+      <a href="https://rlapp.net" target="_blank" rel="noopener" class="rlapp-btn" aria-label="RLAPP.net — כל השירותים שלנו" title="RLAPP.net — כל השירותים שלנו">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="3" y="3" width="7.5" height="7.5" rx="1.6"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="1.6"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="1.6"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.6"/></svg>
+        <span>RLAPP</span>
+      </a>
       <button type="button" class="icon-btn help-btn" id="helpBtn" data-i18n-aria="header.help" aria-label="עזרה ומידע על הכלי הנוכחי">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
       </button>

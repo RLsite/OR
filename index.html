@@ -949,21 +949,6 @@
     #reportPrintArea .rpt-table { font-size: 11px !important; }
   }
 
-  /* ===== Welcome (first visit) ===== */
-  #welcomeDialog { max-width: 480px; width: 92%; text-align: start; }
-  .welcome-head { display: flex; justify-content: center; margin-bottom: 8px; }
-  .welcome-logo { height: 88px; width: auto; }
-  .wl-light { display: none; }
-  [data-theme="light"] .wl-light { display: block; }
-  [data-theme="light"] .wl-dark { display: none; }
-  #welcomeDialog h3 { text-align: center; margin-bottom: 12px; }
-  .welcome-body p { color: var(--color-text-dim); font-size: 14px; line-height: 1.7; margin-bottom: 10px; }
-  .welcome-list { margin: 0 0 14px; padding-inline-start: 20px; font-size: 14px; line-height: 2; }
-  .welcome-list strong { color: var(--color-secondary); }
-  .welcome-tip { display: flex; align-items: center; gap: 10px; background: rgba(59,130,246,0.12); border: 1px solid rgba(59,130,246,0.35); border-radius: 10px; padding: 10px 12px; font-size: 14px; margin-bottom: 14px; }
-  .welcome-tip svg { color: var(--color-secondary); flex-shrink: 0; }
-  .welcome-dontshow { margin-bottom: 4px; }
-
   /* ===== Report Center (JasperReports-inspired) ===== */
   #reportDialog { max-width: 900px; width: 94%; max-height: 90vh; }
   .report-controls { display: flex; flex-wrap: wrap; gap: 10px; align-items: end; margin-bottom: 14px; }
@@ -1790,38 +1775,6 @@
 </dialog>
 
 <div id="reportPrintArea"></div>
-
-<dialog id="welcomeDialog">
-  <div class="welcome-head">
-    <img src="icon-512-dark.png" alt="Or" class="welcome-logo wl-dark">
-    <img src="icon-512.png" alt="Or" class="welcome-logo wl-light">
-  </div>
-  <h3 data-i18n="welcome.title">ברוכים הבאים ל-Or 👋</h3>
-  <div class="welcome-body">
-    <p data-i18n="welcome.intro">Or עוזר לכם לנהל את הבית והכסף — במקום אחד, בחינם, ובפרטיות מלאה (הנתונים נשמרים רק במכשיר שלכם):</p>
-    <ul class="welcome-list">
-      <li data-i18n-html="welcome.list.expenses"><strong>הוצאות הבית</strong> — ארנונה, מים, חשמל וגז</li>
-      <li data-i18n-html="welcome.list.vaad"><strong>וועד בית</strong> — גבייה, דיירים ותקלות</li>
-      <li data-i18n-html="welcome.list.trip"><strong>ניהול חופשה</strong> — מסלול, טיסות, מלונות ותקציב</li>
-      <li data-i18n-html="welcome.list.projects"><strong>ניהול פרויקטים</strong> — משימות, תקציב ומעקב</li>
-      <li data-i18n-html="welcome.list.hours"><strong>שעות עבודה</strong> — שעון נוכחות ושעות נוספות</li>
-      <li data-i18n-html="welcome.list.pettycash"><strong>קופה קטנה</strong> — הכנסות והוצאות עם יתרה</li>
-      <li data-i18n-html="welcome.list.chug"><strong>תנועה / חוג</strong> — חניכים, נוכחות ותשלומים</li>
-    </ul>
-    <div class="welcome-tip">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9.5L12 3l9 6.5"/><path d="M5 10v10h14V10"/><path d="M9 20v-6h6v6"/></svg>
-      <span data-i18n-html="welcome.tip">הטיפ הכי חשוב: לוחצים על <strong>כפתור הבית</strong> בפינה הימנית העליונה — ונפתח תפריט לבחירת הכלי.</span>
-    </div>
-  </div>
-  <label class="checkbox-row welcome-dontshow">
-    <input type="checkbox" id="welcomeDontShow">
-    <span data-i18n="welcome.dontShow">לא להציג את המידע הזה יותר</span>
-  </label>
-  <div class="dialog-actions">
-    <button type="button" class="btn-primary" id="welcomeStart" data-i18n="welcome.startBtn">בואו נתחיל — הראו לי את הכלים</button>
-    <button type="button" class="btn-ghost" id="welcomeClose" data-i18n="common.close">סגור</button>
-  </div>
-</dialog>
 
 <div id="toast" role="status" aria-live="polite"></div>
 
@@ -4644,25 +4597,18 @@ function allMenuToolIds() { return [...document.querySelectorAll('#toolMenu .too
 // Per-tool "has the user entered anything" check, keyed off the same record
 // arrays/fields the tool's own views read from - no separate tracking needed.
 const TOOL_DATA_CHECKS = {
-  expenses: s => s.expenses.length > 0,
-  pettycash: s => (s.records.pettycash || []).length > 0,
-  hours: s => (s.records.hours || []).length > 0,
-  vaad: s => ['vaadpay', 'vaadfixed', 'residents', 'tickets', 'pros', 'buildingsys'].some(k => (s.records[k] || []).length > 0)
-    || !!(s.building && (s.building.city || s.building.street || s.building.buildingNo)),
-  chug: s => ['chug', 'members', 'guides', 'attendance', 'equipment', 'chugpay'].some(k => (s.records[k] || []).length > 0),
   trip: s => ['flights', 'hotels', 'restaurants', 'cars', 'itinerary', 'tripexp'].some(k => (s.records[k] || []).length > 0)
-    || !!(s.trip && s.trip.destination),
-  projects: s => ['projlist', 'projtasks', 'projexp', 'projcontacts'].some(k => (s.records[k] || []).length > 0)
+    || !!(s.trip && s.trip.destination)
 };
 function toolsWithData() {
   const s = loadDB();
   return allMenuToolIds().filter(id => TOOL_DATA_CHECKS[id] && TOOL_DATA_CHECKS[id](s));
 }
-// New users with nothing filled in anywhere land on the vaad tool by default
-// (the flagship tool) rather than a wall of seven empty options.
+// New users with nothing filled in anywhere land on the trip tool by default
+// (the only tool) rather than a wall of empty options.
 function smartDefaultTools() {
   const withData = toolsWithData();
-  return withData.length ? withData : ['vaad'];
+  return withData.length ? withData : ['trip'];
 }
 
 function enabledTools() {
@@ -4674,7 +4620,7 @@ function enabledTools() {
   return en.length ? en : all.slice();                  // never empty
 }
 function saveEnabledTools(en) { localStorage.setItem(ENABLED_TOOLS_KEY, JSON.stringify(en)); }
-function firstEnabledTool() { const en = enabledTools(); return allMenuToolIds().find(t => en.includes(t)) || 'expenses'; }
+function firstEnabledTool() { const en = enabledTools(); return allMenuToolIds().find(t => en.includes(t)) || 'trip'; }
 function applyEnabledTools() {
   const en = enabledTools();
   document.querySelectorAll('#toolMenu .tool-item').forEach(b => { b.hidden = !en.includes(b.dataset.tool); });
@@ -4712,11 +4658,8 @@ document.getElementById('toolMenuShowAll').addEventListener('click', () => {
 document.getElementById('closeSettings').addEventListener('click', () => settingsDialog.close());
 document.getElementById('cancelEdit').addEventListener('click', () => document.getElementById('editDialog').close());
 
-// The settings dialog adapts to the active tool: account details only exist for
-// the household-expenses tool; other tools just show file management + a note.
-const TOOL_SHEET_KEY = { expenses: 'sheet.expenses', pettycash: 'sheet.pettycash', hours: 'sheet.hours', vaad: 'sheet.vaad', chug: 'sheet.members', projects: 'sheet.projlist' };
 // Which tool-specific section belongs to each tool (shown under the "tool" tab)
-const TOOL_SECTION = { expenses: 'accountSettings', vaad: 'buildingSettings', hours: 'hoursSettings', chug: 'chugSettings', trip: 'tripSettings', projects: 'projectsSettings' };
+const TOOL_SECTION = { trip: 'tripSettings' };
 let settingsToolSection = 'toolSettingsNote';
 
 function showSettingsTab(tab) {
@@ -4727,7 +4670,7 @@ function showSettingsTab(tab) {
   if (tab === 'more') updateInstallHints(); // may re-hide the install section when already installed
 }
 
-const TOOL_SHORT_NAME_KEY = { expenses: 'tool.expenses.short', pettycash: 'tool.pettycash.short', hours: 'tool.hours.short', vaad: 'tool.vaad.short', chug: 'tool.chug.short', trip: 'tool.trip.short', projects: 'tool.projects.short' };
+const TOOL_SHORT_NAME_KEY = { trip: 'tool.trip.short' };
 function updateSettingsForTool() {
   const name = t(TOOLKIT[currentTool].title);
   document.getElementById('settingsTitle').textContent = t('dialog.settingsTitlePrefix') + name;
@@ -4735,15 +4678,10 @@ function updateSettingsForTool() {
   // Tab label = the tool's settings (short name)
   const shortName = TOOL_SHORT_NAME_KEY[currentTool] ? t(TOOL_SHORT_NAME_KEY[currentTool]) : name;
   document.getElementById('settingsToolTab').textContent = t('settings.toolTabPrefix') + shortName;
-  document.getElementById('settingsWaInfoTab').hidden = currentTool !== 'vaad';
-  if (currentTool === 'vaad') loadBuildingInfo();
-  if (currentTool === 'hours') initHoursCalendar();
-  if (currentTool === 'chug') renderGroupChips();
-  if (currentTool === 'trip') loadTripInfo();
+  loadTripInfo();
   if (settingsToolSection === 'toolSettingsNote') {
-    const sheetName = TOOL_SHEET_KEY[currentTool] ? t(TOOL_SHEET_KEY[currentTool]) : '';
     document.getElementById('toolSettingsNote').innerHTML = `<h4>${t('settings.currentToolHeading')}</h4>
-      <p class="file-hint">${t('settings.currentToolBody', { name, sheet: sheetName })}</p>`;
+      <p class="file-hint">${t('settings.currentToolBody', { name, sheet: '' })}</p>`;
   }
   showSettingsTab('tools'); // the first tab is always tool selection
 }
@@ -4755,13 +4693,7 @@ document.getElementById('settingsTabs').addEventListener('click', ev => {
 
 // --- Help: context-aware info about the active tool ---
 const HELP = {
-  expenses: { title: 'tool.expenses.name', body: 'help.expenses.body' },
-  pettycash: { title: 'tool.pettycash.name', body: 'help.pettycash.body' },
-  hours: { title: 'tool.hours.name', body: 'help.hours.body' },
-  vaad: { title: 'tool.vaad.name', body: 'help.vaad.body' },
-  chug: { title: 'tool.chug.name', body: 'help.chug.body' },
-  trip: { title: 'tool.trip.name', body: 'help.trip.body' },
-  projects: { title: 'tool.projects.name', body: 'help.projects.body' }
+  trip: { title: 'tool.trip.name', body: 'help.trip.body' }
 };
 
 const HELP_ICON = {
@@ -4831,7 +4763,7 @@ helpTabs.addEventListener('click', ev => {
   if (btn) showHelpTab(btn.dataset.htab);
 });
 document.getElementById('helpBtn').addEventListener('click', () => {
-  const h = HELP[currentTool] || HELP.expenses;
+  const h = HELP[currentTool] || HELP.trip;
   const toolTitle = t(h.title);
   document.getElementById('helpTitle').textContent = t('dialog.helpTitlePrefix') + toolTitle;
   document.querySelector('[data-htab="tool"]').textContent = t('help.tabToolPrefix') + toolTitle;
@@ -4903,40 +4835,10 @@ document.getElementById('checkVersionBtn').addEventListener('click', () => {
 // --- Print the current tool's report ---
 // ===== Report Center (inspired by JasperReports: title / params / grouped detail + subtotals / summary) =====
 const REPORTS = {
-  expenses: {
-    title: 'report.expenses.title', fetch: () => api('/api/expenses'), dateField: 'date',
-    columns: [{ f: 'date', label: 'field.date', type: 'date' }, { f: 'category', label: 'field.category' }, { f: 'notes', label: 'field.notes' }, { f: 'amount', label: 'field.amount', type: 'money', sum: true }],
-    groups: [{ key: 'category', label: 'field.category' }, { key: 'ym', label: 'field.month' }, { key: '', label: 'report.noGroup' }]
-  },
-  pettycash: {
-    title: 'report.pettycash.title', fetch: () => api('/api/records/pettycash'), dateField: 'date',
-    columns: [{ f: 'date', label: 'field.date', type: 'date' }, { f: 'type', label: 'field.type', map: { income: 'enum.income', expense: 'enum.expense' } }, { f: 'description', label: 'field.description' }, { f: 'amount', label: 'field.amount', type: 'money', sum: true }],
-    groups: [{ key: 'ym', label: 'field.month' }, { key: 'type', label: 'field.type' }, { key: '', label: 'report.noGroup' }]
-  },
-  hours: {
-    title: 'report.hours.title', fetch: () => api('/api/records/hours'), dateField: 'date', filter: r => r.end,
-    columns: [{ f: 'date', label: 'field.date', type: 'date' }, { f: 'start', label: 'field.start' }, { f: 'end', label: 'field.end' }, { f: 'regular', label: 'field.regular', type: 'num', sum: true }, { f: 'overtime', label: 'field.overtime', type: 'num', sum: true }, { f: 'total', label: 'common.total', type: 'num', sum: true }],
-    groups: [{ key: 'ym', label: 'field.month' }, { key: '', label: 'report.noGroup' }]
-  },
-  vaad: {
-    title: 'report.vaad.title', fetch: vaadUnifiedTransactions, dateField: 'date',
-    columns: [{ f: 'date', label: 'field.date', type: 'date' }, { f: 'type', label: 'field.type', map: { income: 'vaad.typeIn', expense: 'enum.expense' } }, { f: 'description', label: 'vaad.descLabel' }, { f: 'amount', label: 'field.amount', type: 'money', sum: true }],
-    groups: [{ key: 'ym', label: 'field.month' }, { key: 'type', label: 'field.type' }, { key: '', label: 'report.noGroup' }]
-  },
-  chug: {
-    title: 'report.chug.title', fetch: () => api('/api/records/chug'), dateField: 'date',
-    columns: [{ f: 'date', label: 'field.date', type: 'date' }, { f: 'type', label: 'field.type', map: { income: 'enum.income', expense: 'enum.expense' } }, { f: 'description', label: 'field.description' }, { f: 'amount', label: 'field.amount', type: 'money', sum: true }],
-    groups: [{ key: 'ym', label: 'field.month' }, { key: 'type', label: 'field.type' }, { key: '', label: 'report.noGroup' }]
-  },
   trip: {
     title: 'report.trip.title', fetch: () => api('/api/records/tripexp'), dateField: 'date',
     columns: [{ f: 'date', label: 'field.date', type: 'date' }, { f: 'category', label: 'field.category' }, { f: 'description', label: 'field.description' }, { f: 'amount', label: 'field.amount', type: 'money', sum: true }],
     groups: [{ key: 'category', label: 'field.category' }, { key: 'ym', label: 'field.month' }, { key: '', label: 'report.noGroup' }]
-  },
-  projects: {
-    title: 'report.projects.title', fetch: () => api('/api/records/projexp'), dateField: 'date',
-    columns: [{ f: 'date', label: 'field.date', type: 'date' }, { f: 'project', label: 'field.projectRef' }, { f: 'description', label: 'field.description' }, { f: 'amount', label: 'field.amount', type: 'money', sum: true }],
-    groups: [{ key: 'project', label: 'field.projectRef' }, { key: 'ym', label: 'field.month' }, { key: '', label: 'report.noGroup' }]
   }
 };
 let reportHtml = '';
@@ -5960,122 +5862,6 @@ document.getElementById('fDate').dispatchEvent(new Event('change')); // let the 
 
 // ===================== Multi-tool navigation =====================
 const TOOLKIT = {
-  expenses: { title: 'tool.expenses.name' },
-  pettycash: { title: 'tool.pettycash.name', kind: 'ledger', typeIn: 'enum.income', typeOut: 'enum.expense', descLabel: 'field.description', inWord: 'ledger.incomeWord', outWord: 'ledger.expenseWord', addLabel: 'pettycash.addLabel' },
-  hours: { title: 'tool.hours.name', kind: 'hours', descLabel: 'hours.descLabel', addLabel: 'hours.addLabel' },
-  vaad: { title: 'tool.vaad.name', kind: 'vaad', typeIn: 'vaad.typeIn', typeOut: 'enum.expense', descLabel: 'vaad.descLabel', inWord: 'vaad.typeIn', outWord: 'ledger.expenseWord', addLabel: 'vaad.addLabel' },
-  // vaad sub-datasets (not shown in the tool menu — rendered as tabs inside vaad)
-  residents: {
-    kind: 'list', addLabel: 'list.residents.addLabel', listTitle: 'list.residents.title', emptyMsg: 'list.residents.empty',
-    columns: [
-      { f: 'apartment', label: 'field.apartment', type: 'text', required: true },
-      { f: 'entrance', label: 'field.entrance' },
-      { f: 'floor', label: 'field.floor', type: 'text' },
-      { f: 'size', label: 'field.size', type: 'text', table: false },
-      { f: 'dues', label: 'field.duesILS', type: 'number', money: true },
-      { f: 'name', label: 'field.residentName', type: 'text', lettersOnly: true },
-      { f: 'phone', label: 'field.phone', type: 'tel', dir: 'ltr' },
-      { f: 'name2', label: 'field.residentName2', type: 'text', table: false, lettersOnly: true },
-      { f: 'phone2', label: 'field.phone2', type: 'tel', dir: 'ltr', table: false },
-      { f: 'rented', label: 'field.rented', type: 'select', options: ['לא', 'כן'] },
-      { f: 'ownerName', label: 'field.ownerName', type: 'text', table: false, lettersOnly: true },
-      { f: 'ownerPhone', label: 'field.ownerPhone', type: 'tel', dir: 'ltr', table: false },
-      { f: 'notes', label: 'field.notes', type: 'text', table: false }
-    ]
-  },
-  tickets: {
-    kind: 'list', addLabel: 'list.tickets.addLabel', listTitle: 'list.tickets.title', emptyMsg: 'list.tickets.empty',
-    columns: [
-      { f: 'date', label: 'field.date', type: 'date', required: true, isDate: true },
-      { f: 'reporter', label: 'field.reporter', type: 'text' },
-      { f: 'location', label: 'field.location', type: 'text' },
-      { f: 'description', label: 'field.description', type: 'text', required: true },
-      { f: 'priority', label: 'field.priority', type: 'select', options: ['רגילה', 'דחוף', 'קריטי'], badge: true },
-      { f: 'status', label: 'field.status', type: 'select', options: ['פתוח', 'בטיפול', 'טופל'], badge: true }
-    ]
-  },
-  pros: {
-    kind: 'list', addLabel: 'list.pros.addLabel', listTitle: 'list.pros.title', emptyMsg: 'list.pros.empty',
-    columns: [
-      { f: 'name', label: 'field.name', type: 'text', required: true },
-      { f: 'profession', label: 'field.profession', type: 'text' },
-      { f: 'phone', label: 'field.phone', type: 'tel', dir: 'ltr' },
-      { f: 'notes', label: 'field.notes', type: 'text' }
-    ]
-  },
-  vaadfixed: {
-    kind: 'list', addLabel: 'list.vaadfixed.addLabel', listTitle: 'list.vaadfixed.title', emptyMsg: 'list.vaadfixed.empty',
-    columns: [
-      { f: 'date', label: 'field.date', type: 'date', required: true, isDate: true },
-      { f: 'category', label: 'field.category', type: 'catsel', datalistId: 'vaadfixedCatsList', options: ['מים', 'חשמל', 'ניקיון', 'גינון', 'חומרי ניקוי', 'תחזוקה כללית'], extraOptions: () => toolData.buildingSystems || [], badge: true },
-      { f: 'vendor', label: 'field.vendor', type: 'text' },
-      { f: 'amount', label: 'field.amountILS', type: 'number', money: true, required: true },
-      { f: 'frequency', label: 'expenses.paymentFrequency', type: 'select', options: ['חד פעמי', 'חודשי', 'דו-חודשי', 'תלת חודשי', 'רבעוני', 'חצי שנתי', 'שנתי'], badge: true },
-      { f: 'notes', label: 'field.notes', type: 'text', table: false }
-    ]
-  },
-  expfixed: {
-    kind: 'list', addLabel: 'list.expfixed.addLabel', listTitle: 'list.expfixed.title', emptyMsg: 'list.expfixed.empty',
-    columns: [
-      { f: 'name', label: 'expenses.sub.name', type: 'text', required: true, ph: 'expenses.sub.namePh' },
-      { f: 'category', label: 'field.category', type: 'catsel', datalistId: 'expfixedCatsList', options: ['סטרימינג', 'ביטוח', 'חדר כושר', 'תקשורת', 'אחר'] },
-      { f: 'amount', label: 'field.amountILS', type: 'number', money: true, required: true },
-      { f: 'frequency', label: 'expenses.paymentFrequency', type: 'select', options: ['חודשי', 'דו-חודשי', 'רבעוני', 'חצי שנתי', 'שנתי'], badge: true },
-      { f: 'date', label: 'expenses.sub.nextDue', type: 'date', required: true, isDate: true },
-      { f: 'endDate', label: 'expenses.sub.endDate', type: 'date', isDate: true, table: false },
-      { f: 'notes', label: 'field.notes', type: 'text', table: false }
-    ]
-  },
-  buildingsys: {
-    kind: 'list', addLabel: 'list.buildingsys.addLabel', listTitle: 'list.buildingsys.title', emptyMsg: 'list.buildingsys.empty',
-    columns: [
-      { f: 'date', label: 'field.date', type: 'date', required: true, isDate: true },
-      { f: 'system', label: 'field.system', type: 'syssel', badge: true },
-      { f: 'description', label: 'field.description', type: 'text', required: true },
-      { f: 'cost', label: 'field.costILS', type: 'number', money: true },
-      { f: 'frequency', label: 'expenses.paymentFrequency', type: 'select', options: ['חד פעמי', 'חודשי', 'דו-חודשי', 'תלת חודשי', 'רבעוני', 'חצי שנתי', 'שנתי'], badge: true },
-      { f: 'serviceDate', label: 'field.serviceDate', type: 'date', isDate: true },
-      { f: 'nextServiceDate', label: 'field.nextServiceDate', type: 'date', isDate: true },
-      { f: 'warrantyExpiry', label: 'field.warrantyExpiry', type: 'date', isDate: true, table: false },
-      { f: 'insuranceExpiry', label: 'field.insuranceExpiry', type: 'date', isDate: true, table: false },
-      { f: 'notes', label: 'field.notes', type: 'text', table: false }
-    ]
-  },
-
-  // ---- Youth-movement / club hub (inspired by Dolphine Scout Management) ----
-  chug: { title: 'tool.chug.name', kind: 'chug', typeIn: 'enum.income', typeOut: 'enum.expense', descLabel: 'field.description', inWord: 'ledger.incomeWord', outWord: 'ledger.expenseWord', addLabel: 'chug.addLabel' },
-  members: {
-    kind: 'list', addLabel: 'list.members.addLabel', listTitle: 'list.members.title', emptyMsg: 'list.members.empty',
-    columns: [
-      { f: 'name', label: 'field.name', type: 'text', required: true },
-      { f: 'group', label: 'field.group', type: 'groupsel' },
-      { f: 'birthdate', label: 'field.birthdate', type: 'date', table: false },
-      { f: 'phone', label: 'field.phone', type: 'tel', dir: 'ltr' },
-      { f: 'parentName', label: 'field.parentName', type: 'text', table: false },
-      { f: 'parentPhone', label: 'field.parentPhone', type: 'tel', dir: 'ltr' },
-      { f: 'fee', label: 'field.memberFeeILS', type: 'number', money: true },
-      { f: 'notes', label: 'field.notes', type: 'text', table: false }
-    ]
-  },
-  guides: {
-    kind: 'list', addLabel: 'list.guides.addLabel', listTitle: 'list.guides.title', emptyMsg: 'list.guides.empty',
-    columns: [
-      { f: 'name', label: 'field.name', type: 'text', required: true },
-      { f: 'group', label: 'field.group', type: 'groupsel' },
-      { f: 'phone', label: 'field.phone', type: 'tel', dir: 'ltr' },
-      { f: 'notes', label: 'field.notes', type: 'text' }
-    ]
-  },
-  equipment: {
-    kind: 'list', addLabel: 'list.equipment.addLabel', listTitle: 'list.equipment.title', emptyMsg: 'list.equipment.empty',
-    columns: [
-      { f: 'item', label: 'field.item', type: 'text', required: true },
-      { f: 'qty', label: 'field.qty', type: 'number' },
-      { f: 'condition', label: 'field.condition', type: 'select', options: ['תקין', 'דורש תיקון', 'חסר'], badge: true },
-      { f: 'notes', label: 'field.notes', type: 'text' }
-    ]
-  },
-
   // ---- Trip / vacation hub (inspired by Wanderlog & TripIt) ----
   trip: { title: 'tool.trip.name', kind: 'trip' },
   itinerary: {
@@ -6216,13 +6002,7 @@ const TOOLKIT = {
 
 // Icon (inner SVG) per top-level tool — shown in the header, swapped on tool switch
 const TOOL_ICONS = {
-  expenses: '<path d="M3 9.5L12 3l9 6.5"/><path d="M5 10v10h14V10"/><path d="M9 20v-6h6v6"/>',
-  pettycash: '<rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/>',
-  hours: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
-  vaad: '<path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/>',
-  chug: '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
-  trip: '<path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/>',
-  projects: '<rect x="9" y="2" width="6" height="4" rx="1"/><path d="M9 4H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-4"/><path d="m9 14 2 2 4-4"/>'
+  trip: '<path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/>'
 };
 
 let currentTool = 'trip';
@@ -6233,8 +6013,7 @@ const ymKey = dateYM; // dateYM (line ~3215) robustly re-derives "YYYY-MM" inste
 const ymLabel = key => { const [y, m] = key.split('-'); return (MONTH_NAMES[currentLang][Number(m) - 1] || '') + ' ' + y; };
 
 async function refreshCurrent() {
-  if (currentTool === 'expenses') await load();
-  else await loadTool(currentTool);
+  await loadTool(currentTool);
 }
 
 // --- Menu ---
@@ -6265,7 +6044,7 @@ document.addEventListener('click', ev => {
 document.addEventListener('keydown', ev => { if (ev.key === 'Escape') { closeMenu(); closeLangMenu(); } });
 
 function showTool(id) {
-  if (!TOOLKIT[id]) id = 'expenses';
+  if (!TOOLKIT[id]) id = 'trip';
   currentTool = id;
   ensureView(id);
   document.querySelectorAll('.view').forEach(v => { v.hidden = v.id !== 'view-' + id; });
@@ -6273,45 +6052,29 @@ function showTool(id) {
   if (TOOL_ICONS[id]) document.querySelector('#homeBtn svg').innerHTML = TOOL_ICONS[id];
   document.querySelectorAll('.tool-item').forEach(b => b.classList.toggle('active', b.dataset.tool === id));
   closeMenu();
-  if (id === 'expenses') load();
-  else loadTool(id);
+  return loadTool(id);
 }
 
-const VAAD_TOOLS = ['vaad', 'residents', 'tickets', 'pros', 'vaadpay', 'vaadfixed', 'buildingsys'];
-const CHUG_TOOLS = ['chug', 'members', 'guides', 'attendance', 'equipment', 'chugpay'];
-const TRIP_TOOLS = ['trip', 'itinerary', 'flights', 'hotels', 'restaurants', 'cars', 'tripexp', 'triplinks'];
-const PROJECTS_TOOLS = ['projects', 'projlist', 'projtasks', 'projexp', 'projcontacts'];
 async function loadTool(id) {
+  // Or ships only the trip tool, so every showTool(id) resolves to the trip
+  // composite view. (This used to fan out to expenses/pettycash/hours/vaad/
+  // chug/projects loaders transplanted from YURI that are no longer present.)
   try {
-    if (currentTool === 'vaad' && VAAD_TOOLS.includes(id)) {
-      await loadVaad();
-    } else if (currentTool === 'chug' && CHUG_TOOLS.includes(id)) {
-      await loadChug();
-    } else if (currentTool === 'trip' && TRIP_TOOLS.includes(id)) {
-      await loadTrip();
-    } else if (currentTool === 'projects' && PROJECTS_TOOLS.includes(id)) {
-      await loadProjects();
-    } else {
-      toolData[id] = await api('/api/records/' + id);
-      renderTool(id);
-    }
+    await loadTrip();
   } catch (err) { toast(err.message, true); }
 }
 
 // --- Build a tool view once, then cache it ---
 function ensureView(id) {
-  if (id === 'expenses' || document.getElementById('view-' + id)) return;
-  const cfg = TOOLKIT[id];
+  // Or has exactly one tool (trip); showTool/loadTool only ever pass 'trip'.
+  if (document.getElementById('view-' + id)) return;
   const div = document.createElement('div');
   div.id = 'view-' + id;
   div.className = 'view';
   div.hidden = true;
-  if (cfg.kind === 'hours') { div.innerHTML = hoursViewHTML(id, cfg); document.getElementById('dynamicViews').appendChild(div); wireHoursView(id); }
-  else if (cfg.kind === 'vaad') { div.innerHTML = vaadViewHTML(); document.getElementById('dynamicViews').appendChild(div); wireVaadView(); }
-  else if (cfg.kind === 'chug') { div.innerHTML = chugViewHTML(); document.getElementById('dynamicViews').appendChild(div); wireChugView(); }
-  else if (cfg.kind === 'trip') { div.innerHTML = tripViewHTML(); document.getElementById('dynamicViews').appendChild(div); wireTripView(); }
-  else if (cfg.kind === 'projects') { div.innerHTML = projectsViewHTML(); document.getElementById('dynamicViews').appendChild(div); wireProjectsView(); }
-  else { div.innerHTML = ledgerViewHTML(id, cfg); document.getElementById('dynamicViews').appendChild(div); wireToolView(id, cfg); }
+  div.innerHTML = tripViewHTML();
+  document.getElementById('dynamicViews').appendChild(div);
+  wireTripView();
 }
 
 // --- Work-hours helpers (regular = up to 8h, overtime = above 8h; handles past-midnight) ---
@@ -10103,23 +9866,6 @@ try {
   if (initialTool !== 'trip') showTool('trip');
 }
 applyEnabledTools();
-
-// --- First-visit welcome ---
-const WELCOME_KEY = 'or-welcome-hide';
-const welcomeDialog = document.getElementById('welcomeDialog');
-function closeWelcome(openMenu) {
-  if (document.getElementById('welcomeDontShow').checked) localStorage.setItem(WELCOME_KEY, '1');
-  welcomeDialog.close();
-  if (openMenu) {
-    // point the user straight at the tool menu
-    setTimeout(() => document.getElementById('homeBtn').click(), 250);
-  }
-}
-document.getElementById('welcomeStart').addEventListener('click', () => closeWelcome(true));
-document.getElementById('welcomeClose').addEventListener('click', () => closeWelcome(false));
-welcomeDialog.addEventListener('click', ev => { if (ev.target === welcomeDialog) closeWelcome(false); });
-welcomeDialog.addEventListener('cancel', () => { if (document.getElementById('welcomeDontShow').checked) localStorage.setItem(WELCOME_KEY, '1'); });
-// welcome dialog suppressed for the single-tool build
 </script>
 </body>
 </html>

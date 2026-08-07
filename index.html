@@ -151,7 +151,7 @@
      across real browsers. Instead: the native input's own text is made
      invisible (kept fully functional - typing, the calendar/clock picker,
      keyboard nav all still work), and a plain-text overlay we fully
-     control renders the value in guaranteed dd/mm/yyyy / 24h format on
+     control renders the value in guaranteed dd/mm/yy / 24h format on
      top of it. See upgradeDateTimeInput(). */
   .date-input-wrap { position: relative; display: block; width: 100%; }
   .date-input-wrap > input { width: 100%; }
@@ -194,21 +194,6 @@
   .home-btn svg { color: var(--color-secondary); }
   .help-btn svg { color: var(--color-accent); }
   .help-btn:hover { border-color: var(--color-accent); color: var(--color-accent); }
-  /* RLAPP.net shortcut — a designed gradient pill that stands out from the plain
-     icon buttons, signalling "all our services". Links to the parent portal. */
-  .rlapp-btn {
-    display: inline-flex; align-items: center; gap: 6px;
-    height: 44px; padding: 0 14px; border-radius: 10px;
-    background: linear-gradient(135deg, #3B82F6, #1E40AF);
-    color: #fff; font-weight: 800; font-size: 12.5px; letter-spacing: 0.4px;
-    text-decoration: none; white-space: nowrap; flex-shrink: 0;
-    box-shadow: 0 2px 10px rgba(37,99,235,0.35);
-    transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
-  }
-  .rlapp-btn:hover { transform: translateY(-1px); box-shadow: 0 5px 16px rgba(37,99,235,0.5); filter: brightness(1.08); }
-  .rlapp-btn:active { transform: translateY(0); box-shadow: 0 2px 8px rgba(37,99,235,0.4); }
-  .rlapp-btn svg { flex-shrink: 0; }
-  @media (max-width: 640px) { .rlapp-btn span { display: none; } .rlapp-btn { padding: 0 12px; } }
   #helpDialog { max-width: 640px; width: 92%; }
   #helpTabs { margin-bottom: 12px; }
   /* #helpDialog is a flex column (title/tabs fixed, body fills remaining space)
@@ -226,8 +211,6 @@
   .help-section { margin-bottom: 18px; }
   .help-section h4 { font-size: 15px; font-weight: 600; margin-bottom: 6px; color: var(--color-fg); display: flex; align-items: center; gap: 8px; }
   .help-ico { color: var(--color-accent); flex-shrink: 0; }
-  .help-section.help-current { border-top: 1px solid var(--color-border); padding-top: 14px; }
-  .help-section.help-current h4 { color: var(--color-secondary); }
   .help-body p { margin-bottom: 10px; color: var(--color-text-dim); }
   .help-body ul { margin: 8px 0; padding-inline-start: 20px; }
   .help-body li { margin-bottom: 7px; }
@@ -731,6 +714,10 @@
 
   /* Account details */
   .details-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: var(--space-2); }
+  /* Checkbox lists (e.g. tool/building-systems selection) are much shorter than
+     a .detail-block card, so they get their own tighter grid instead of
+     sharing .details-grid's wide card-sized columns. */
+  .checkbox-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: var(--space-1); }
   .detail-block {
     background: var(--color-muted); border: 1px solid var(--color-border);
     border-radius: 8px; padding: var(--space-2);
@@ -783,7 +770,7 @@
   dialog h3 { margin-bottom: var(--space-3); }
   .settings-header-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: var(--space-3); }
   .settings-header-row h3 { margin-bottom: 0; }
-  .settings-header-actions { display: flex; flex-direction: column; gap: 6px; align-items: stretch; }
+  .settings-header-actions { display: flex; flex-direction: row; align-items: center; gap: var(--space-2); flex-wrap: wrap; }
   #versionInfo { text-align: center; }
   /* Fixed height (not shrink-to-fit) so switching between settings tabs never
      visibly resizes/jumps the dialog - same reasoning and pattern as
@@ -1065,7 +1052,7 @@
 </script>
 <div id="splash">
   <img class="logo-light" src="icon-512.png" alt="Or — Control your money today">
-  <img class="logo-dark" src="icon-512.png" alt="Or — Control your money today">
+  <img class="logo-dark" src="icon-512-dark.png" alt="Or — Control your money today">
 </div>
 <div class="container">
   <header>
@@ -1088,7 +1075,7 @@
 
     <a class="brand-center" href="./" data-i18n-aria="nav.homeLink" data-i18n-title="nav.homeLink" aria-label="Or — דף הבית" title="Or — דף הבית">
       <img class="logo logo-light" src="icon-512.png" alt="Or">
-      <img class="logo logo-dark" src="icon-512.png" alt="Or">
+      <img class="logo logo-dark" src="icon-512-dark.png" alt="Or">
     </a>
 
     <div class="header-actions">
@@ -1116,9 +1103,8 @@
           <button type="button" class="lang-item" data-lang="ar">العربية</button>
         </nav>
       </div>
-      <a href="https://rlapp.net" target="_blank" rel="noopener" class="rlapp-btn" aria-label="RLAPP.net — כל השירותים שלנו" title="RLAPP.net — כל השירותים שלנו">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="3" y="3" width="7.5" height="7.5" rx="1.6"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="1.6"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="1.6"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.6"/></svg>
-        <span>RLAPP</span>
+      <a href="https://rlapp.net" target="_blank" rel="noopener" class="icon-btn rlapp-icon-btn" aria-label="RLAPP.net — כל השירותים שלנו" title="RLAPP.net — כל השירותים שלנו">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
       </a>
       <button type="button" class="icon-btn help-btn" id="helpBtn" data-i18n-aria="header.help" aria-label="עזרה ומידע על הכלי הנוכחי">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
@@ -1370,8 +1356,7 @@
   <div class="settings-header-row">
     <h3 id="settingsTitle" data-i18n="settings.title">הגדרות</h3>
     <div class="settings-header-actions">
-      <button type="button" class="btn-ghost" id="checkVersionBtn" data-i18n="settings.data.checkVersionBtn">בדוק גירסה חדשה</button>
-      <button type="button" class="btn-ghost" id="closeSettings" data-i18n="common.close">סגור</button>
+      <button type="button" class="btn-ghost" id="checkVersionBtn" data-i18n="settings.data.checkVersionBtn">רענן את הדפדפן</button>
     </div>
   </div>
 
@@ -1388,7 +1373,7 @@
   <section class="settings-section" id="toolsSection" data-stab="tools">
     <h4 data-i18n="settings.tools.heading">כלים פעילים באתר</h4>
     <p class="file-hint" data-i18n="settings.tools.hint">סמנו אילו כלים יופיעו בתפריט הבחירה. אפשר לבחור כמה שרוצים — אבל חייב להישאר לפחות כלי אחד פעיל.</p>
-    <div class="details-grid" id="toolsCheckboxes"></div>
+    <div class="checkbox-grid" id="toolsCheckboxes"></div>
   </section>
 
   <section class="settings-section" id="dataSection" data-stab="data" hidden>
@@ -1401,8 +1386,8 @@
       <button type="button" class="btn-danger" id="newFileBtn" data-i18n="settings.data.deleteAllBtn">מחיקת כל הנתונים</button>
       <input type="file" id="fileInput" accept=".xlsx,.xls" hidden>
     </div>
-    <p class="file-hint" style="margin-top: 8px" data-i18n-html="settings.data.hint1">הנתונים נשמרים <strong>בדפדפן הזה</strong> (במכשיר הזה). <strong>ייצוא לאקסל</strong> מוריד קובץ גיבוי; <strong>ייבוא מאקסל</strong> טוען נתונים מקובץ גיבוי (למשל כדי להעביר למכשיר אחר). מומלץ לייצא גיבוי מדי פעם.</p>
-    <p class="file-hint" style="margin-top: 4px" data-i18n-html="settings.data.shareHint">כפתור <strong>שיתוף</strong> פותח את תפריט השיתוף של המכשיר (וואטסאפ, מייל וכו') עם קובץ הגיבוי מוכן לשליחה — למשל לבן/בת הזוג, כדי שיוכלו לטעון אותו אצלם דרך "ייבוא מאקסל". בדפדפנים שלא תומכים בשיתוף קבצים, הקובץ פשוט יורד — אפשר לצרף אותו ידנית.</p>
+    <p class="file-hint" style="margin-top: var(--space-1)" data-i18n-html="settings.data.hint1">הנתונים נשמרים <strong>בדפדפן הזה</strong> (במכשיר הזה). <strong>ייצוא לאקסל</strong> מוריד קובץ גיבוי; <strong>ייבוא מאקסל</strong> טוען נתונים מקובץ גיבוי (למשל כדי להעביר למכשיר אחר). מומלץ לייצא גיבוי מדי פעם.</p>
+    <p class="file-hint" style="margin-top: var(--space-1)" data-i18n-html="settings.data.shareHint">כפתור <strong>שיתוף</strong> פותח את תפריט השיתוף של המכשיר (וואטסאפ, מייל וכו') עם קובץ הגיבוי מוכן לשליחה — למשל לבן/בת הזוג, כדי שיוכלו לטעון אותו אצלם דרך "ייבוא מאקסל". בדפדפנים שלא תומכים בשיתוף קבצים, הקובץ פשוט יורד — אפשר לצרף אותו ידנית.</p>
   </section>
 
   <section class="settings-section" data-stab="drive" hidden>
@@ -1415,17 +1400,17 @@
       <button type="button" class="btn-edit" id="drivePickSharedBtn" data-i18n="drive.pickSharedBtn" hidden>בחירת קובץ משותף</button>
       <button type="button" class="btn-ghost" id="driveDisconnectBtn" data-i18n="drive.disconnectBtn" hidden>ניתוק</button>
     </div>
-    <p class="file-hint" id="driveLastSync" style="margin-top:6px"></p>
+    <p class="file-hint" id="driveLastSync" style="margin-top:var(--space-1)"></p>
     <p class="file-hint" data-i18n="drive.scopeHint">אור מקבל גישה רק לקובץ הגיבוי שהוא עצמו יוצר ב-Drive שלכם (לא לכל הקבצים שלכם).</p>
     <p class="file-hint" data-i18n="drive.pickSharedHint">כדי לראות נתונים של בן/בת הזוג: תבקשו מהם לשתף איתכם את קובץ הגיבוי שלהם ב-Drive (כפתור השיתוף הרגיל של Drive), ואז השתמשו כאן ב"בחירת קובץ משותף" כדי לבחור אותו.</p>
 
-    <div id="driveFilesSection" hidden style="margin-top:16px">
+    <div id="driveFilesSection" hidden style="margin-top:var(--space-3)">
       <div class="file-actions">
         <button type="button" class="btn-edit" id="driveUploadLocalBtn" data-i18n="drive.uploadLocalBtn">העלאת קובץ מקומי ל-Drive</button>
         <input type="file" id="driveLocalFileInput" accept=".xlsx,.xls" hidden>
       </div>
-      <p class="file-hint" data-i18n="drive.uploadLocalHint" style="margin-top:4px">מעלה קובץ אקסל שבחרתם מהמחשב כקובץ חדש ב-Drive שלכם (בנוסף לקובץ הגיבוי הקבוע).</p>
-      <h4 style="margin-top:16px" data-i18n="drive.filesHeading">קבצים ב-Drive</h4>
+      <p class="file-hint" data-i18n="drive.uploadLocalHint" style="margin-top:var(--space-1)">מעלה קובץ אקסל שבחרתם מהמחשב כקובץ חדש ב-Drive שלכם (בנוסף לקובץ הגיבוי הקבוע).</p>
+      <h4 style="margin-top:var(--space-4)" data-i18n="drive.filesHeading">קבצים ב-Drive</h4>
       <div id="driveFilesList" class="drive-files-list"></div>
     </div>
 
@@ -1450,14 +1435,14 @@
     <h4 data-i18n="settings.account.heading">פרטי החשבונות שלי</h4>
     <form id="detailsForm">
       <div class="details-grid" id="detailsGrid"></div>
-      <div class="path-row" style="margin-top:12px">
+      <div class="path-row" style="margin-top:var(--space-2)">
         <input type="text" id="newCategoryName" data-i18n-ph="settings.account.addCategoryPh" placeholder="שם קטגוריה חדשה">
         <button type="button" class="btn-ghost" id="addCategoryBtn" data-i18n="settings.account.addCategoryBtn">הוספת קטגוריה</button>
       </div>
       <div class="details-footer">
         <button type="submit" class="btn-primary" id="detailsBtn" data-i18n="settings.account.saveBtn">שמור פרטים</button>
       </div>
-      <p class="file-hint" style="margin-top: 12px" data-i18n="settings.account.hint">ביטול "חשבון פעיל" מסתיר את הקטגוריה מהמסך הראשי — ההיסטוריה נשארת שמורה בקובץ האקסל.</p>
+      <p class="file-hint" style="margin-top: var(--space-2)" data-i18n="settings.account.hint">ביטול "חשבון פעיל" מסתיר את הקטגוריה מהמסך הראשי — ההיסטוריה נשארת שמורה בקובץ האקסל.</p>
     </form>
   </section>
 
@@ -1471,19 +1456,19 @@
       <label><span data-i18n="settings.building.entrances">מספר כניסות</span> <input id="bEntrances" type="number" min="0"></label>
       <label><span data-i18n="field.notes">הערות</span> <input id="bNotes" type="text"></label>
     </div>
-    <div class="details-footer" style="margin-top:12px">
+    <div class="details-footer" style="margin-top:var(--space-2)">
       <button type="button" class="btn-primary" id="saveBuildingBtn" data-i18n="settings.building.saveBtn">שמור פרטי בניין</button>
       <button type="button" class="btn-edit" id="gotoResidentsBtn" data-i18n="settings.building.gotoResidents">מידע על הדיירים ←</button>
     </div>
-    <h4 style="margin-top:20px" data-i18n="settings.buildingSystems.heading">מערכות בבניין</h4>
+    <h4 style="margin-top:var(--space-4)" data-i18n="settings.buildingSystems.heading">מערכות בבניין</h4>
     <p class="file-hint" data-i18n="settings.buildingSystems.hint">סמנו אילו מערכות קיימות בבניין שלכם — רק מערכות מסומנות יופיעו כאפשרות בלשונית "מערכות בבניין".</p>
-    <div class="details-grid" id="buildingSystemsCheckboxes"></div>
+    <div class="checkbox-grid" id="buildingSystemsCheckboxes"></div>
   </section>
 
   <section class="settings-section" id="chugSettings" data-stab="tool" hidden>
     <h4 data-i18n="settings.chug.heading">שכבות / קבוצות</h4>
     <p class="file-hint" data-i18n="settings.chug.hint">הגדירו כאן את שמות השכבות או הקבוצות של התנועה/החוג. שכבות שהוגדרו יופיעו בבורר במסך הראשי ובשדה "שכבה / קבוצה" של חניכים ומדריכים. אם לא הוגדרו שכבות — הבורר לא יוצג.</p>
-    <div class="path-row" style="margin-top:10px">
+    <div class="path-row" style="margin-top:var(--space-2)">
       <input type="text" id="groupNameInput" data-i18n-ph="settings.chug.groupNamePh" placeholder="למשל: כיתה ד, שבט צופים, קבוצת בוגרים">
       <button type="button" class="btn-primary" id="addGroupBtn" data-i18n="settings.chug.addGroupBtn">הוסף שכבה</button>
     </div>
@@ -1499,14 +1484,14 @@
       <label><span data-i18n="settings.trip.travelers">כמה אנשים טסים</span> <input id="tTravelers" type="number" min="1"></label>
       <label><span data-i18n="settings.trip.budget">תקציב כולל (₪)</span> <input id="tBudget" type="number" min="0" step="0.01"></label>
     </div>
-    <h4 style="margin-top:16px" data-i18n="settings.trip.insurance">ביטוח רפואי</h4>
+    <h4 style="margin-top:var(--space-4)" data-i18n="settings.trip.insurance">ביטוח רפואי</h4>
     <div class="details-grid">
       <label><span data-i18n="settings.trip.insCompany">חברת הביטוח</span> <input id="tInsCompany" type="text"></label>
       <label><span data-i18n="settings.trip.insPolicy">מספר פוליסה</span> <input id="tInsPolicy" type="text" dir="ltr" style="text-align:right"></label>
       <label><span data-i18n="settings.trip.insPhone">טלפון חירום של הביטוח</span> <input id="tInsPhone" type="tel" dir="ltr" style="text-align:right"></label>
       <label><span data-i18n="field.notes">הערות</span> <input id="tNotes" type="text" data-i18n-ph="settings.trip.notesPh" placeholder="דרכונים, ויזות, תרופות..."></label>
     </div>
-    <div class="details-footer" style="margin-top:12px">
+    <div class="details-footer" style="margin-top:var(--space-2)">
       <button type="button" class="btn-primary" id="saveTripBtn" data-i18n="settings.trip.saveBtn">שמור פרטי טיול</button>
     </div>
   </section>
@@ -1532,7 +1517,7 @@
       </label>
       <button type="submit" class="btn-primary" data-i18n="common.add">הוספה</button>
     </form>
-    <h4 style="margin-top:20px" data-i18n="list.projlist.title">רשימת הפרויקטים</h4>
+    <h4 style="margin-top:var(--space-4)" data-i18n="list.projlist.title">רשימת הפרויקטים</h4>
     <div class="table-wrap">
       <table><thead><tr>
         <th data-i18n="field.name">שם</th>
@@ -1575,11 +1560,11 @@
       <span class="file-hint" id="calSelInfo"></span>
     </div>
 
-    <div class="details-footer" style="margin-top:12px">
+    <div class="details-footer" style="margin-top:var(--space-2)">
       <button type="button" class="btn-primary" id="saveCalBtn" data-i18n="settings.hours.saveBtn">שמור לוח</button>
       <span class="file-hint" id="calSummary"></span>
     </div>
-    <p class="file-hint" style="margin-top:8px" data-i18n="settings.hours.hint">בחרו סוג יום למעלה (כפתורי בחירה), לחצו על יום אחד או כמה ימים כדי לבחור אותם, ואז "סמן ימים נבחרים" — כך מסמנים חופש/חג לכמה ימים במכה אחת. ימי שבת מסומנים אוטומטית לפי "שבת ראשונה".</p>
+    <p class="file-hint" style="margin-top:var(--space-1)" data-i18n="settings.hours.hint">בחרו סוג יום למעלה (כפתורי בחירה), לחצו על יום אחד או כמה ימים כדי לבחור אותם, ואז "סמן ימים נבחרים" — כך מסמנים חופש/חג לכמה ימים במכה אחת. ימי שבת מסומנים אוטומטית לפי "שבת ראשונה".</p>
   </section>
 
   <section class="settings-section" id="toolSettingsNote" data-stab="tool" hidden></section>
@@ -1595,23 +1580,27 @@
   <section class="settings-section" id="installSection" data-stab="more" hidden>
     <h4 data-i18n="settings.install.heading">התקנה וקיצור דרך</h4>
     <p class="file-hint" data-i18n="settings.install.hint">אפשר להוסיף את Or כאפליקציה — עם אייקון ושם — על שולחן העבודה במחשב או על מסך הבית בנייד.</p>
-    <div class="file-actions" style="margin-top:8px">
+    <div class="file-actions" style="margin-top:var(--space-1)">
       <button type="button" class="btn-primary" id="installBtn" hidden data-i18n="settings.install.installBtn">הוסף את Or למסך</button>
     </div>
-    <p class="file-hint" id="iosInstall" hidden style="margin-top:8px" data-i18n-html="settings.install.iosHint">באייפון (Safari): לחצו על כפתור <strong>שיתוף</strong> ואז על <strong>"הוספה למסך הבית"</strong> — האייקון של Or יופיע עם השם.</p>
-    <p class="file-hint" id="genericInstall" hidden style="margin-top:8px" data-i18n-html="settings.install.genericHint">במחשב (Chrome / Edge): לחצו על אייקון ההתקנה בשורת הכתובת, או על תפריט הדפדפן ← "התקן את Or". בדפדפנים אחרים שמרו קיצור דרך / סימנייה.</p>
+    <p class="file-hint" id="iosInstall" hidden style="margin-top:var(--space-1)" data-i18n-html="settings.install.iosHint">באייפון (Safari): לחצו על כפתור <strong>שיתוף</strong> ואז על <strong>"הוספה למסך הבית"</strong> — האייקון של Or יופיע עם השם.</p>
+    <p class="file-hint" id="genericInstall" hidden style="margin-top:var(--space-1)" data-i18n-html="settings.install.genericHint">במחשב (Chrome / Edge): לחצו על אייקון ההתקנה בשורת הכתובת, או על תפריט הדפדפן ← "התקן את Or". בדפדפנים אחרים שמרו קיצור דרך / סימנייה.</p>
   </section>
 
   <section class="settings-section" id="bugSection" data-stab="more" hidden>
     <h4 data-i18n="settings.bug.heading">דיווח על באג / תקלה</h4>
     <form id="bugForm">
       <textarea id="bugDesc" rows="3" data-i18n-ph="settings.bug.descPh" placeholder="תארו מה קרה, מה ציפיתם שיקרה, ובאיזה כלי זה קרה"></textarea>
-      <div class="details-footer" style="margin-top:8px">
+      <div class="details-footer" style="margin-top:var(--space-1)">
         <button type="submit" class="btn-primary" data-i18n="settings.bug.sendBtn">שלח דיווח במייל</button>
         <span class="file-hint" data-i18n="settings.bug.hint">הדיווח נפתח כהודעת מייל למפתח (עם הפרטים ממולאים) — יש ללחוץ "שלח" בתוכנת המייל.</span>
       </div>
     </form>
   </section>
+
+  <div class="dialog-actions">
+    <button type="button" class="btn-ghost" id="closeSettings" data-i18n="common.close">סגור</button>
+  </div>
 </dialog>
 
 <dialog id="helpDialog">
@@ -1804,7 +1793,7 @@
 
 <dialog id="welcomeDialog">
   <div class="welcome-head">
-    <img src="icon-512.png" alt="Or" class="welcome-logo wl-dark">
+    <img src="icon-512-dark.png" alt="Or" class="welcome-logo wl-dark">
     <img src="icon-512.png" alt="Or" class="welcome-logo wl-light">
   </div>
   <h3 data-i18n="welcome.title">ברוכים הבאים ל-Or 👋</h3>
@@ -1891,6 +1880,10 @@ const MONTH_NAMES = {
   ru: ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'],
   ar: ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر']
 };
+// Shared 3-letter month abbreviation for "YYYY-MM" keys, used by the vaad/chug
+// payment matrices' column headers and cell titles - previously re-declared
+// identically at three separate call sites.
+const shortMonth = ym => MONTH_NAMES[currentLang][Number(ym.split('-')[1]) - 1].slice(0, 3);
 const WEEKDAY_NAMES = {
   he: ['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'],
   en: ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],
@@ -2496,6 +2489,8 @@ const I18N = {
   'toast.backupDownloading': { he: 'קובץ הגיבוי (or.xlsx) יורד', en: 'Backup file (or.xlsx) is downloading', ru: 'Файл резервной копии (or.xlsx) загружается' , ar: 'جارٍ تنزيل ملف النسخة الاحتياطية (or.xlsx)' },
   'toast.exportError': { he: 'שגיאה בייצוא: {msg}', en: 'Export error: {msg}', ru: 'Ошибка экспорта: {msg}' , ar: 'خطأ في التصدير: {msg}' },
   'confirm.loadFromFile': { he: 'לטעון נתונים מהקובץ "{name}"?\nהנתונים הנוכחיים בדפדפן יוחלפו.', en: 'Load data from the file "{name}"?\nThe current data in the browser will be replaced.', ru: 'Загрузить данные из файла «{name}»?\nТекущие данные в браузере будут заменены.', ar: 'تحميل البيانات من الملف "{name}"؟\nسيتم استبدال البيانات الحالية في المتصفح.' },
+  'confirm.importOlderBackup': { he: 'קובץ הגיבוי שנבחר ({importedDate}) ישן יותר מהנתונים הנוכחיים בדפדפן ({currentDate}). לטעון בכל זאת? הנתונים הנוכחיים יוחלפו.', en: 'The selected backup file ({importedDate}) is older than the current data in this browser ({currentDate}). Load it anyway? The current data will be replaced.', ru: 'Выбранный файл резервной копии ({importedDate}) старше текущих данных в этом браузере ({currentDate}). Всё равно загрузить? Текущие данные будут заменены.', ar: 'ملف النسخة الاحتياطية المحدد ({importedDate}) أقدم من البيانات الحالية في هذا المتصفح ({currentDate}). هل تريد التحميل على أي حال؟ سيتم استبدال البيانات الحالية.' },
+  'err.notAnOrBackup': { he: 'הקובץ הזה לא נראה כמו גיבוי של Or — הטעינה בוטלה', en: "This file doesn't look like an Or backup - import cancelled", ru: 'Этот файл не похож на резервную копию Or — импорт отменён', ar: 'هذا الملف لا يبدو نسخة احتياطية من Or — تم إلغاء الاستيراد' },
   'toast.dataLoaded': { he: 'הנתונים נטענו — {n} הוצאות', en: 'Data loaded — {n} expenses', ru: 'Данные загружены — {n} расходов' , ar: 'تم تحميل البيانات — {n} مصروفات' },
   'toast.datesRepaired': { he: 'תוקנו תאריכים פגומים בנתונים שנטענו בעבר מקובץ אקסל', en: 'Fixed corrupted dates from a previously imported Excel file', ru: 'Исправлены повреждённые даты из ранее импортированного файла Excel', ar: 'تم إصلاح تواريخ تالفة من ملف إكسل تم استيراده سابقاً' },
   'toast.importError': { he: 'שגיאה בייבוא: {msg}', en: 'Import error: {msg}', ru: 'Ошибка импорта: {msg}' , ar: 'خطأ في الاستيراد: {msg}' },
@@ -3691,14 +3686,30 @@ async function importXlsx(file) {
   const buf = await file.arrayBuffer();
   return importXlsxFromArrayBuffer(buf);
 }
-async function importXlsxFromArrayBuffer(buf) {
+// opts.warnIfOlder (default true): if the file being imported is an older
+// backup than what's currently saved locally, confirm before overwriting the
+// newer local data. Skipped for the Drive sync dialog, which already shows
+// both timestamps side by side before its "update local" button is even
+// enabled - a second confirm() there would just be a redundant popup.
+// Returns null (instead of the usual {count}) if the user backs out at that
+// warning, or if the file isn't a recognized Or backup at all - callers
+// should treat either the same as a cancelled import.
+async function importXlsxFromArrayBuffer(buf, opts) {
+  opts = opts || {};
+  const warnIfOlder = opts.warnIfOlder !== false;
   const wb = XLSX.read(buf, { type: 'array', cellDates: true });
   const readSheetByKey = key => {
     const name = findSheetName(wb, key);
     const ws = name ? wb.Sheets[name] : null;
     return ws ? XLSX.utils.sheet_to_json(ws, { defval: '' }) : [];
   };
+  // NEVER wipe the DB for a workbook that isn't an Or backup at all - importing
+  // a stray/foreign xlsx would otherwise silently clear every record and report
+  // the harmless-looking "0 loaded". Abort before any mutation.
+  const KNOWN_SHEET_KEYS = ['sheet.meta', 'sheet.expenses', 'sheet.accountDetails', 'sheet.building', 'sheet.workcal', 'sheet.groups', 'sheet.buildingSystemsList', 'sheet.trip', 'sheet.bugs', ...Object.values(REC).map(rec => rec.sheetKey)];
+  if (!KNOWN_SHEET_KEYS.some(k => findSheetName(wb, k))) { toast(t('err.notAnOrBackup'), true); return null; }
   const s = loadDB();
+  const priorSavedAt = s.savedAt; // captured before any field below is overwritten
   s.expenses = readSheetByKey('sheet.expenses').map(r => {
     const v = readRowPositional(r, EXP_COLS);
     return {
@@ -3739,10 +3750,22 @@ async function importXlsxFromArrayBuffer(buf) {
     const v = readRowPositional(tripRow, tripColKeys);
     s.trip = { destination: v[0] || '', from: v[1] || '', to: v[2] || '', travelers: String(v[3] ?? ''), budget: String(v[4] ?? ''), insCompany: v[5] || '', insPolicy: String(v[6] ?? ''), insPhone: String(v[7] ?? ''), notes: v[8] || '' };
   }
+  const metaRow = readSheetByKey('sheet.meta')[0];
+  if (warnIfOlder && priorSavedAt && metaRow) {
+    const importedDateRaw = readRowPositional(metaRow, ['field.orVersion', 'field.backupDate'])[1];
+    const importedTime = importedDateRaw ? new Date(importedDateRaw).getTime() : NaN;
+    const priorTime = new Date(priorSavedAt).getTime();
+    if (!isNaN(importedTime) && !isNaN(priorTime) && importedTime < priorTime) {
+      const ok = confirm(t('confirm.importOlderBackup', {
+        importedDate: fmtDateTime(new Date(importedDateRaw)),
+        currentDate: fmtDateTime(new Date(priorSavedAt))
+      }));
+      if (!ok) return null; // abort before saveDB - loadDB() always returns a fresh parse, so nothing was ever written
+    }
+  }
   saveDB(s);
   // Record which version/date the imported file was backed up from, so a
   // future release can detect an older backup layout and migrate it.
-  const metaRow = readSheetByKey('sheet.meta')[0];
   if (metaRow) {
     const v = readRowPositional(metaRow, ['field.orVersion', 'field.backupDate']);
     if (v[0]) localStorage.setItem('or-last-import-version', String(v[0]));
@@ -3919,6 +3942,7 @@ async function driveRestoreFromFile(fileId, fileName) {
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const buf = await res.arrayBuffer();
     const result = await importXlsxFromArrayBuffer(buf);
+    if (!result) return; // user backed out at the "older backup" warning, or file wasn't a recognized backup
     toast(t('toast.dataLoaded', { n: result.count }));
     await refreshCurrent();
     loadFileInfo();
@@ -4006,19 +4030,6 @@ async function driveUploadBackup(token) {
   localStorage.removeItem('or-drive-last-restore');
   recordBackupNow();
 }
-async function driveBackup() {
-  const btn = document.getElementById('driveBackupBtn');
-  btn.disabled = true;
-  const original = btn.textContent;
-  btn.textContent = t('drive.backingUp');
-  try {
-    const token = await driveEnsureToken();
-    await driveUploadBackup(token);
-    toast(t('drive.backupSuccess'));
-    updateDriveUI();
-  } catch (err) { toast(t('drive.backupError', { msg: err.message }), true); }
-  finally { btn.disabled = false; btn.textContent = original; }
-}
 // Background auto-backup used to run here on a timer, silently re-requesting
 // a Google token ~60s after every page load for anyone previously connected
 // to Drive. "Silently" was the intent (prompt: ''), but when the browser
@@ -4076,13 +4087,26 @@ function updateBackupClock() {
 }
 setInterval(updateBackupClock, 1000);
 updateBackupClock();
+// Shared across tabs via localStorage (not just this tab's in-memory timer):
+// with Or open in more than one tab, each tab's independent timer used to
+// fire the popup on its own schedule against the same "last backup" time, so
+// the reminder could appear far more often than the configured interval
+// (roughly every interval/tabCount minutes). Gating re-shows on when it was
+// last shown ANYWHERE, not just backed up, fixes that regardless of tab count.
+const BACKUP_REMINDER_LAST_SHOWN_KEY = 'or-backup-reminder-last-shown';
 function checkBackupReminder() {
   const last = getLastBackupTime();
   const dlg = document.getElementById('backupReminderDialog');
   if (!dlg || dlg.open) return;
   const intervalMin = getBackupReminderIntervalMin();
   if (!intervalMin) return; // reminder disabled
-  if (!last || Date.now() - last.getTime() >= intervalMin * 60 * 1000) dlg.show();
+  const intervalMs = intervalMin * 60 * 1000;
+  if (last && Date.now() - last.getTime() < intervalMs) return; // backup is still fresh
+  const lastShownRaw = localStorage.getItem(BACKUP_REMINDER_LAST_SHOWN_KEY);
+  const lastShown = lastShownRaw ? new Date(lastShownRaw).getTime() : 0;
+  if (Date.now() - lastShown < intervalMs) return; // already nagged (maybe in another tab) within this interval
+  localStorage.setItem(BACKUP_REMINDER_LAST_SHOWN_KEY, new Date().toISOString());
+  dlg.show();
 }
 // Restartable (not a fixed setInterval) so changing the interval in Settings
 // takes effect immediately instead of only after the page reloads - the tick
@@ -4126,30 +4150,6 @@ document.getElementById('openSettingsFromBackupReminder').addEventListener('clic
   openSettingsOnBackupTab();
 });
 document.getElementById('backupClock').addEventListener('click', openSettingsOnBackupTab);
-async function driveRestore() {
-  if (!confirm(t('drive.confirmRestore'))) return;
-  const btn = document.getElementById('driveRestoreBtn');
-  btn.disabled = true;
-  const original = btn.textContent;
-  btn.textContent = t('drive.restoring');
-  try {
-    const token = await driveEnsureToken();
-    const fileId = await driveFindOrCreateFileId(token);
-    if (!fileId) { toast(t('drive.noBackupFound'), true); return; }
-    const res = await fetch(`https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`, { headers: { Authorization: `Bearer ${token}` } });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const buf = await res.arrayBuffer();
-    const result = await importXlsxFromArrayBuffer(buf);
-    localStorage.setItem('or-drive-last-restore', new Date().toISOString());
-    localStorage.removeItem('or-drive-last-backup');
-    toast(t('toast.dataLoaded', { n: result.count }));
-    updateDriveUI();
-    await refreshCurrent();
-    loadFileInfo();
-  } catch (err) { toast(t('drive.restoreError', { msg: err.message }), true); }
-  finally { btn.disabled = false; btn.textContent = original; }
-}
-
 // Backup/Restore both go through this instead of acting immediately - shows
 // both copies' timestamps side by side and lets the user pick a direction,
 // rather than silently overwriting whichever one they clicked. The confirm
@@ -4217,7 +4217,11 @@ document.getElementById('driveSyncUpdateLocal').addEventListener('click', async 
   const btn = document.getElementById('driveSyncUpdateLocal');
   btn.disabled = true;
   try {
-    const result = await importXlsxFromArrayBuffer(driveSyncCache.buf);
+    // warnIfOlder:false - this dialog already shows both timestamps side by
+    // side before this button is even enabled, so a second confirm() here
+    // would just be a redundant popup.
+    const result = await importXlsxFromArrayBuffer(driveSyncCache.buf, { warnIfOlder: false });
+    if (!result) { btn.disabled = false; return; }
     localStorage.setItem('or-drive-last-restore', new Date().toISOString());
     localStorage.removeItem('or-drive-last-backup');
     toast(t('toast.dataLoaded', { n: result.count }));
@@ -4406,8 +4410,8 @@ function renderTable() {
     <td class="exp-adv-field" hidden>${e.installments || 1}</td>
     <td>${escapeHtml(e.notes)}</td>
     <td class="actions-cell">
-      <button class="btn-edit" data-edit="${e.id}" aria-label="${t('expenses.editAria', { date: e.date })}">${t('expenses.editBtn')}</button>
-      <button class="btn-danger" data-del="${e.id}" aria-label="${t('expenses.deleteAria', { date: e.date })}">${t('expenses.deleteBtn')}</button>
+      <button class="btn-edit" data-edit="${e.id}" aria-label="${t('expenses.editAria', { date: fmtDate(e.date) })}">${t('expenses.editBtn')}</button>
+      <button class="btn-danger" data-del="${e.id}" aria-label="${t('expenses.deleteAria', { date: fmtDate(e.date) })}">${t('expenses.deleteBtn')}</button>
     </td>
   </tr>`).join('');
 }
@@ -4423,8 +4427,8 @@ function renderIncomeTable() {
     <td class="num">${fmt(e.amount)}</td>
     <td>${escapeHtml(e.notes)}</td>
     <td class="actions-cell">
-      <button class="btn-edit" data-edit="${e.id}" aria-label="${t('expenses.editAria', { date: e.date })}">${t('expenses.editBtn')}</button>
-      <button class="btn-danger" data-del="${e.id}" aria-label="${t('expenses.deleteAria', { date: e.date })}">${t('expenses.deleteBtn')}</button>
+      <button class="btn-edit" data-edit="${e.id}" aria-label="${t('expenses.editAria', { date: fmtDate(e.date) })}">${t('expenses.editBtn')}</button>
+      <button class="btn-danger" data-del="${e.id}" aria-label="${t('expenses.deleteAria', { date: fmtDate(e.date) })}">${t('expenses.deleteBtn')}</button>
     </td>
   </tr>`).join('');
 }
@@ -5124,6 +5128,8 @@ function openReportDialog() {
 function printReport() {
   if (!reportHtml) { toast(t('toast.generateFirst'), true); return; }
   document.getElementById('reportPrintArea').innerHTML = reportHtml;
+  document.getElementById('printTitle').textContent = lastReport ? t(lastReport.cfg.title) : t('report.title');
+  document.getElementById('printDate').textContent = fmtDate(new Date());
   document.body.classList.add('report-printing');
   window.addEventListener('afterprint', () => document.body.classList.remove('report-printing'), { once: true });
   window.print();
@@ -5672,6 +5678,7 @@ document.getElementById('fileInput').addEventListener('change', async ev => {
   if (!confirm(t('confirm.loadFromFile', { name: file.name }))) { ev.target.value = ''; return; }
   try {
     const r = await importXlsx(file);
+    if (!r) return; // user backed out at the "older backup" warning, or file wasn't a recognized backup
     toast(t('toast.dataLoaded', { n: r.count }));
     await refreshCurrent();
     loadFileInfo();
@@ -6222,7 +6229,7 @@ let currentTool = 'trip';
 const toolData = {};
 const toolCharts = {};
 const numFmt = n => Number(n).toLocaleString('he-IL', { maximumFractionDigits: 2 });
-const ymKey = dateStr => String(dateStr).slice(0, 7);
+const ymKey = dateYM; // dateYM (line ~3215) robustly re-derives "YYYY-MM" instead of trusting the string to already be zero-padded
 const ymLabel = key => { const [y, m] = key.split('-'); return (MONTH_NAMES[currentLang][Number(m) - 1] || '') + ' ' + y; };
 
 async function refreshCurrent() {
@@ -6639,8 +6646,8 @@ function fieldHTML(c) {
   const lettersOnly = c.lettersOnly ? ' data-letters-only="1"' : '';
   // Baked in directly (not left to the applyDateInputLocale() JS pass) so
   // there's no window where a freshly-rendered date/time field could ever
-  // show the visitor's own locale format instead of dd/mm/yyyy / 24h.
-  const dtLang = (c.type === 'date' || c.type === 'time') ? ' lang="he-IL"' : '';
+  // show the visitor's own locale format instead of dd/mm/yy / 24h.
+  const dtLang = (c.type === 'date' || c.type === 'time' || c.type === 'month') ? ' lang="he-IL"' : '';
   return `<label>${t(c.label)}<input type="${c.type}" data-f="${c.f}"${step}${dir}${req}${ph}${lettersOnly}${dtLang}></label>`;
 }
 // Strips digits as the user types, for name fields that should never contain a
@@ -7868,7 +7875,8 @@ function waUpdatePreview() {
   if (msg) {
     const timeSpan = document.createElement('span');
     timeSpan.className = 'wa-chat-time';
-    timeSpan.textContent = new Date().toLocaleTimeString(currentLang === 'he' ? 'he-IL' : currentLang, { hour: '2-digit', minute: '2-digit', hour12: false });
+    const now = new Date();
+    timeSpan.textContent = pad2(now.getHours()) + ':' + pad2(now.getMinutes());
     bubbleEl.appendChild(timeSpan);
   }
 }
@@ -7879,11 +7887,11 @@ function waUpdatePreview() {
 function waMissingMonthsForApartment(apt) {
   const now = new Date();
   const year = now.getFullYear();
-  const shortMonth = m => MONTH_NAMES[currentLang][Number(m.split('-')[1]) - 1];
+  const monthLabel = m => MONTH_NAMES[currentLang][Number(m.split('-')[1]) - 1];
   const missing = [];
   for (let mo = 1; mo <= now.getMonth() + 1; mo++) {
     const key = year + '-' + String(mo).padStart(2, '0');
-    if (!paidRecord(apt, key)) missing.push(shortMonth(key));
+    if (!paidRecord(apt, key)) missing.push(monthLabel(key));
   }
   return missing;
 }
@@ -8029,7 +8037,6 @@ function renderMatrix() {
   const apts = sortedApartments();
   const months = Array.from({ length: 12 }, (_, i) => vaadYear + '-' + String(i + 1).padStart(2, '0'));
   document.getElementById('vaad-year-label').textContent = vaadYear;
-  const shortMonth = m => MONTH_NAMES[currentLang][Number(m.split('-')[1]) - 1].slice(0, 3);
 
   const box = document.getElementById('vaad-matrix');
   if (!apts.length) {
@@ -8090,7 +8097,6 @@ function renderFixedMatrix() {
   const recs = toolData.vaadfixed || [];
   const months = Array.from({ length: 12 }, (_, i) => vaadFixedYear + '-' + String(i + 1).padStart(2, '0'));
   document.getElementById('vaadfixed-year-label').textContent = vaadFixedYear;
-  const shortMonth = m => MONTH_NAMES[currentLang][Number(m.split('-')[1]) - 1].slice(0, 3);
 
   const box = document.getElementById('vaadfixed-matrix');
   const yearRecs = recs.filter(r => dateYM(r.date).startsWith(vaadFixedYear + '-'));
@@ -8592,7 +8598,6 @@ function renderChugPay() {
   const members = chugFilteredMembers();
   const months = Array.from({ length: 12 }, (_, i) => chugPayYear + '-' + String(i + 1).padStart(2, '0'));
   document.getElementById('chugpay-year-label').textContent = chugPayYear;
-  const shortMonth = m => MONTH_NAMES[currentLang][Number(m.split('-')[1]) - 1].slice(0, 3);
   const box = document.getElementById('chugpay-matrix');
 
   if (!members.length) {
@@ -8675,7 +8680,7 @@ function renderDayStrip() {
       iso: cur.getFullYear() + '-' + pad2(cur.getMonth() + 1) + '-' + pad2(cur.getDate()),
       n: days.length + 1,
       wd: WEEKDAY_SHORT[currentLang][cur.getDay()],
-      dm: cur.getDate() + '.' + (cur.getMonth() + 1)
+      dm: pad2(cur.getDate()) + '/' + pad2(cur.getMonth() + 1)
     });
     cur.setDate(cur.getDate() + 1);
   }
@@ -9032,7 +9037,7 @@ function updateTripDayNotice() {
   let n = null;
   if (trip.from) n = Math.round((new Date(tripDay) - new Date(trip.from)) / 86400000) + 1;
   el.hidden = false;
-  const dayText = (n && n > 0 ? t('trip.dayStrip.dayN', { n }) + ' — ' : '') + fmtDate(tripDay, { weekday: 'long' });
+  const dayText = (n && n > 0 ? t('trip.dayStrip.dayN', { n }) + ' · ' : '') + fmtDate(tripDay, { weekday: 'long' });
   el.innerHTML = t('trip.dayNotice.showing', { day: dayText }) + `<button type="button" class="day-notice-clear" id="tripDayClear">${t('trip.dayNotice.showAllBtn')}</button>`;
   document.getElementById('tripDayClear').addEventListener('click', () => {
     tripDay = '';
@@ -10029,7 +10034,7 @@ function renderHours(id, cfg) {
 // made invisible (color:transparent) while keeping it fully functional -
 // typing, the calendar/clock picker, keyboard nav are untouched - and a
 // plain <span> overlay we build ourselves shows the value in guaranteed
-// dd/mm/yyyy / 24h format on top of it. The overlay is pointer-events:none
+// dd/mm/yy / 24h format on top of it. The overlay is pointer-events:none
 // so every click still reaches the native input underneath (opens the
 // picker etc.); on focus the native text becomes visible again so typing
 // isn't blind. A MutationObserver covers inputs added later too (dynamic
@@ -10048,10 +10053,17 @@ function upgradeDateTimeInput(input) {
   overlay.className = 'date-input-overlay';
   wrap.appendChild(overlay);
   const isDate = input.type === 'date';
-  const placeholder = isDate ? 'dd/mm/yyyy' : '--:--';
+  const isMonth = input.type === 'month';
+  const placeholder = isDate ? 'dd/mm/yy' : isMonth ? 'mm/yyyy' : '--:--';
+  const formatMonth = v => {
+    const [y, m] = v.split('-');
+    const name = MONTH_NAMES[currentLang][Number(m) - 1];
+    return name ? `${name} ${y}` : v;
+  };
   const update = () => {
     if (input.value) {
-      overlay.textContent = isDate ? fmtDate(input.value) : input.value; // time input's own value is already zero-padded 24h "HH:MM"
+      // time input's own value is already zero-padded 24h "HH:MM"
+      overlay.textContent = isDate ? fmtDate(input.value) : isMonth ? formatMonth(input.value) : input.value;
       overlay.classList.remove('is-placeholder');
     } else {
       overlay.textContent = placeholder;
@@ -10063,13 +10075,13 @@ function upgradeDateTimeInput(input) {
   update();
 }
 function upgradeAllDateTimeInputs(root) {
-  (root || document).querySelectorAll('input[type="date"]:not([data-dt-upgraded]), input[type="time"]:not([data-dt-upgraded])').forEach(upgradeDateTimeInput);
+  (root || document).querySelectorAll('input[type="date"]:not([data-dt-upgraded]), input[type="time"]:not([data-dt-upgraded]), input[type="month"]:not([data-dt-upgraded])').forEach(upgradeDateTimeInput);
 }
 upgradeAllDateTimeInputs();
 new MutationObserver(muts => {
   muts.forEach(m => m.addedNodes.forEach(node => {
     if (node.nodeType !== 1) return;
-    if (node.matches && node.matches('input[type="date"], input[type="time"]')) upgradeDateTimeInput(node);
+    if (node.matches && node.matches('input[type="date"], input[type="time"], input[type="month"]')) upgradeDateTimeInput(node);
     else if (node.querySelectorAll) upgradeAllDateTimeInputs(node);
   }));
 }).observe(document.body, { childList: true, subtree: true });

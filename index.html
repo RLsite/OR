@@ -3296,13 +3296,6 @@ const DEFAULT_DETAILS = [
   { category: 'חשמל', idLabel: ID_LABELS['חשמל'], idValue: '', frequency: 'חודשי', active: true, notes: '' },
   { category: 'גז', idLabel: ID_LABELS['גז'], idValue: '', frequency: 'חודשי', active: true, notes: '' }
 ];
-// The last 5 columns are only ever populated in "complex" mode (see TODO.md) -
-// old backup files without them still import fine (readRowPositional defaults
-// missing cells to '', and the import code below defaults installments/type).
-const EXP_COLS = ['field.id', 'field.date', 'field.year', 'field.month', 'field.category', 'field.amount', 'field.notes', 'expenses.adv.product', 'expenses.adv.location', 'expenses.adv.installments', 'expenses.adv.receipt', 'expenses.adv.type'];
-const DETAIL_COLS = ['field.category', 'field.idType', 'field.idNumber', 'expenses.paymentFrequency', 'field.active', 'field.notes'];
-const BUILDING_COLS = ['settings.building.city', 'settings.building.street', 'settings.building.no', 'settings.building.floors', 'settings.building.entrances', 'field.notes'];
-const WORKCAL_COLS = ['field.month', 'settings.hours.daysInMonth', 'field.firstSat', 'field.specialDays'];
 const BUGS_COLS = ['field.date', 'field.toolOrPage', 'field.description', 'field.browser'];
 // Enum-valued cell content that gets translated at export time and reverse-mapped back to the
 // stable Hebrew value at import time, same as header/sheet-name translation (never mutates storage).
@@ -3317,22 +3310,6 @@ function cellEnumLabel(v) { const m = cellEnumI18nKey(); return m[v] ? t(m[v]) :
 const BUILDING_SYSTEMS_ALL = ['מעלית', 'משאבת מים', 'מערכת סולארית', 'מערכת חשמל ראשית', 'גנרטור', 'מערכת גילוי וכיבוי אש', 'אבטחה ואינטרקום', 'מערכת אוורור ומיזוג', 'מערכת תאורה', 'מערכת ביוב וניקוז', 'הדברה'];
 // Record collections (mirror of the former server sheets)
 const REC = {
-  pettycash: { sheetKey: 'sheet.pettycash', colKeys: ['field.id', 'field.date', 'field.type', 'field.description', 'field.amount'], fields: ['id', 'date', 'type', 'description', 'amount'], numeric: ['amount'], enumFields: {} },
-  hours: { sheetKey: 'sheet.hours', colKeys: ['field.id', 'field.date', 'field.startTime', 'field.endTime', 'field.hoursRegular', 'field.hoursOvertime', 'field.hoursTotal', 'field.note'], fields: ['id', 'date', 'start', 'end', 'regular', 'overtime', 'total', 'note'], numeric: ['regular', 'overtime', 'total'], enumFields: {} },
-  vaad: { sheetKey: 'sheet.vaad', colKeys: ['field.id', 'field.date', 'field.type', 'vaad.descLabel', 'field.amount'], fields: ['id', 'date', 'type', 'description', 'amount'], numeric: ['amount'], enumFields: {} },
-  residents: { sheetKey: 'sheet.residents', colKeys: ['field.id', 'field.apartment', 'field.entrance', 'field.floor', 'field.size', 'field.duesPlain', 'field.residentName', 'field.phone', 'field.residentName2', 'field.phone2', 'field.rented', 'field.ownerName', 'field.ownerPhone', 'field.notes'], fields: ['id', 'apartment', 'entrance', 'floor', 'size', 'dues', 'name', 'phone', 'name2', 'phone2', 'rented', 'ownerName', 'ownerPhone', 'notes'], numeric: ['dues'], enumFields: { rented: true } },
-  tickets: { sheetKey: 'sheet.tickets', colKeys: ['field.id', 'field.date', 'field.reporter', 'field.location', 'field.description', 'field.priority', 'field.status'], fields: ['id', 'date', 'reporter', 'location', 'description', 'priority', 'status'], numeric: [], enumFields: { priority: true, status: true } },
-  pros: { sheetKey: 'sheet.pros', colKeys: ['field.id', 'field.name', 'field.profession', 'field.phone', 'field.notes'], fields: ['id', 'name', 'profession', 'phone', 'notes'], numeric: [], enumFields: {} },
-  vaadpay: { sheetKey: 'sheet.vaadpay', colKeys: ['field.id', 'field.apartment', 'field.month', 'field.paid', 'field.amount', 'field.paidDate'], fields: ['id', 'apartment', 'month', 'paid', 'amount', 'paidDate'], numeric: ['amount'], enumFields: { paid: true } },
-  vaadfixed: { sheetKey: 'sheet.vaadfixed', colKeys: ['field.id', 'field.date', 'field.category', 'field.vendor', 'field.amountILS', 'expenses.paymentFrequency', 'field.notes'], fields: ['id', 'date', 'category', 'vendor', 'amount', 'frequency', 'notes'], numeric: ['amount'], enumFields: { category: true, frequency: true } },
-  expfixed: { sheetKey: 'sheet.expfixed', colKeys: ['field.id', 'expenses.sub.name', 'field.category', 'field.amountILS', 'expenses.paymentFrequency', 'expenses.sub.nextDue', 'expenses.sub.endDate', 'field.notes'], fields: ['id', 'name', 'category', 'amount', 'frequency', 'date', 'endDate', 'notes'], numeric: ['amount'], enumFields: { category: true, frequency: true } },
-  buildingsys: { sheetKey: 'sheet.buildingsys', colKeys: ['field.id', 'field.date', 'field.system', 'field.description', 'field.costILS', 'expenses.paymentFrequency', 'field.serviceDate', 'field.nextServiceDate', 'field.warrantyExpiry', 'field.insuranceExpiry', 'field.notes'], fields: ['id', 'date', 'system', 'description', 'cost', 'frequency', 'serviceDate', 'nextServiceDate', 'warrantyExpiry', 'insuranceExpiry', 'notes'], numeric: ['cost'], enumFields: { system: true, frequency: true } },
-  chug: { sheetKey: 'sheet.chug', colKeys: ['field.id', 'field.date', 'field.type', 'field.description', 'field.amount'], fields: ['id', 'date', 'type', 'description', 'amount'], numeric: ['amount'], enumFields: {} },
-  members: { sheetKey: 'sheet.members', colKeys: ['field.id', 'field.name', 'field.group', 'field.birthdate', 'field.phone', 'field.parentName', 'field.parentPhone', 'field.memberFeeILS', 'field.notes'], fields: ['id', 'name', 'group', 'birthdate', 'phone', 'parentName', 'parentPhone', 'fee', 'notes'], numeric: ['fee'], enumFields: {} },
-  guides: { sheetKey: 'sheet.guides', colKeys: ['field.id', 'field.name', 'field.group', 'field.phone', 'field.notes'], fields: ['id', 'name', 'group', 'phone', 'notes'], numeric: [], enumFields: {} },
-  attendance: { sheetKey: 'sheet.attendance', colKeys: ['field.id', 'field.memberTh', 'field.meetingDate', 'field.present'], fields: ['id', 'member', 'date', 'present'], numeric: [], enumFields: { present: true } },
-  equipment: { sheetKey: 'sheet.equipment', colKeys: ['field.id', 'field.item', 'field.qty', 'field.condition', 'field.notes'], fields: ['id', 'item', 'qty', 'condition', 'notes'], numeric: ['qty'], enumFields: { condition: true } },
-  chugpay: { sheetKey: 'sheet.chugpay', colKeys: ['field.id', 'field.memberTh', 'field.month', 'field.paid', 'field.amount', 'field.paidDate'], fields: ['id', 'member', 'month', 'paid', 'amount', 'paidDate'], numeric: ['amount'], enumFields: { paid: true } },
   // ---- Trip / vacation planning (inspired by Wanderlog & TripIt) ----
   flights: { sheetKey: 'sheet.flights', colKeys: ['field.id', 'field.date', 'field.flightNo', 'field.from', 'field.to', 'field.departure', 'field.arrival', 'field.reference', 'field.costTh', 'field.notes'], fields: ['id', 'date', 'flight', 'from', 'to', 'dep', 'arr', 'ref', 'cost', 'notes'], numeric: ['cost'], enumFields: {} },
   hotels: { sheetKey: 'sheet.hotels', colKeys: ['field.id', 'field.hotelName', 'field.address', 'field.coords', 'field.checkin', 'field.checkout', 'field.reference', 'field.costTh', 'field.notes'], fields: ['id', 'name', 'address', 'coords', 'checkin', 'checkout', 'ref', 'cost', 'notes'], numeric: ['cost'], enumFields: {} },
@@ -3340,31 +3317,16 @@ const REC = {
   cars: { sheetKey: 'sheet.cars', colKeys: ['field.id', 'field.carCompany', 'field.carType', 'field.pickupLoc', 'field.pickupDate', 'field.returnLoc', 'field.returnDate', 'field.reference', 'field.costTh', 'field.notes'], fields: ['id', 'company', 'cartype', 'pickupLoc', 'pickupDate', 'returnLoc', 'returnDate', 'ref', 'cost', 'notes'], numeric: ['cost'], enumFields: {} },
   itinerary: { sheetKey: 'sheet.itinerary', colKeys: ['field.id', 'field.date', 'field.time', 'field.category', 'field.name', 'field.address', 'field.coords', 'field.costTh', 'field.notes'], fields: ['id', 'date', 'time', 'category', 'name', 'address', 'coords', 'cost', 'notes'], numeric: ['cost'], enumFields: { category: true } },
   tripexp: { sheetKey: 'sheet.tripexp', colKeys: ['field.id', 'field.date', 'field.category', 'field.description', 'field.amount'], fields: ['id', 'date', 'category', 'description', 'amount'], numeric: ['amount'], enumFields: { category: true } },
-  triplinks: { sheetKey: 'sheet.triplinks', colKeys: ['field.id', 'field.name', 'field.url', 'field.description', 'field.image'], fields: ['id', 'name', 'url', 'description', 'image'], numeric: [], enumFields: {} },
-  // ---- Project management ----
-  projlist: { sheetKey: 'sheet.projlist', colKeys: ['field.id', 'field.name', 'field.description', 'field.status', 'field.projStart', 'field.projDue', 'field.budgetILS', 'field.parentProject'], fields: ['id', 'name', 'description', 'status', 'startDate', 'dueDate', 'budget', 'parentId'], numeric: ['budget'], enumFields: { status: true } },
-  projtasks: { sheetKey: 'sheet.projtasks', colKeys: ['field.id', 'field.taskName', 'field.projectRef', 'field.assignee', 'field.dueDate', 'field.priority', 'field.status', 'field.notes'], fields: ['id', 'name', 'project', 'assignee', 'dueDate', 'priority', 'status', 'notes'], numeric: [], enumFields: { priority: true, status: true } },
-  projexp: { sheetKey: 'sheet.projexp', colKeys: ['field.id', 'field.date', 'field.projectRef', 'field.description', 'field.amount'], fields: ['id', 'date', 'project', 'description', 'amount'], numeric: ['amount'], enumFields: {} },
-  projcontacts: { sheetKey: 'sheet.projcontacts', colKeys: ['field.id', 'field.name', 'field.contactRole', 'field.projectRef', 'field.phone', 'field.notes'], fields: ['id', 'name', 'role', 'project', 'phone', 'notes'], numeric: [], enumFields: {} }
+  triplinks: { sheetKey: 'sheet.triplinks', colKeys: ['field.id', 'field.name', 'field.url', 'field.description', 'field.image'], fields: ['id', 'name', 'url', 'description', 'image'], numeric: [], enumFields: {} }
 };
 
 function loadDB() {
   let s = null;
   try { s = JSON.parse(localStorage.getItem(STORE_KEY)); } catch (e) { /* corrupt */ }
   s = s || {};
-  s.expenses = s.expenses || [];
-  s.details = s.details || DEFAULT_DETAILS.map(d => ({ ...d }));
   s.records = s.records || {};
-  s.building = s.building || { city: '', street: '', buildingNo: '', floors: '', entrances: '', notes: '' };
-  s.workcal = s.workcal || [];
   s.bugs = s.bugs || [];
-  s.groups = s.groups || [];        // club layers/groups, managed in Settings
   s.trip = s.trip || { destination: '', from: '', to: '', travelers: '', budget: '', insCompany: '', insPolicy: '', insPhone: '', notes: '' };
-  s.buildingSystems = s.buildingSystems || ['מעלית'];
-  if (s.records && s.records.elevator && !s.records.buildingsys) {
-    s.records.buildingsys = s.records.elevator.map(r => ({ ...r, system: r.system || 'מעלית' }));
-    delete s.records.elevator;
-  }
   s.savedAt = s.savedAt || null;
   return s;
 }
@@ -3380,65 +3342,6 @@ async function api(url, opts) {
   body = body || {};
   const u = url.split('?')[0];
   const s = loadDB();
-
-  // --- expenses ---
-  if (u === '/api/expenses') {
-    if (method === 'GET') return s.expenses;
-    if (method === 'POST') {
-      if (!body.date || !body.category || body.amount === '' || body.amount == null) throw new Error(t('err.requiredExpenseFields'));
-      const d = new Date(body.date);
-      const e = {
-        id: nextId(s.expenses), date: body.date, year: d.getFullYear(), month: d.getMonth() + 1, category: body.category, amount: Number(body.amount) || 0, notes: body.notes || '',
-        product: body.product || '', location: body.location || '', installments: Number(body.installments) || 1, receipt: body.receipt || '',
-        type: body.type === 'income' ? 'income' : 'expense'
-      };
-      s.expenses.push(e); saveDB(s); return e;
-    }
-  }
-  const em = u.match(/^\/api\/expenses\/(\d+)$/);
-  if (em) {
-    const id = Number(em[1]); const idx = s.expenses.findIndex(e => Number(e.id) === id);
-    if (idx === -1) throw new Error(t('err.recordNotFound'));
-    if (method === 'PUT') {
-      const d = new Date(body.date || s.expenses[idx].date);
-      s.expenses[idx] = {
-        ...s.expenses[idx], date: body.date || s.expenses[idx].date, year: d.getFullYear(), month: d.getMonth() + 1, category: body.category || s.expenses[idx].category, amount: body.amount !== undefined ? Number(body.amount) : s.expenses[idx].amount, notes: body.notes !== undefined ? body.notes : s.expenses[idx].notes,
-        product: body.product !== undefined ? body.product : s.expenses[idx].product, location: body.location !== undefined ? body.location : s.expenses[idx].location,
-        installments: body.installments !== undefined ? Number(body.installments) || 1 : s.expenses[idx].installments,
-        receipt: body.receipt !== undefined ? body.receipt : s.expenses[idx].receipt,
-        type: body.type !== undefined ? (body.type === 'income' ? 'income' : 'expense') : s.expenses[idx].type
-      };
-      saveDB(s); return s.expenses[idx];
-    }
-    if (method === 'DELETE') { s.expenses.splice(idx, 1); saveDB(s); return { ok: true }; }
-  }
-
-  // --- account details ---
-  if (u === '/api/details') {
-    if (method === 'GET') return s.details;
-    if (method === 'PUT') {
-      s.details = s.details.map(d => {
-        const upd = (body || []).find(i => i.category === d.category);
-        if (!upd) return d;
-        return { category: d.category, idLabel: ID_LABELS[d.category] || d.idLabel, idValue: upd.idValue !== undefined ? String(upd.idValue) : d.idValue, frequency: upd.frequency || d.frequency, active: upd.active !== undefined ? Boolean(upd.active) : d.active, notes: upd.notes !== undefined ? upd.notes : d.notes };
-      });
-      // Payload entries with a category not already in s.details are new
-      // custom accounts (see the "add category" control in Settings).
-      (body || []).forEach(upd => {
-        if (!upd.category || !String(upd.category).trim()) return;
-        if (s.details.some(d => d.category === upd.category)) return;
-        s.details.push({ category: upd.category, idLabel: ID_LABELS[upd.category] || '', idValue: upd.idValue !== undefined ? String(upd.idValue) : '', frequency: upd.frequency || 'חודשי', active: upd.active !== undefined ? Boolean(upd.active) : true, notes: upd.notes || '' });
-      });
-      saveDB(s); return s.details;
-    }
-  }
-  const dtm = u.match(/^\/api\/details\/([^\/]+)$/);
-  if (dtm && method === 'DELETE') {
-    const cat = decodeURIComponent(dtm[1]);
-    if (DEFAULT_DETAILS.some(d => d.category === cat)) throw new Error(t('err.cannotDeleteBuiltinCategory'));
-    s.details = s.details.filter(d => d.category !== cat);
-    saveDB(s); return s.details;
-  }
 
   // --- generic records ---
   const rm = u.match(/^\/api\/records\/([^\/]+)$/);
@@ -3468,51 +3371,12 @@ async function api(url, opts) {
     if (method === 'DELETE') { s.records[tool].splice(idx, 1); saveDB(s); return { ok: true }; }
   }
 
-  // --- building info ---
-  if (u === '/api/building') {
-    if (method === 'GET') return s.building;
-    if (method === 'PUT') { s.building = { city: body.city || '', street: body.street || '', buildingNo: body.buildingNo || '', floors: body.floors || '', entrances: body.entrances || '', notes: body.notes || '' }; saveDB(s); return s.building; }
-  }
-
-  // --- work calendar ---
-  if (u === '/api/workcal') {
-    if (method === 'GET') return s.workcal;
-    if (method === 'PUT') {
-      if (!body.month) throw new Error(t('err.missingMonth'));
-      const marks = {}; Object.entries(body.marks || {}).forEach(([d, v]) => { if (v && v !== 'רגיל') marks[d] = v; });
-      const row = { month: body.month, days: Number(body.days) || 31, firstSaturday: Number(body.firstSaturday) || 0, marks };
-      const i = s.workcal.findIndex(m => m.month === body.month);
-      if (i === -1) s.workcal.push(row); else s.workcal[i] = row;
-      saveDB(s); return s.workcal;
-    }
-  }
-
   // --- trip details (destination, dates, travelers, budget, insurance) ---
   if (u === '/api/trip') {
     if (method === 'GET') return s.trip;
     if (method === 'PUT') {
       s.trip = { destination: body.destination || '', from: body.from || '', to: body.to || '', travelers: body.travelers || '', budget: body.budget || '', insCompany: body.insCompany || '', insPolicy: body.insPolicy || '', insPhone: body.insPhone || '', notes: body.notes || '' };
       saveDB(s); return s.trip;
-    }
-  }
-
-  // --- club groups/layers (managed in Settings) ---
-  if (u === '/api/groups') {
-    if (method === 'GET') return s.groups;
-    if (method === 'PUT') {
-      const list = Array.isArray(body) ? body : [];
-      s.groups = [...new Set(list.map(g => String(g).trim()).filter(Boolean))];
-      saveDB(s); return s.groups;
-    }
-  }
-
-  // --- building systems enabled for tracking (managed in Settings) ---
-  if (u === '/api/buildingsystems') {
-    if (method === 'GET') return s.buildingSystems;
-    if (method === 'PUT') {
-      const list = Array.isArray(body) ? body : [];
-      s.buildingSystems = BUILDING_SYSTEMS_ALL.filter(sys => list.includes(sys));
-      saveDB(s); return s.buildingSystems;
     }
   }
 
@@ -3525,7 +3389,8 @@ async function api(url, opts) {
 
   // --- storage info / management ---
   if (u === '/api/info') {
-    return { fileName: t('storage.browserLabel'), storage: 'browser', exists: true, size: (localStorage.getItem(STORE_KEY) || '').length, modified: s.savedAt, count: s.expenses.length };
+    const count = Object.values(s.records).reduce((sum, arr) => sum + ((arr && arr.length) || 0), 0);
+    return { fileName: t('storage.browserLabel'), storage: 'browser', exists: true, size: (localStorage.getItem(STORE_KEY) || '').length, modified: s.savedAt, count };
   }
   if (u === '/api/config') return { file: t('storage.savedInBrowser'), storage: 'browser', configured: true, exists: true };
   if (u === '/api/new' && method === 'POST') { localStorage.removeItem(STORE_KEY); return { ok: true }; }
@@ -3583,7 +3448,6 @@ function repairImportedDates() {
       if (parsed) { rec[field] = xlsxDateToISO(parsed.y, parsed.m, parsed.d); changed = true; }
     }
   };
-  s.expenses.forEach(r => fixField(r, 'date'));
   Object.keys(s.records).forEach(id => {
     const fields = dateFieldsForRecordType(id);
     (s.records[id] || []).forEach(r => fields.forEach(f => fixField(r, f)));
@@ -3614,17 +3478,10 @@ function buildWorkbook() {
   const s = loadDB();
   const wb = XLSX.utils.book_new();
   const add = (nameKey, colKeys, rows) => { const ws = XLSX.utils.aoa_to_sheet([colKeys.map(k => t(k)), ...rows]); XLSX.utils.book_append_sheet(wb, ws, t(nameKey)); };
-  add('sheet.expenses', EXP_COLS, s.expenses.map(e => [e.id, e.date, e.year, e.month, catLabel(e.category), e.amount, e.notes,
-    e.product || '', e.location || '', e.installments || 1, e.receipt || '', e.type === 'income' ? t('vaad.typeIn') : t('ledger.expenseWord')]));
-  add('sheet.accountDetails', DETAIL_COLS, s.details.map(d => [catLabel(d.category), idLabelText(d.idLabel), d.idValue, freqLabel(d.frequency), d.active === false ? t('opt.no') : t('opt.yes'), d.notes]));
   Object.entries(REC).forEach(([tool, rec]) => {
     const rows = (s.records[tool] || []).map(r => rec.fields.map(f => rec.enumFields[f] ? cellEnumLabel(r[f]) : r[f]));
     if (rows.length) add(rec.sheetKey, rec.colKeys, rows);
   });
-  add('sheet.building', BUILDING_COLS, [[s.building.city, s.building.street, s.building.buildingNo, s.building.floors, s.building.entrances, s.building.notes]]);
-  add('sheet.workcal', WORKCAL_COLS, s.workcal.map(m => [m.month, m.days, m.firstSaturday, Object.entries(m.marks || {}).map(([d, v]) => `${d}=${v}`).join(';')]));
-  if (s.groups.length) add('sheet.groups', ['field.groupName'], s.groups.map(g => [g]));
-  if (s.buildingSystems.length) add('sheet.buildingSystemsList', ['field.systemName'], s.buildingSystems.map(sys => [optLabel(sys)]));
   add('sheet.trip', ['settings.trip.dest', 'field.dateFrom', 'field.dateTo', 'field.travelersCount', 'field.budgetPlain', 'settings.trip.insCompany', 'settings.trip.insPolicy', 'field.insPhonePlain', 'field.notes'],
     [[s.trip.destination, s.trip.from, s.trip.to, s.trip.travelers, s.trip.budget, s.trip.insCompany, s.trip.insPolicy, s.trip.insPhone, s.trip.notes]]);
   if (s.bugs.length) add('sheet.bugs', BUGS_COLS, s.bugs);
@@ -3659,25 +3516,10 @@ async function importXlsxFromArrayBuffer(buf, opts) {
   // NEVER wipe the DB for a workbook that isn't an Or backup at all - importing
   // a stray/foreign xlsx would otherwise silently clear every record and report
   // the harmless-looking "0 loaded". Abort before any mutation.
-  const KNOWN_SHEET_KEYS = ['sheet.meta', 'sheet.expenses', 'sheet.accountDetails', 'sheet.building', 'sheet.workcal', 'sheet.groups', 'sheet.buildingSystemsList', 'sheet.trip', 'sheet.bugs', ...Object.values(REC).map(rec => rec.sheetKey)];
+  const KNOWN_SHEET_KEYS = ['sheet.meta', 'sheet.trip', 'sheet.bugs', ...Object.values(REC).map(rec => rec.sheetKey)];
   if (!KNOWN_SHEET_KEYS.some(k => findSheetName(wb, k))) { toast(t('err.notAnOrBackup'), true); return null; }
   const s = loadDB();
   const priorSavedAt = s.savedAt; // captured before any field below is overwritten
-  s.expenses = readSheetByKey('sheet.expenses').map(r => {
-    const v = readRowPositional(r, EXP_COLS);
-    return {
-      id: v[0], date: v[1], year: v[2], month: v[3], category: reverseCellEnum(v[4]), amount: Number(v[5]) || 0, notes: v[6] || '',
-      product: v[7] || '', location: v[8] || '', installments: Number(v[9]) || 1, receipt: v[10] || '',
-      type: reverseCellEnum(v[11]) === 'הכנסה' ? 'income' : 'expense'
-    };
-  }).filter(r => r.id !== '' && r.id != null);
-  const det = readSheetByKey('sheet.accountDetails');
-  if (det.length) s.details = DEFAULT_DETAILS.map(d => {
-    const r = det.find(x => reverseCellEnum(readRowPositional(x, DETAIL_COLS)[0]) === d.category);
-    if (!r) return { ...d };
-    const v = readRowPositional(r, DETAIL_COLS);
-    return { category: d.category, idLabel: ID_LABELS[d.category] || d.idLabel, idValue: String(v[2] ?? ''), frequency: reverseCellEnum(v[3]) || d.frequency, active: reverseCellEnum(v[4]) !== 'לא', notes: v[5] || '' };
-  });
   s.records = {};
   Object.entries(REC).forEach(([tool, rec]) => {
     const rows = readSheetByKey(rec.sheetKey);
@@ -3688,15 +3530,6 @@ async function importXlsxFromArrayBuffer(buf, opts) {
       return o;
     }).filter(r => r.id !== '' && r.id != null);
   });
-  const bRow = readSheetByKey('sheet.building')[0];
-  if (bRow) { const v = readRowPositional(bRow, BUILDING_COLS); s.building = { city: v[0] || '', street: v[1] || '', buildingNo: String(v[2] ?? ''), floors: String(v[3] ?? ''), entrances: String(v[4] ?? ''), notes: v[5] || '' }; }
-  s.workcal = readSheetByKey('sheet.workcal').map(r => readRowPositional(r, WORKCAL_COLS)).filter(v => v[0]).map(v => {
-    const marks = {}; String(v[3] || '').split(';').forEach(p => { const [d, mv] = p.split('='); if (d && mv) marks[d.trim()] = mv.trim(); });
-    return { month: v[0], days: Number(v[1]) || 31, firstSaturday: Number(v[2]) || 0, marks };
-  });
-  s.groups = readSheetByKey('sheet.groups').map(r => String(readRowPositional(r, ['field.groupName'])[0] || '').trim()).filter(Boolean);
-  const sysRows = readSheetByKey('sheet.buildingSystemsList').map(r => reverseCellEnum(String(readRowPositional(r, ['field.systemName'])[0] || '').trim())).filter(sys => BUILDING_SYSTEMS_ALL.includes(sys));
-  s.buildingSystems = sysRows.length ? sysRows : BUILDING_SYSTEMS_ALL.slice();
   const tripRow = readSheetByKey('sheet.trip')[0];
   if (tripRow) {
     const tripColKeys = ['settings.trip.dest', 'field.dateFrom', 'field.dateTo', 'field.travelersCount', 'field.budgetPlain', 'settings.trip.insCompany', 'settings.trip.insPolicy', 'field.insPhonePlain', 'field.notes'];
@@ -3724,7 +3557,7 @@ async function importXlsxFromArrayBuffer(buf, opts) {
     if (v[0]) localStorage.setItem('or-last-import-version', String(v[0]));
     if (v[1]) localStorage.setItem('or-last-import-date', String(v[1]));
   }
-  return { count: s.expenses.length };
+  return { count: Object.values(s.records).reduce((sum, arr) => sum + ((arr && arr.length) || 0), 0) };
 }
 
 // ===== Google Drive backup (Google Identity Services token client + Drive REST API v3) =====

@@ -6273,7 +6273,6 @@ function showTool(id) {
   if (TOOL_ICONS[id]) document.querySelector('#homeBtn svg').innerHTML = TOOL_ICONS[id];
   document.querySelectorAll('.tool-item').forEach(b => b.classList.toggle('active', b.dataset.tool === id));
   closeMenu();
-  if (location.hash.slice(1) !== id) history.replaceState(null, '', '#' + id);
   if (id === 'expenses') load();
   else loadTool(id);
 }

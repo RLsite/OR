@@ -1531,7 +1531,7 @@ applyLang(localStorage.getItem('or-lang') || 'he', false);
 // ===================== Client-side data layer (runs fully in the browser) =====================
 // Data lives in localStorage; Excel import/export via SheetJS. No server needed — works on GitHub Pages.
 // (In the future a cloud backend such as Google Drive can replace loadDB/saveDB.)
-const APP_VERSION = '1.22.0';
+const APP_VERSION = '1.22.1';
 const APP_BUILT_AT = 'dev'; // replaced by build.js with the deploy timestamp — lets a running page detect it's stale
 const STORE_KEY = 'or-store-v1';
 const BUGS_COLS = ['field.date', 'field.toolOrPage', 'field.description', 'field.browser'];
@@ -2499,7 +2499,13 @@ async function checkForUpdate(explicit) {
       if (!sessionStorage.getItem('or-auto-reloaded')) {
         sessionStorage.setItem('or-auto-reloaded', '1');
         toast(t('toast.updateFound', { v: data.version }));
-        setTimeout(() => window.location.reload(), 1800);
+        // A plain reload() can be served stale straight from Cloudflare's edge
+        // cache (seen live: cache-control was max-age=0/must-revalidate yet
+        // cf-cache-status still came back HIT) - the same cache-busting query
+        // string checkVersionBtn's handler already uses below is required here
+        // too, or the reload just re-shows the same stale page and this
+        // one-shot guard then blocks any further attempt for the rest of the session.
+        setTimeout(() => { location.href = location.pathname + '?_=' + Date.now(); }, 1800);
       } else if (explicit) {
         toast(t('toast.updateFound', { v: data.version }));
       }

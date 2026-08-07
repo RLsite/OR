@@ -979,41 +979,20 @@ const fmt = n => '₪' + Number(n).toLocaleString('he-IL', { minimumFractionDigi
 let currentLang = 'he';
 const LANG_ORDER = ['he', 'en', 'ru', 'ar'];
 const I18N = {
-  'lang.code.he': { he: 'עב', en: 'עב', ru: 'עב' , ar: 'עב' },
-  'lang.code.en': { he: 'EN', en: 'EN', ru: 'EN' , ar: 'EN' },
-  'lang.code.ru': { he: 'RU', en: 'RU', ru: 'RU' , ar: 'RU' },
   'lang.toggleAria': { he: 'שינוי שפה / Change language / Изменить язык', en: 'שינוי שפה / Change language / Изменить язык', ru: 'שינוי שפה / Change language / Изменить язык' , ar: 'שינוי שפה / Change language / Изменить язык / تغيير اللغة' },
-  'common.save': { he: 'שמירה', en: 'Save', ru: 'Сохранить' , ar: 'حفظ' },
   'common.cancel': { he: 'ביטול', en: 'Cancel', ru: 'Отмена' , ar: 'إلغاء' },
-  'common.edit': { he: 'עריכה', en: 'Edit', ru: 'Редактировать' , ar: 'تعديل' },
-  'common.delete': { he: 'מחיקה', en: 'Delete', ru: 'Удалить' , ar: 'حذف' },
   'common.actions': { he: 'פעולות', en: 'Actions', ru: 'Действия' , ar: 'إجراءات' },
   'common.all': { he: 'הכל', en: 'All', ru: 'Все' , ar: 'الكل' },
   'settings.title': { he: 'הגדרות', en: 'Settings', ru: 'Настройки' , ar: 'الإعدادات' },
   'help.title': { he: 'עזרה', en: 'Help', ru: 'Справка' , ar: 'مساعدة' },
-  'apt.infoTitle': { he: 'פרטי דירה', en: 'Apartment details', ru: 'Данные о квартире' , ar: 'تفاصيل الشقة' },
-  'tasks.subtasksTitle': { he: 'תת-משימות', en: 'Subtasks', ru: 'Подзадачи' , ar: 'المهام الفرعية' },
   'trip.date.pastError': { he: 'תאריך ההתחלה לא יכול להיות בעבר', en: 'Start date cannot be in the past', ru: 'Дата начала не может быть в прошлом' , ar: 'لا يمكن أن يكون تاريخ البدء في الماضي' },
   'trip.date.endBeforeStartError': { he: 'תאריך הסיום לפני תאריך ההתחלה', en: 'End date is before the start date', ru: 'Дата окончания раньше даты начала' , ar: 'تاريخ الانتهاء قبل تاريخ البدء' },
   'nav.chooseTool': { he: 'בחירת כלי', en: 'Choose a tool', ru: 'Выбрать инструмент' , ar: 'اختيار أداة' },
   'nav.toolsHeading': { he: 'כלים באתר', en: 'Tools', ru: 'Инструменты' , ar: 'الأدوات' },
   'nav.showAllTools': { he: 'הצג את כל הכלים', en: 'Show all tools', ru: 'Показать все инструменты', ar: 'عرض جميع الأدوات' },
   'nav.homeLink': { he: 'Or — דף הבית', en: 'Or — Home', ru: 'Or — Главная' , ar: 'Or — الصفحة الرئيسية' },
-  'tool.expenses.name': { he: 'ניהול הוצאות הבית', en: 'Home Expense Management', ru: 'Управление домашними расходами' , ar: 'إدارة مصروفات المنزل' },
-  'tool.expenses.desc': { he: 'ארנונה, מים, חשמל וגז', en: 'Property tax, water, electricity & gas', ru: 'Налог на недвижимость, вода, электричество и газ' , ar: 'الأرنونا، المياه، الكهرباء والغاز' },
-  'tool.pettycash.name': { he: 'ניהול קופה קטנה', en: 'Petty Cash Management', ru: 'Управление мелкой кассой' , ar: 'إدارة الصندوق الصغير' },
-  'tool.pettycash.desc': { he: 'הכנסות והוצאות קטנות', en: 'Small income & expenses', ru: 'Небольшие доходы и расходы' , ar: 'إيرادات ومصروفات صغيرة' },
-  'tool.vaad.name': { he: 'ניהול וועד בית', en: 'Building Committee', ru: 'Управление домовым комитетом' , ar: 'إدارة لجنة البناية' },
-  'tool.vaad.desc': { he: 'גבייה והוצאות הבניין', en: 'Collections & building expenses', ru: 'Сборы и расходы здания' , ar: 'التحصيل ومصروفات البناية' },
-  'tool.chug.name': { he: 'ניהול תנועה / חוג', en: 'Youth Group Management', ru: 'Управление кружком / движением' , ar: 'إدارة حركة / نادي' },
-  'tool.chug.desc': { he: 'חניכים, נוכחות וקופה', en: 'Members, attendance & cash', ru: 'Участники, посещаемость и касса' , ar: 'الأعضاء، الحضور والصندوق' },
   'tool.trip.name': { he: 'ניהול חופשה', en: 'Vacation Management', ru: 'Управление отпуском' , ar: 'إدارة الإجازة' },
   'tool.trip.desc': { he: 'מסלול, טיסות, מלונות ותקציב', en: 'Itinerary, flights, hotels & budget', ru: 'Маршрут, рейсы, отели и бюджет' , ar: 'المسار، الرحلات، الفنادق والميزانية' },
-  'tool.hours.name': { he: 'ניהול שעות עבודה', en: 'Work Hours Management', ru: 'Управление рабочими часами' , ar: 'إدارة ساعات العمل' },
-  'tool.hours.desc': { he: 'תיעוד שעות ותשלום', en: 'Hour tracking & pay', ru: 'Учёт часов и оплата' , ar: 'توثيق الساعات والدفع' },
-  'tool.projects.name': { he: 'ניהול פרויקטים', en: 'Project Management', ru: 'Управление проектами' , ar: 'إدارة المشاريع' },
-  'tool.projects.desc': { he: 'משימות, תקציב ומעקב פרויקטים', en: 'Tasks, budget & project tracking', ru: 'Задачи, бюджет и отслеживание проектов' , ar: 'مهام، ميزانية ومتابعة المشاريع' },
-  'tool.projects.short': { he: 'פרויקטים', en: 'Projects', ru: 'Проекты' , ar: 'مشاريع' },
   'header.reportCenter': { he: 'מרכז הדוחות', en: 'Report Center', ru: 'Центр отчётов' , ar: 'مركز التقارير' },
   'header.settings': { he: 'הגדרות — פרטי החשבונות', en: 'Settings — account details', ru: 'Настройки — данные счетов' , ar: 'الإعدادات — بيانات الحسابات' },
   'header.themeToggle': { he: 'החלפת עיצוב כהה / בהיר', en: 'Toggle dark / light theme', ru: 'Переключить тёмную / светлую тему' , ar: 'تبديل المظهر الداكن / الفاتح' },
@@ -1026,7 +1005,6 @@ const I18N = {
   'common.close': { he: 'סגור', en: 'Close', ru: 'Закрыть' , ar: 'إغلاق' },
   'field.date': { he: 'תאריך', en: 'Date', ru: 'Дата' , ar: 'تاريخ' },
   'field.category': { he: 'קטגוריה', en: 'Category', ru: 'Категория' , ar: 'فئة' },
-  'field.type': { he: 'סוג', en: 'Type', ru: 'Тип' , ar: 'نوع' },
   'field.amountILS': { he: 'סכום (₪)', en: 'Amount (₪)', ru: 'Сумма (₪)' , ar: 'مبلغ (₪)' },
   'field.notes': { he: 'הערות', en: 'Notes', ru: 'Примечания' , ar: 'ملاحظات' },
   'field.dateFrom': { he: 'מתאריך', en: 'From date', ru: 'С даты' , ar: 'من تاريخ' },
@@ -1054,12 +1032,6 @@ const I18N = {
   'settings.backupReminder.off': { he: 'בלי תזכורת', en: 'No reminder', ru: 'Без напоминания' , ar: 'بدون تذكير' },
   'settings.tabs.tool': { he: 'הגדרות הכלי', en: 'Tool settings', ru: 'Настройки инструмента' , ar: 'إعدادات الأداة' },
   'settings.tabs.more': { he: 'עוד', en: 'More', ru: 'Ещё' , ar: 'المزيد' },
-  'settings.tabs.waInfo': { he: 'שליחת הודעות WhatsApp', en: 'WhatsApp messages', ru: 'Сообщения WhatsApp', ar: 'رسائل واتساب' },
-  'settings.waInfo.heading': { he: 'איך המנוי לשליחת הודעות עובד', en: 'How the messaging subscription works', ru: 'Как работает подписка на сообщения', ar: 'كيف يعمل اشتراك الرسائل' },
-  'settings.waInfo.what': { he: 'תכונה בתשלום שמאפשרת לוועד הבית לשלוח הודעות WhatsApp (למשל תזכורות תשלום) ישירות לדיירים הרשומים בכלי "דיירים ודירות" — עד 2 הודעות בחודש לאותו דייר, בכפוף למכסה החודשית של המסלול שנבחר.', en: 'A paid feature that lets the building committee send WhatsApp messages (e.g. payment reminders) directly to residents registered in the "Residents & Apartments" tool - up to 2 messages a month per resident, subject to the chosen plan\'s monthly quota.', ru: 'Платная функция, позволяющая домовому комитету отправлять сообщения WhatsApp (например, напоминания об оплате) жильцам, зарегистрированным в инструменте "Жильцы и квартиры" - до 2 сообщений в месяц одному жильцу, в рамках месячной квоты выбранного тарифа.', ar: 'ميزة مدفوعة تتيح للجنة البناية إرسال رسائل واتساب (مثل تذكيرات الدفع) مباشرة للسكان المسجلين في أداة "السكان والشقق" - حتى رسالتين شهرياً لنفس الساكن، ضمن الحصة الشهرية للباقة المختارة.' },
-  'settings.waInfo.tiers': { he: 'שלושה מסלולים חודשיים, לפי מספר הדירות בבניין: עד 15 דירות — ₪50 (30 הודעות בחודש); 16–50 דירות — ₪100 (100 הודעות); 51–100 דירות — ₪150 (200 הודעות). ניתן לבחור מסלול זול יותר מהמומלץ, אך לא יקר פחות מהצורך.', en: 'Three monthly plans based on the building\'s apartment count: up to 15 apartments - ₪50 (30 messages/month); 16-50 - ₪100 (100 messages); 51-100 - ₪150 (200 messages). You may pick a cheaper plan than recommended, but not a lower one than actually needed.', ru: 'Три месячных тарифа в зависимости от числа квартир: до 15 — ₪50 (30 сообщений/мес); 16-50 — ₪100 (100 сообщений); 51-100 — ₪150 (200 сообщений). Можно выбрать более дешёвый тариф, чем рекомендованный, но не ниже реальной потребности.', ar: 'ثلاث باقات شهرية حسب عدد الشقق في البناية: حتى 15 شقة — 50₪ (30 رسالة/شهر)؛ 16-50 — 100₪ (100 رسالة)؛ 51-100 — 150₪ (200 رسالة). يمكن اختيار باقة أرخص من الموصى بها، لكن ليس أقل من الحاجة الفعلية.' },
-  'settings.waInfo.howToBuy': { he: 'כדי לרכוש: בטאב "שליחת הודעות" בכלי וועד בית — קוראים ומאשרים את הסכם השימוש, מזינים תעודת זהות, מתחברים עם חשבון Google, ובוחרים מסלול. התשלום מתבצע דרך PayPal.', en: 'To purchase: in the "Send messages" tab of the building committee tool - read and confirm the terms of use, enter an ID number, sign in with Google, and pick a plan. Payment is via PayPal.', ru: 'Чтобы оформить: на вкладке "Отправка сообщений" в инструменте домового комитета - прочитайте и подтвердите условия использования, введите номер удостоверения, войдите через Google и выберите тариф. Оплата через PayPal.', ar: 'للشراء: في تبويب "إرسال الرسائل" بأداة لجنة البناية — اقرأوا ووافقوا على شروط الاستخدام، أدخلوا رقم الهوية، سجّلوا الدخول عبر Google، واختاروا باقة. الدفع عبر PayPal.' },
-  'settings.waInfo.billing': { he: 'המנוי מחויב חודשית וממשיך אוטומטית עד לביטול. אפשר לבטל בכל עת דרך PayPal או דרך כפתור "ניתוק" בטאב שליחת ההודעות; הביטול נכנס לתוקף בסוף מחזור החיוב הנוכחי.', en: 'The subscription bills monthly and renews automatically until cancelled. You can cancel anytime via PayPal or the "Disconnect" button in the messages tab; cancellation takes effect at the end of the current billing period.', ru: 'Подписка списывается ежемесячно и продлевается автоматически до отмены. Отменить можно в любой момент через PayPal или кнопку "Отключить" на вкладке сообщений; отмена вступает в силу в конце текущего расчётного периода.', ar: 'يُحصّل الاشتراك شهرياً ويتجدد تلقائياً حتى الإلغاء. يمكن الإلغاء في أي وقت عبر PayPal أو زر "قطع الاتصال" في تبويب الرسائل؛ يسري الإلغاء في نهاية دورة الفوترة الحالية.' },
   'settings.tools.heading': { he: 'כלים פעילים באתר', en: 'Active tools', ru: 'Активные инструменты' , ar: 'الأدوات النشطة في الموقع' },
   'settings.tools.hint': { he: 'סמנו אילו כלים יופיעו בתפריט הבחירה. אפשר לבחור כמה שרוצים — אבל חייב להישאר לפחות כלי אחד פעיל.', en: 'Check which tools appear in the selection menu. Pick as many as you like — but at least one tool must stay active.', ru: 'Отметьте инструменты, которые появятся в меню выбора. Можно выбрать сколько угодно — но хотя бы один должен остаться активным.' , ar: 'حددوا الأدوات التي ستظهر في قائمة الاختيار. يمكن اختيار أي عدد — لكن يجب أن تبقى أداة واحدة على الأقل نشطة.' },
   'settings.data.heading': { he: 'הנתונים המקומיים', en: 'Local data', ru: 'Локальные данные' , ar: 'البيانات المحلية' },
@@ -1075,7 +1047,6 @@ const I18N = {
   'settings.data.checkVersionBtn': { he: 'רענן את הדפדפן', en: 'Refresh the browser', ru: 'Обновить браузер', ar: 'تحديث المتصفح' },
   'toast.clearingCache': { he: 'מנקים נתוני דפדפן ומרעננים...', en: 'Clearing browser data and refreshing...', ru: 'Очистка данных браузера и обновление...', ar: 'جارٍ مسح بيانات المتصفح والتحديث...' },
   'settings.data.hint1': { he: 'הנתונים נשמרים <strong>בדפדפן הזה</strong> (במכשיר הזה). <strong>ייצוא לאקסל</strong> מוריד קובץ גיבוי; <strong>ייבוא מאקסל</strong> טוען נתונים מקובץ גיבוי (למשל כדי להעביר למכשיר אחר). מומלץ לייצא גיבוי מדי פעם.', en: 'Data is saved <strong>in this browser</strong> (on this device). <strong>Export to Excel</strong> downloads a backup file; <strong>Import from Excel</strong> loads data from a backup file (e.g. to move to another device). It\'s recommended to export a backup now and then.', ru: 'Данные сохраняются <strong>в этом браузере</strong> (на этом устройстве). <strong>Экспорт в Excel</strong> скачивает резервный файл; <strong>Импорт из Excel</strong> загружает данные из резервного файла (например, для переноса на другое устройство). Рекомендуется периодически делать резервную копию.' , ar: 'يتم حفظ البيانات <strong>في هذا المتصفح</strong> (على هذا الجهاز). <strong>تصدير إلى إكسل</strong> يقوم بتنزيل ملف نسخة احتياطية؛ <strong>استيراد من إكسل</strong> يحمّل البيانات من ملف نسخة احتياطية (مثلاً للانتقال إلى جهاز آخر). يُنصح بتصدير نسخة احتياطية بين الحين والآخر.' },
-  'settings.data.hint2': { he: 'בקרוב: חיבור ל-Google Drive לשמירה וסנכרון אוטומטי בין מכשירים.', en: 'Coming soon: Google Drive connection for automatic save & sync across devices.', ru: 'Скоро: подключение к Google Drive для автоматического сохранения и синхронизации между устройствами.' , ar: 'قريباً: الاتصال بـ Google Drive للحفظ والمزامنة التلقائية بين الأجهزة.' },
   'drive.heading': { he: 'Google Drive', en: 'Google Drive', ru: 'Google Drive', ar: 'Google Drive' },
   'drive.notConnected': { he: 'לא מחובר ל-Google Drive', en: 'Not connected to Google Drive', ru: 'Нет подключения к Google Drive', ar: 'غير متصل بـ Google Drive' },
   'drive.connected': { he: 'מחובר כ-{email}', en: 'Connected as {email}', ru: 'Подключено как {email}', ar: 'متصل باسم {email}' },
@@ -1100,15 +1071,10 @@ const I18N = {
   'drive.scopeHint': { he: 'אור מקבל גישה רק לקובץ הגיבוי שהוא עצמו יוצר ב-Drive שלכם (לא לכל הקבצים שלכם).', en: 'Or only gets access to the backup file it creates in your Drive (not all of your files).', ru: 'Or получает доступ только к резервному файлу, который сам создаёт в вашем Drive (не ко всем вашим файлам).', ar: 'يحصل Or فقط على صلاحية الوصول إلى ملف النسخة الاحتياطية الذي ينشئه بنفسه في Drive الخاص بكم (وليس كل ملفاتكم).' },
   'drive.lastBackup': { he: 'גיבוי אחרון: {time}', en: 'Last backup: {time}', ru: 'Последняя резервная копия: {time}', ar: 'آخر نسخة احتياطية: {time}' },
   'drive.lastRestore': { he: 'שוחזר לאחרונה: {time}', en: 'Last restored: {time}', ru: 'Последнее восстановление: {time}', ar: 'آخر استعادة: {time}' },
-  'drive.backingUp': { he: 'מגבה ל-Drive...', en: 'Backing up to Drive...', ru: 'Резервное копирование в Drive...', ar: 'جارٍ النسخ الاحتياطي إلى Drive...' },
-  'drive.restoring': { he: 'משחזר מ-Drive...', en: 'Restoring from Drive...', ru: 'Восстановление из Drive...', ar: 'جارٍ الاستعادة من Drive...' },
   'drive.backupSuccess': { he: 'הגיבוי הועלה בהצלחה ל-Drive', en: 'Backup uploaded to Drive successfully', ru: 'Резервная копия успешно загружена в Drive', ar: 'تم رفع النسخة الاحتياطية إلى Drive بنجاح' },
-  'drive.restoreSuccess': { he: 'הנתונים שוחזרו בהצלחה מ-Drive', en: 'Data restored from Drive successfully', ru: 'Данные успешно восстановлены из Drive', ar: 'تمت استعادة البيانات من Drive بنجاح' },
   'drive.backupError': { he: 'שגיאה בגיבוי ל-Drive: {msg}', en: 'Error backing up to Drive: {msg}', ru: 'Ошибка резервного копирования в Drive: {msg}', ar: 'خطأ في النسخ الاحتياطي إلى Drive: {msg}' },
   'drive.restoreError': { he: 'שגיאה בשחזור מ-Drive: {msg}', en: 'Error restoring from Drive: {msg}', ru: 'Ошибка восстановления из Drive: {msg}', ar: 'خطأ في الاستعادة من Drive: {msg}' },
   'drive.notConfigured': { he: 'חיבור Google Drive עדיין לא הוגדר על ידי מפתח האתר.', en: 'Google Drive connection has not been configured by the site developer yet.', ru: 'Подключение Google Drive ещё не настроено разработчиком сайта.', ar: 'لم يتم تكوين الاتصال بـ Google Drive بعد من قبل مطور الموقع.' },
-  'drive.confirmRestore': { he: 'לשחזר נתונים מ-Drive? הנתונים הנוכחיים בדפדפן יוחלפו.', en: 'Restore data from Drive? The current data in this browser will be replaced.', ru: 'Восстановить данные из Drive? Текущие данные в этом браузере будут заменены.', ar: 'استعادة البيانات من Drive؟ سيتم استبدال البيانات الحالية في هذا المتصفح.' },
-  'drive.noBackupFound': { he: 'לא נמצא קובץ גיבוי ב-Drive. בצעו גיבוי קודם.', en: 'No backup file found in Drive. Back up first.', ru: 'Резервный файл в Drive не найден. Сначала выполните резервное копирование.', ar: 'لم يتم العثور على ملف نسخة احتياطية في Drive. قوموا بالنسخ الاحتياطي أولاً.' },
   'drive.connectError': { he: 'שגיאה בהתחברות ל-Google Drive: {msg}', en: 'Error connecting to Google Drive: {msg}', ru: 'Ошибка подключения к Google Drive: {msg}', ar: 'خطأ في الاتصال بـ Google Drive: {msg}' },
   'drive.uploadLocalBtn': { he: 'העלאת קובץ מקומי ל-Drive', en: 'Upload a local file to Drive', ru: 'Загрузить локальный файл в Drive', ar: 'رفع ملف محلي إلى Drive' },
   'drive.uploadLocalHint': { he: 'מעלה קובץ אקסל שבחרתם מהמחשב כקובץ חדש ב-Drive שלכם (בנוסף לקובץ הגיבוי הקבוע).', en: 'Uploads an Excel file you choose from your computer as a new file in your Drive (in addition to the fixed backup file).', ru: 'Загружает выбранный на компьютере файл Excel как новый файл в вашем Drive (в дополнение к постоянному файлу резервной копии).', ar: 'يرفع ملف إكسل تختارونه من جهازكم كملف جديد في Drive الخاص بكم (بالإضافة إلى ملف النسخة الاحتياطية الثابت).' },
@@ -1120,26 +1086,6 @@ const I18N = {
   'drive.filesLoadError': { he: 'שגיאה בטעינת רשימת הקבצים: {msg}', en: 'Error loading the file list: {msg}', ru: 'Ошибка загрузки списка файлов: {msg}', ar: 'خطأ في تحميل قائمة الملفات: {msg}' },
   'drive.restoreFromFileBtn': { he: 'שחזור מקובץ זה', en: 'Restore from this file', ru: 'Восстановить из этого файла', ar: 'استعادة من هذا الملف' },
   'drive.confirmRestoreFile': { he: 'לשחזר נתונים מ-"{name}"? הנתונים הנוכחיים בדפדפן יוחלפו.', en: 'Restore data from "{name}"? The current data in this browser will be replaced.', ru: 'Восстановить данные из «{name}»? Текущие данные в этом браузере будут заменены.', ar: 'استعادة البيانات من "{name}"؟ سيتم استبدال البيانات الحالية في هذا المتصفح.' },
-  'settings.account.heading': { he: 'פרטי החשבונות שלי', en: 'My account details', ru: 'Данные моих счетов' , ar: 'بيانات حساباتي' },
-  'settings.account.saveBtn': { he: 'שמור פרטים', en: 'Save details', ru: 'Сохранить данные' , ar: 'حفظ البيانات' },
-  'settings.account.hint': { he: 'ביטול "חשבון פעיל" מסתיר את הקטגוריה מהמסך הראשי — ההיסטוריה נשארת שמורה בקובץ האקסל.', en: 'Unchecking "active" hides the category from the main screen — history stays saved in the Excel file.', ru: 'Снятие отметки «активен» скрывает категорию с главного экрана — история остаётся сохранённой в файле Excel.' , ar: 'إلغاء تحديد "حساب نشط" يخفي الفئة من الشاشة الرئيسية — يبقى السجل التاريخي محفوظاً في ملف الإكسل.' },
-  'settings.account.addCategoryPh': { he: 'שם קטגוריה חדשה', en: 'New category name', ru: 'Название новой категории', ar: 'اسم فئة جديدة' },
-  'settings.account.addCategoryBtn': { he: 'הוספת קטגוריה', en: 'Add category', ru: 'Добавить категорию', ar: 'إضافة فئة' },
-  'settings.expenses.advancedLabel': { he: 'ניהול הוצאות בית מורכב', en: 'Complex household expense management', ru: 'Комплексное управление расходами домохозяйства', ar: 'إدارة مصروفات منزلية معقدة' },
-  'settings.building.heading': { he: 'פרטי הבניין', en: 'Building details', ru: 'Данные здания' , ar: 'بيانات البناية' },
-  'settings.building.city': { he: 'עיר', en: 'City', ru: 'Город' , ar: 'مدينة' },
-  'settings.building.cityPh': { he: 'למשל תל אביב', en: 'e.g. Tel Aviv', ru: 'например, Тель-Авив' , ar: 'مثال: تل أبيب' },
-  'settings.building.street': { he: 'רחוב', en: 'Street', ru: 'Улица' , ar: 'شارع' },
-  'settings.building.streetPh': { he: 'שם הרחוב', en: 'Street name', ru: 'Название улицы' , ar: 'اسم الشارع' },
-  'settings.building.no': { he: 'מספר בניין', en: 'Building number', ru: 'Номер здания' , ar: 'رقم البناية' },
-  'settings.building.floors': { he: 'מספר קומות', en: 'Number of floors', ru: 'Количество этажей' , ar: 'عدد الطوابق' },
-  'settings.building.entrances': { he: 'מספר כניסות', en: 'Number of entrances', ru: 'Количество подъездов' , ar: 'عدد المداخل' },
-  'settings.building.saveBtn': { he: 'שמור פרטי בניין', en: 'Save building details', ru: 'Сохранить данные здания' , ar: 'حفظ بيانات البناية' },
-  'settings.building.gotoResidents': { he: 'מידע על הדיירים ←', en: 'Resident info →', ru: 'Данные жильцов →' , ar: 'معلومات عن السكان ←' },
-  'settings.chug.heading': { he: 'שכבות / קבוצות', en: 'Grades / groups', ru: 'Классы / группы' , ar: 'الصفوف / المجموعات' },
-  'settings.chug.hint': { he: 'הגדירו כאן את שמות השכבות או הקבוצות של התנועה/החוג. שכבות שהוגדרו יופיעו בבורר במסך הראשי ובשדה "שכבה / קבוצה" של חניכים ומדריכים. אם לא הוגדרו שכבות — הבורר לא יוצג.', en: 'Define the group/grade names for the youth group here. Defined groups appear in the picker on the main screen and in the "grade / group" field for members and guides. If none are defined, the picker won\'t show.', ru: 'Задайте здесь названия классов или групп кружка/движения. Заданные группы появятся в селекторе на главном экране и в поле «класс / группа» участников и руководителей. Если группы не заданы — селектор не отобразится.' , ar: 'حددوا هنا أسماء الصفوف أو مجموعات الحركة/النادي. الصفوف المُعرَّفة ستظهر في المُنتقي في الشاشة الرئيسية وفي حقل "صف / مجموعة" للأعضاء والمرشدين. إذا لم تُعرَّف صفوف — لن يظهر المُنتقي.' },
-  'settings.chug.groupNamePh': { he: 'למשל: כיתה ד, שבט צופים, קבוצת בוגרים', en: 'e.g. Grade 4, Scout troop, Seniors group', ru: 'например: 4 класс, отряд скаутов, группа старших' , ar: 'مثال: الصف الرابع، فرقة كشافة، مجموعة كبار' },
-  'settings.chug.addGroupBtn': { he: 'הוסף שכבה', en: 'Add group', ru: 'Добавить группу' , ar: 'إضافة صف' },
   'settings.trip.heading': { he: 'פרטי הטיול', en: 'Trip details', ru: 'Данные поездки' , ar: 'بيانات الرحلة' },
   'settings.trip.dest': { he: 'יעד', en: 'Destination', ru: 'Направление' , ar: 'الوجهة' },
   'settings.trip.destPh': { he: 'למשל: לונדון, אנגליה', en: 'e.g. London, England', ru: 'например: Лондон, Англия' , ar: 'مثال: لندن، إنجلترا' },
@@ -1151,17 +1097,6 @@ const I18N = {
   'settings.trip.insPhone': { he: 'טלפון חירום של הביטוח', en: 'Insurance emergency phone', ru: 'Телефон экстренной связи страховой' , ar: 'هاتف الطوارئ للتأمين' },
   'settings.trip.notesPh': { he: 'דרכונים, ויזות, תרופות...', en: 'Passports, visas, medication...', ru: 'Паспорта, визы, лекарства...' , ar: 'جوازات السفر، التأشيرات، الأدوية...' },
   'settings.trip.saveBtn': { he: 'שמור פרטי טיול', en: 'Save trip details', ru: 'Сохранить данные поездки' , ar: 'حفظ بيانات الرحلة' },
-  'settings.hours.heading': { he: 'לוח עבודה חודשי', en: 'Monthly work calendar', ru: 'Ежемесячный рабочий календарь' , ar: 'جدول العمل الشهري' },
-  'settings.hours.month': { he: 'חודש', en: 'Month', ru: 'Месяц' , ar: 'شهر' },
-  'settings.hours.daysInMonth': { he: 'ימים בחודש', en: 'Days in month', ru: 'Дней в месяце' , ar: 'أيام الشهر' },
-  'settings.hours.firstSat': { he: 'שבת ראשונה (תאריך)', en: 'First Saturday (date)', ru: 'Первая суббота (число)' , ar: 'أول سبت (التاريخ)' },
-  'settings.hours.typeBarLabel': { he: 'סוג יום לסימון:', en: 'Day type to mark:', ru: 'Тип дня для отметки:' , ar: 'نوع اليوم للتحديد:' },
-  'settings.hours.typeRegular': { he: 'יום עבודה רגיל', en: 'Regular workday', ru: 'Обычный рабочий день' , ar: 'يوم عمل عادي' },
-  'settings.hours.typeSick': { he: 'חופש מחלה', en: 'Sick leave', ru: 'Больничный' , ar: 'إجازة مرضية' },
-  'settings.hours.applyBtn': { he: 'סמן ימים נבחרים', en: 'Mark selected days', ru: 'Отметить выбранные дни' , ar: 'تحديد الأيام المختارة' },
-  'settings.hours.clearSelBtn': { he: 'נקה בחירה', en: 'Clear selection', ru: 'Очистить выбор' , ar: 'مسح التحديد' },
-  'settings.hours.saveBtn': { he: 'שמור לוח', en: 'Save calendar', ru: 'Сохранить календарь' , ar: 'حفظ الجدول' },
-  'settings.hours.hint': { he: 'בחרו סוג יום למעלה (כפתורי בחירה), לחצו על יום אחד או כמה ימים כדי לבחור אותם, ואז "סמן ימים נבחרים" — כך מסמנים חופש/חג לכמה ימים במכה אחת. ימי שבת מסומנים אוטומטית לפי "שבת ראשונה".', en: 'Choose a day type above (radio buttons), click one or more days to select them, then "Mark selected days" — this marks vacation/holiday for several days at once. Saturdays are marked automatically based on "First Saturday".', ru: 'Выберите тип дня выше (переключатели), нажмите на один или несколько дней, чтобы выбрать их, затем «Отметить выбранные дни» — так можно отметить отпуск/праздник сразу для нескольких дней. Субботы отмечаются автоматически по «Первой субботе».' , ar: 'اختاروا نوع اليوم أعلاه (أزرار اختيار)، انقروا على يوم واحد أو عدة أيام لتحديدها، ثم "تحديد الأيام المختارة" — بهذه الطريقة يتم تحديد إجازة/عطلة لعدة أيام دفعة واحدة. أيام السبت تُحدَّد تلقائياً بناءً على "أول سبت".' },
   'settings.install.heading': { he: 'התקנה וקיצור דרך', en: 'Install & shortcut', ru: 'Установка и ярлык' , ar: 'التثبيت واختصار' },
   'settings.install.hint': { he: 'אפשר להוסיף את Or כאפליקציה — עם אייקון ושם — על שולחן העבודה במחשב או על מסך הבית בנייד.', en: 'You can add Or as an app — with an icon and name — to your computer desktop or your phone\'s home screen.', ru: 'Or можно добавить как приложение — с иконкой и названием — на рабочий стол компьютера или на главный экран телефона.' , ar: 'يمكن إضافة Or كتطبيق — بأيقونة واسم — على سطح مكتب الكمبيوتر أو على الشاشة الرئيسية للهاتف.' },
   'settings.install.installBtn': { he: 'הוסף את Or למסך', en: 'Add Or to screen', ru: 'Добавить Or на экран' , ar: 'إضافة Or إلى الشاشة' },
@@ -1171,7 +1106,6 @@ const I18N = {
   'settings.bug.descPh': { he: 'תארו מה קרה, מה ציפיתם שיקרה, ובאיזה כלי זה קרה', en: 'Describe what happened, what you expected, and in which tool', ru: 'Опишите, что произошло, что вы ожидали и в каком инструменте' , ar: 'صفوا ما حدث، وما توقعتم حدوثه، وفي أي أداة حدث ذلك' },
   'settings.bug.sendBtn': { he: 'שלח דיווח במייל', en: 'Send report by email', ru: 'Отправить по почте' , ar: 'إرسال البلاغ بالبريد الإلكتروني' },
   'settings.bug.hint': { he: 'הדיווח נפתח כהודעת מייל למפתח (עם הפרטים ממולאים) — יש ללחוץ "שלח" בתוכנת המייל.', en: 'The report opens as an email to the developer (pre-filled) — click "send" in your mail app.', ru: 'Отчёт откроется как письмо разработчику (с заполненными данными) — нажмите «Отправить» в почтовом приложении.' , ar: 'يفتح البلاغ كرسالة بريد إلكتروني للمطوّر (مع تعبئة التفاصيل) — يجب الضغط على "إرسال" في برنامج البريد.' },
-  'edit.title': { he: 'עריכת הוצאה', en: 'Edit expense', ru: 'Редактировать расход' , ar: 'تعديل مصروف' },
   'trip.dest.title': { he: 'בחירת יעד הטיול', en: 'Choose trip destination', ru: 'Выбор направления поездки' , ar: 'اختيار وجهة الرحلة' },
   'trip.dest.label': { he: 'לאן טסים?', en: 'Where to?', ru: 'Куда едем?' , ar: 'إلى أين نسافر؟' },
   'trip.dest.saveBtn': { he: 'שמור יעד', en: 'Save destination', ru: 'Сохранить направление' , ar: 'حفظ الوجهة' },
@@ -1187,103 +1121,11 @@ const I18N = {
   'report.chooseHint': { he: 'בחרו דוח ולחצו "הפק דוח".', en: 'Choose a report and click "Generate report".', ru: 'Выберите отчёт и нажмите «Сформировать отчёт».' , ar: 'اختاروا تقريراً واضغطوا "إنشاء تقرير".' },
   'report.printBtn': { he: 'הדפסה / PDF', en: 'Print / PDF', ru: 'Печать / PDF' , ar: 'طباعة / PDF' },
   'report.exportBtn': { he: 'ייצוא לאקסל', en: 'Export to Excel', ru: 'Экспорт в Excel' , ar: 'تصدير إلى إكسل' },
-  'welcome.title': { he: 'ברוכים הבאים ל-Or 👋', en: 'Welcome to Or 👋', ru: 'Добро пожаловать в Or 👋' , ar: 'مرحباً بكم في Or 👋' },
-  'welcome.intro': { he: 'Or עוזר לכם לנהל את הבית והכסף — במקום אחד, בחינם, ובפרטיות מלאה (הנתונים נשמרים רק במכשיר שלכם):', en: 'Or helps you manage your home and money — in one place, for free, with full privacy (data is saved only on your device):', ru: 'Or помогает управлять домом и деньгами — в одном месте, бесплатно и с полной конфиденциальностью (данные хранятся только на вашем устройстве):' , ar: 'يساعدكم Or على إدارة المنزل والمال — في مكان واحد، مجاناً، وبخصوصية تامة (تُحفظ البيانات على جهازكم فقط):' },
-  'welcome.list.expenses': { he: '<strong>הוצאות הבית</strong> — ארנונה, מים, חשמל וגז', en: '<strong>Home expenses</strong> — property tax, water, electricity & gas', ru: '<strong>Домашние расходы</strong> — налог на недвижимость, вода, электричество и газ' , ar: '<strong>مصروفات المنزل</strong> — الأرنونا، المياه، الكهرباء والغاز' },
-  'welcome.list.pettycash': { he: '<strong>קופה קטנה</strong> — הכנסות והוצאות עם יתרה', en: '<strong>Petty cash</strong> — income & expenses with balance', ru: '<strong>Мелкая касса</strong> — доходы и расходы с балансом' , ar: '<strong>الصندوق الصغير</strong> — إيرادات ومصروفات مع رصيد' },
-  'welcome.list.vaad': { he: '<strong>וועד בית</strong> — גבייה, דיירים ותקלות', en: '<strong>Building committee</strong> — collections, residents & issues', ru: '<strong>Домовой комитет</strong> — сборы, жильцы и неполадки' , ar: '<strong>لجنة البناية</strong> — التحصيل، السكان والأعطال' },
-  'welcome.list.trip': { he: '<strong>ניהול חופשה</strong> — מסלול, טיסות, מלונות ותקציב', en: '<strong>Vacation management</strong> — itinerary, flights, hotels & budget', ru: '<strong>Управление отпуском</strong> — маршрут, перелёты, отели и бюджет', ar: '<strong>إدارة العطلة</strong> — المسار، الرحلات، الفنادق والميزانية' },
-  'welcome.list.projects': { he: '<strong>ניהול פרויקטים</strong> — משימות, תקציב ומעקב', en: '<strong>Project management</strong> — tasks, budget & tracking', ru: '<strong>Управление проектами</strong> — задачи, бюджет и отслеживание', ar: '<strong>إدارة المشاريع</strong> — المهام، الميزانية والمتابعة' },
-  'welcome.list.chug': { he: '<strong>תנועה / חוג</strong> — חניכים, נוכחות ותשלומים', en: '<strong>Youth group</strong> — members, attendance & payments', ru: '<strong>Кружок / движение</strong> — участники, посещаемость и платежи' , ar: '<strong>حركة / نادي</strong> — الأعضاء، الحضور والمدفوعات' },
-  'welcome.list.hours': { he: '<strong>שעות עבודה</strong> — שעון נוכחות ושעות נוספות', en: '<strong>Work hours</strong> — time clock & overtime', ru: '<strong>Рабочие часы</strong> — табель и переработки' , ar: '<strong>ساعات العمل</strong> — ساعة الحضور والساعات الإضافية' },
-  'welcome.tip': { he: 'הטיפ הכי חשוב: לוחצים על <strong>כפתור הבית</strong> בפינה הימנית העליונה — ונפתח תפריט לבחירת הכלי.', en: 'The most important tip: click the <strong>home button</strong> in the top corner — it opens the tool-picker menu.', ru: 'Самый важный совет: нажмите на <strong>кнопку «Домой»</strong> в верхнем углу — откроется меню выбора инструмента.' , ar: 'النصيحة الأهم: اضغطوا على <strong>زر الرئيسية</strong> في الزاوية العلوية — وستُفتح قائمة لاختيار الأداة.' },
-  'welcome.dontShow': { he: 'לא להציג את המידע הזה יותר', en: "Don't show this again", ru: 'Больше не показывать' , ar: 'عدم عرض هذه المعلومات مرة أخرى' },
-  'welcome.startBtn': { he: 'בואו נתחיל — הראו לי את הכלים', en: "Let's start — show me the tools", ru: 'Начнём — покажите инструменты' , ar: 'هيا نبدأ — أروني الأدوات' },
   'dialog.settingsTitlePrefix': { he: 'הגדרות — ', en: 'Settings — ', ru: 'Настройки — ' , ar: 'الإعدادات — ' },
   'dialog.helpTitlePrefix': { he: 'עזרה — ', en: 'Help — ', ru: 'Справка — ' , ar: 'مساعدة — ' },
-  'dialog.aptInfoTitlePrefix': { he: 'פרטי דירה ', en: 'Apartment ', ru: 'Квартира ' , ar: 'بيانات الشقة ' },
-  'dialog.memberInfoTitle': { he: 'פרטי חניך', en: 'Member details', ru: 'Данные участника' , ar: 'بيانات العضو' },
   'field.amount': { he: 'סכום', en: 'Amount', ru: 'Сумма' , ar: 'مبلغ' },
-  'expenses.summaryAria': { he: 'סיכום הוצאות', en: 'Expense summary', ru: 'Сводка расходов' , ar: 'ملخص المصروفات' },
-  'expenses.addNew': { he: 'הוספת הוצאה חדשה', en: 'Add new expense', ru: 'Добавить новый расход' , ar: 'إضافة مصروف جديد' },
-  'expenses.notesPh': { he: 'אופציונלי', en: 'Optional', ru: 'Необязательно' , ar: 'اختياري' },
-  'expenses.adv.customCategory': { he: 'קטגוריה מותאמת אישית', en: 'Custom category', ru: 'Своя категория', ar: 'فئة مخصصة' },
-  'expenses.adv.customCategoryPh': { he: 'השאירו ריק כדי להשתמש בקטגוריה למעלה', en: 'Leave empty to use the category above', ru: 'Оставьте пустым, чтобы использовать категорию выше', ar: 'اتركوه فارغاً لاستخدام الفئة أعلاه' },
-  'expenses.adv.type': { he: 'סוג', en: 'Type', ru: 'Тип', ar: 'النوع' },
-  'expenses.adv.product': { he: 'מוצר', en: 'Product', ru: 'Товар', ar: 'المنتج' },
-  'expenses.adv.location': { he: 'מיקום', en: 'Location', ru: 'Место', ar: 'الموقع' },
-  'expenses.adv.installments': { he: 'תשלומים', en: 'Installments', ru: 'Платежи', ar: 'الأقساط' },
-  'expenses.adv.receipt': { he: 'קבלה', en: 'Receipt', ru: 'Чек', ar: 'الإيصال' },
-  'expenses.tabExpense': { he: 'הוצאות', en: 'Expenses', ru: 'Расходы', ar: 'المصروفات' },
-  'expenses.tabIncome': { he: 'הכנסות', en: 'Income', ru: 'Доходы', ar: 'الإيرادات' },
-  'expenses.tabDashboard': { he: 'דשבורד', en: 'Dashboard', ru: 'Дашборд', ar: 'لوحة المعلومات' },
-  'expenses.tabScan': { he: 'סריקת קבלות', en: 'Scan receipts', ru: 'Сканирование чеков', ar: 'مسح الإيصالات' },
-  'expenses.tabSubscriptions': { he: 'מנויים', en: 'Subscriptions', ru: 'Подписки', ar: 'الاشتراكات' },
-  'expenses.sub.name': { he: 'שם המנוי', en: 'Subscription name', ru: 'Название подписки', ar: 'اسم الاشتراك' },
-  'expenses.sub.nextDue': { he: 'חיוב הבא', en: 'Next charge', ru: 'Следующее списание', ar: 'الدفعة القادمة' },
-  'expenses.sub.markPaidBtn': { he: '✓ שולם', en: '✓ Paid', ru: '✓ Оплачено', ar: '✓ تم الدفع' },
-  'expenses.sub.markPaidToast': { he: 'ההוצאה נרשמה', en: 'Expense recorded', ru: 'Расход записан', ar: 'تم تسجيل المصروف' },
-  'expenses.sub.endDate': { he: 'תאריך סיום (השאירו ריק אם אין)', en: 'End date (leave empty if none)', ru: 'Дата окончания (оставьте пустым, если нет)' , ar: 'تاريخ الانتهاء (اتركوه فارغاً إن لم يوجد)' },
-  'expenses.sub.namePh': { he: 'לדוגמה: חדר כושר, תשלום חודשי 100 ₪', en: 'e.g. Gym, monthly payment ₪100', ru: 'Например: спортзал, ежемесячный платёж 100 ₪' , ar: 'مثال: نادي رياضي، دفعة شهرية 100 ₪' },
-  'expenses.dash.byMonthTitle': { he: 'הכנסות מול הוצאות לפי חודש', en: 'Income vs expenses by month', ru: 'Доходы и расходы по месяцам', ar: 'الإيرادات مقابل المصروفات حسب الشهر' },
-  'expenses.dash.byMonthAria': { he: 'גרף עמודות של הכנסות מול הוצאות לכל חודש', en: 'Bar chart of income vs expenses per month', ru: 'Столбчатая диаграмма доходов и расходов по месяцам', ar: 'رسم بياني شريطي للإيرادات مقابل المصروفات لكل شهر' },
-  'expenses.dash.byCatTitle': { he: 'פילוח הוצאות לפי קטגוריה', en: 'Expense breakdown by category', ru: 'Разбивка расходов по категориям', ar: 'توزيع المصروفات حسب الفئة' },
-  'expenses.dash.byCatAria': { he: 'גרף עוגה של פילוח הוצאות לפי קטגוריה', en: 'Pie chart of expense breakdown by category', ru: 'Круговая диаграмма разбивки расходов по категориям', ar: 'رسم بياني دائري لتوزيع المصروفات حسب الفئة' },
-  'expenses.dash.income': { he: 'סה"כ הכנסות', en: 'Total income', ru: 'Общий доход', ar: 'إجمالي الإيرادات' },
-  'expenses.dash.expense': { he: 'סה"כ הוצאות', en: 'Total expenses', ru: 'Общие расходы', ar: 'إجمالي المصروفات' },
-  'expenses.dash.balance': { he: 'יתרה', en: 'Balance', ru: 'Баланс', ar: 'الرصيد' },
-  'expenses.scan.title': { he: 'סריקת קבלה', en: 'Scan a receipt', ru: 'Сканировать чек', ar: 'مسح إيصال' },
-  'expenses.scan.hint': { he: 'העלו תמונה של קבלה — הסריקה רצה כולה בדפדפן שלכם, שום תמונה לא נשלחת לשרת. לאחר הסריקה תוכלו לבדוק ולתקן את הפרטים לפני השמירה.', en: 'Upload a photo of a receipt - scanning runs entirely in your browser, no image is ever sent to a server. After scanning you can review and correct the details before saving.', ru: 'Загрузите фото чека — сканирование выполняется полностью в вашем браузере, изображение никуда не отправляется. После сканирования вы сможете проверить и исправить данные перед сохранением.', ar: 'ارفعوا صورة إيصال — يتم المسح بالكامل في متصفحكم، ولا تُرسل أي صورة إلى خادم. بعد المسح يمكنكم مراجعة وتصحيح التفاصيل قبل الحفظ.' },
-  'expenses.scan.pickBtn': { he: 'בחרו תמונת קבלה', en: 'Choose a receipt photo', ru: 'Выбрать фото чека', ar: 'اختاروا صورة إيصال' },
-  'expenses.scan.cameraBtn': { he: '📷 צלמו קבלה', en: '📷 Take a photo', ru: '📷 Сделать фото', ar: '📷 التقطوا صورة' },
-  'expenses.scan.saveBtn': { he: 'שמור כהוצאה', en: 'Save as expense', ru: 'Сохранить как расход', ar: 'احفظوا كمصروف' },
-  'expenses.scan.loading': { he: 'סורק את הקבלה... זה יכול לקחת כמה שניות', en: 'Scanning the receipt... this can take a few seconds', ru: 'Сканирование чека... это может занять несколько секунд', ar: 'جارٍ مسح الإيصال... قد يستغرق ذلك بضع ثوانٍ' },
-  'expenses.scan.done': { he: 'הסריקה הושלמה — בדקו ותקנו את הפרטים למטה', en: 'Scan complete - review and correct the details below', ru: 'Сканирование завершено — проверьте и исправьте данные ниже', ar: 'اكتمل المسح — راجعوا وصححوا التفاصيل أدناه' },
-  'expenses.scan.error': { he: 'הסריקה נכשלה. אפשר למלא את הפרטים ידנית למטה.', en: 'Scanning failed. You can fill in the details manually below.', ru: 'Сканирование не удалось. Вы можете заполнить данные вручную ниже.', ar: 'فشل المسح. يمكنكم تعبئة التفاصيل يدوياً أدناه.' },
-  'expenses.scan.saved': { he: 'ההוצאה נשמרה', en: 'Expense saved', ru: 'Расход сохранён', ar: 'تم حفظ المصروف' },
-  'expenses.scan.statementTitle': { he: 'ייבוא דף חיוב מלא', en: 'Import a full statement', ru: 'Импорт полной выписки', ar: 'استيراد كشف حساب كامل' },
-  'expenses.scan.statementHint': { he: 'להעלאת תמונה של דף חיוב שלם עם כמה עסקאות — הסריקה תזהה כמה שורות בבת אחת, ותאפשר לבחור אילו מהן לייבא.', en: 'Upload a photo of a full statement with several transactions - the scan detects multiple lines at once and lets you choose which ones to import.', ru: 'Загрузите фото полной выписки с несколькими транзакциями — сканирование распознает сразу несколько строк и позволит выбрать, какие импортировать.', ar: 'ارفعوا صورة كشف حساب كامل يحتوي على عدة معاملات — سيكتشف المسح عدة أسطر دفعة واحدة ويتيح لكم اختيار أيها تريدون استيراده.' },
-  'expenses.scan.statementBtn': { he: 'בחרו תמונת דף חיוב', en: 'Choose a statement photo', ru: 'Выбрать фото выписки', ar: 'اختاروا صورة كشف حساب' },
-  'expenses.scan.statementCameraBtn': { he: '📷 צלמו דף חיוב', en: '📷 Take a statement photo', ru: '📷 Сфотографировать выписку', ar: '📷 التقطوا صورة كشف حساب' },
-  'expenses.scan.statementNoneFound': { he: 'לא זוהו עסקאות בתמונה. אפשר לנסות תמונה ברורה יותר, או להשתמש בסריקת קבלה בודדת למעלה.', en: 'No transactions were detected in the photo. Try a clearer photo, or use the single-receipt scan above.', ru: 'Транзакции на фото не обнаружены. Попробуйте более чёткое фото или используйте сканирование одного чека выше.', ar: 'لم يتم اكتشاف معاملات في الصورة. جربوا صورة أوضح، أو استخدموا مسح الإيصال الفردي أعلاه.' },
-  'expenses.scan.statementFound': { he: 'זוהו {n} עסקאות — בדקו ותקנו למטה לפני הייבוא', en: '{n} transactions detected - review and correct below before importing', ru: 'Обнаружено {n} транзакций — проверьте и исправьте ниже перед импортом', ar: 'تم اكتشاف {n} معاملات — راجعوا وصححوا أدناه قبل الاستيراد' },
-  'expenses.scan.importSelectedBtn': { he: 'ייבוא השורות המסומנות', en: 'Import selected rows', ru: 'Импортировать выбранные строки', ar: 'استيراد الأسطر المحددة' },
-  'expenses.scan.statementImported': { he: 'יובאו {n} הוצאות', en: '{n} expenses imported', ru: 'Импортировано {n} расходов', ar: 'تم استيراد {n} مصروفات' },
-  'expenses.addBtn': { he: 'הוסף הוצאה', en: 'Add expense', ru: 'Добавить расход' , ar: 'إضافة مصروف' },
-  'expenses.trendTitle': { he: 'מגמה חודשית לפי קטגוריה', en: 'Monthly trend by category', ru: 'Динамика по месяцам и категориям' , ar: 'الاتجاه الشهري حسب الفئة' },
-  'expenses.trendAria': { he: 'גרף קווי של הוצאות חודשיות לפי קטגוריה', en: 'Line chart of monthly expenses by category', ru: 'Линейный график расходов по месяцам и категориям' , ar: 'رسم بياني خطي للمصروفات الشهرية حسب الفئة' },
-  'expenses.compareTitle': { he: 'השוואת חודשים (סה"כ)', en: 'Monthly comparison (total)', ru: 'Сравнение по месяцам (итого)' , ar: 'مقارنة الأشهر (الإجمالي)' },
-  'expenses.compareAria': { he: 'גרף עמודות של סך הוצאות לכל חודש', en: 'Bar chart of total expenses per month', ru: 'Столбчатая диаграмма общих расходов по месяцам' , ar: 'رسم بياني عمودي لإجمالي المصروفات لكل شهر' },
-  'expenses.allTitle': { he: 'כל ההוצאות', en: 'All expenses', ru: 'Все расходы' , ar: 'كل المصروفات' },
-  'expenses.filterCat': { he: 'סינון לפי קטגוריה', en: 'Filter by category', ru: 'Фильтр по категории' , ar: 'تصفية حسب الفئة' },
-  'expenses.filterYear': { he: 'סינון לפי שנה', en: 'Filter by year', ru: 'Фильтр по году' , ar: 'تصفية حسب السنة' },
-  'expenses.emptyMsg': { he: 'אין עדיין הוצאות. הוסיפו את ההוצאה הראשונה למעלה.', en: 'No expenses yet. Add the first one above.', ru: 'Пока нет расходов. Добавьте первый выше.' , ar: 'لا توجد مصروفات بعد. أضيفوا الأول أعلاه.' },
-  'expenses.addIncome': { he: 'הוספת הכנסה חדשה', en: 'Add new income', ru: 'Добавить новый доход', ar: 'إضافة دخل جديد' },
-  'expenses.addIncomeBtn': { he: 'הוסף הכנסה', en: 'Add income', ru: 'Добавить доход', ar: 'إضافة دخل' },
-  'expenses.incomeSource': { he: 'מקור', en: 'Source', ru: 'Источник', ar: 'المصدر' },
-  'expenses.allIncomeTitle': { he: 'כל ההכנסות', en: 'All income', ru: 'Все доходы', ar: 'كل الإيرادات' },
-  'expenses.emptyIncomeMsg': { he: 'אין עדיין הכנסות. הוסיפו את ההכנסה הראשונה למעלה.', en: 'No income yet. Add the first one above.', ru: 'Пока нет доходов. Добавьте первый выше.', ar: 'لا توجد إيرادات بعد. أضيفوا الأول أعلاه.' },
-  'common.saving': { he: 'שומר...', en: 'Saving...', ru: 'Сохранение...' , ar: 'جارٍ الحفظ...' },
-  'common.total': { he: 'סה"כ', en: 'Total', ru: 'Итого' , ar: 'الإجمالي' },
-  'common.records': { he: 'רשומות', en: 'records', ru: 'записей' , ar: 'سجلات' },
-  'expenses.totalCard': { he: 'סה"כ לתקופות החיוב', en: 'Total for billing periods', ru: 'Итого за периоды оплаты' , ar: 'الإجمالي لفترات الفوترة' },
-  'expenses.activeAccount': { he: 'חשבון פעיל', en: 'Active account', ru: 'Активный счёт' , ar: 'حساب نشط' },
-  'expenses.paymentFrequency': { he: 'תדירות תשלום', en: 'Payment frequency', ru: 'Периодичность оплаты' , ar: 'وتيرة الدفع' },
-  'expenses.additionalInfo': { he: 'מידע נוסף', en: 'Additional info', ru: 'Дополнительно' , ar: 'معلومات إضافية' },
-  'expenses.idValuePhPrefix': { he: 'הזינו ', en: 'Enter ', ru: 'Введите ' , ar: 'أدخلوا ' },
-  'expenses.additionalInfoPh': { he: 'ספק, טלפון, יום חיוב...', en: 'Provider, phone, billing day...', ru: 'Поставщик, телефон, день оплаты...' , ar: 'المزوّد، الهاتف، يوم الفوترة...' },
   'expenses.editBtn': { he: 'עריכה', en: 'Edit', ru: 'Редактировать' , ar: 'تعديل' },
   'expenses.deleteBtn': { he: 'מחיקה', en: 'Delete', ru: 'Удалить' , ar: 'حذف' },
-  'expenses.editAria': { he: 'עריכת הוצאה מ-{date}', en: 'Edit expense from {date}', ru: 'Редактировать расход от {date}' , ar: 'تعديل مصروف من {date}' },
-  'expenses.deleteAria': { he: 'מחיקת הוצאה מ-{date}', en: 'Delete expense from {date}', ru: 'Удалить расход от {date}' , ar: 'حذف مصروف من {date}' },
-  'toast.expenseAdded': { he: 'ההוצאה נוספה ונשמרה לקובץ האקסל', en: 'Expense added and saved to the Excel file', ru: 'Расход добавлен и сохранён в файл Excel' , ar: 'تمت إضافة المصروف وحفظه في ملف الإكسل' },
-  'confirm.deleteExpense': { he: 'למחוק את ההוצאה? הפעולה תעדכן את קובץ האקסל.', en: 'Delete this expense? This will update the Excel file.', ru: 'Удалить расход? Это обновит файл Excel.' , ar: 'هل تريد حذف المصروف؟ سيؤدي هذا إلى تحديث ملف الإكسل.' },
-  'confirm.deleteCategory': { he: 'למחוק את הקטגוריה "{cat}"? היסטוריית ההוצאות הקיימות תישאר שמורה, רק הכרטיס יוסר.', en: 'Delete the category "{cat}"? Existing expense history stays saved, only the card is removed.', ru: 'Удалить категорию «{cat}»? История расходов сохранится, будет удалена только карточка.' , ar: 'حذف الفئة "{cat}"؟ سيبقى سجل المصروفات محفوظاً، وستتم إزالة البطاقة فقط.' },
-  'toast.expenseDeleted': { he: 'ההוצאה נמחקה', en: 'Expense deleted', ru: 'Расход удалён' , ar: 'تم حذف المصروف' },
-  'toast.expenseUpdated': { he: 'ההוצאה עודכנה בקובץ האקסל', en: 'Expense updated in the Excel file', ru: 'Расход обновлён в файле Excel' , ar: 'تم تحديث المصروف في ملف الإكسل' },
-  'toast.detailsSaved': { he: 'פרטי החשבונות נשמרו לקובץ האקסל', en: 'Account details saved to the Excel file', ru: 'Данные счетов сохранены в файл Excel' , ar: 'تم حفظ بيانات الحسابات في ملف الإكسل' },
-  'toast.categoryAdded': { he: 'הקטגוריה נוספה', en: 'Category added', ru: 'Категория добавлена' , ar: 'تمت إضافة الفئة' },
-  'toast.categoryDeleted': { he: 'הקטגוריה נמחקה', en: 'Category deleted', ru: 'Категория удалена' , ar: 'تم حذف الفئة' },
   'freq.monthly': { he: 'חודשי', en: 'Monthly', ru: 'Ежемесячно' , ar: 'شهري' },
   'freq.bimonthly': { he: 'דו-חודשי', en: 'Bimonthly', ru: 'Раз в 2 месяца' , ar: 'كل شهرين' },
   'freq.quarterly': { he: 'רבעוני', en: 'Quarterly', ru: 'Ежеквартально' , ar: 'ربع سنوي' },
@@ -1291,41 +1133,15 @@ const I18N = {
   'freq.oneTime': { he: 'חד פעמי', en: 'One-time', ru: 'Разовый', ar: 'مرة واحدة' },
   'freq.triMonthly': { he: 'תלת חודשי', en: 'Every 3 months', ru: 'Раз в 3 месяца', ar: 'كل 3 أشهر' },
   'freq.semiAnnual': { he: 'חצי שנתי', en: 'Semi-annual', ru: 'Раз в полгода', ar: 'نصف سنوي' },
-  'period.bimonthly': { he: 'החודשיים האחרונים', en: 'The last 2 months', ru: 'Последние 2 месяца' , ar: 'الشهران الأخيران' },
-  'period.quarterly': { he: '3 החודשים האחרונים', en: 'The last 3 months', ru: 'Последние 3 месяца' , ar: 'الأشهر الثلاثة الأخيرة' },
-  'period.yearly': { he: '12 החודשים האחרונים', en: 'The last 12 months', ru: 'Последние 12 месяцев' , ar: 'الأشهر الـ12 الأخيرة' },
-  'period.current': { he: 'החודש הנוכחי', en: 'The current month', ru: 'Текущий месяц' , ar: 'الشهر الحالي' },
-  'idlabel.arnona': { he: 'מספר משלם', en: 'Payer number', ru: 'Номер плательщика' , ar: 'رقم الدافع' },
-  'idlabel.electricity': { he: 'מספר חוזה', en: 'Contract number', ru: 'Номер договора' , ar: 'رقم العقد' },
-  'idlabel.water': { he: 'מספר שעון מים', en: 'Water meter number', ru: 'Номер водомера' , ar: 'رقم عداد المياه' },
-  'idlabel.gas': { he: 'מספר לקוח', en: 'Customer number', ru: 'Номер клиента' , ar: 'رقم العميل' },
   'common.add': { he: 'הוספה', en: 'Add', ru: 'Добавить' , ar: 'إضافة' },
   'common.update': { he: 'עדכון', en: 'Update', ru: 'Обновить' , ar: 'تحديث' },
   'daytype.regular': { he: 'רגיל', en: 'Regular', ru: 'Обычный' , ar: 'عادي' },
   'daytype.sick': { he: 'מחלה', en: 'Sick', ru: 'Больничный' , ar: 'مرضي' },
-  'enum.income': { he: 'הכנסה', en: 'Income', ru: 'Доход' , ar: 'إيراد' },
-  'enum.expense': { he: 'הוצאה', en: 'Expense', ru: 'Расход' , ar: 'مصروف' },
   'field.description': { he: 'תיאור', en: 'Description', ru: 'Описание' , ar: 'وصف' },
-  'ledger.incomeWord': { he: 'הכנסות', en: 'Income', ru: 'Доходы' , ar: 'إيرادات' },
-  'ledger.expenseWord': { he: 'הוצאות', en: 'Expenses', ru: 'Расходы' , ar: 'مصروفات' },
-  'pettycash.addLabel': { he: 'הוספת רשומה', en: 'Add entry', ru: 'Добавить запись' , ar: 'إضافة سجل' },
-  'hours.descLabel': { he: 'תיאור / פרויקט', en: 'Description / project', ru: 'Описание / проект' , ar: 'وصف / مشروع' },
-  'hours.addLabel': { he: 'הוספת שעות', en: 'Add hours', ru: 'Добавить часы' , ar: 'إضافة ساعات' },
-  'vaad.typeIn': { he: 'גבייה', en: 'Collection', ru: 'Сбор' , ar: 'تحصيل' },
-  'vaad.descLabel': { he: 'דירה / תיאור', en: 'Apartment / description', ru: 'Квартира / описание' , ar: 'شقة / وصف' },
-  'vaad.addLabel': { he: 'הוספת תנועה', en: 'Add transaction', ru: 'Добавить операцию' , ar: 'إضافة حركة' },
-  'chug.addLabel': { he: 'הוספת תנועה כספית', en: 'Add financial transaction', ru: 'Добавить финансовую операцию' , ar: 'إضافة حركة مالية' },
   'field.noGroup': { he: '— ללא שכבה —', en: '— No group —', ru: '— Без группы —' , ar: '— بدون صف —' },
-  'ledger.balance': { he: 'יתרה בקופה', en: 'Cash balance', ru: 'Остаток кассы' , ar: 'رصيد الصندوق' },
-  'ledger.vsByMonth': { he: '{a} מול {b} לפי חודש', en: '{a} vs {b} by month', ru: '{a} и {b} по месяцам' , ar: '{a} مقابل {b} حسب الشهر' },
-  'ledger.monthlyChartAria': { he: 'גרף חודשי', en: 'Monthly chart', ru: 'Ежемесячный график' , ar: 'رسم بياني شهري' },
-  'ledger.allRecords': { he: 'כל הרשומות', en: 'All records', ru: 'Все записи' , ar: 'كل السجلات' },
-  'ledger.runningBalance': { he: 'יתרה מצטברת', en: 'Running balance', ru: 'Текущий остаток' , ar: 'الرصيد التراكمي' },
-  'ledger.emptyMsg': { he: 'אין עדיין רשומות. הוסיפו את הראשונה למעלה.', en: 'No records yet. Add the first one above.', ru: 'Пока нет записей. Добавьте первую выше.' , ar: 'لا توجد سجلات بعد. أضيفوا الأول أعلاه.' },
   'toast.recordUpdated': { he: 'הרשומה עודכנה', en: 'Record updated', ru: 'Запись обновлена' , ar: 'تم تحديث السجل' },
   'toast.recordAdded': { he: 'הרשומה נוספה ונשמרה', en: 'Record added and saved', ru: 'Запись добавлена и сохранена' , ar: 'تمت إضافة السجل وحفظه' },
   'confirm.deleteRecord': { he: 'למחוק את הרשומה? הפעולה תעדכן את קובץ האקסל.', en: 'Delete this record? This will update the Excel file.', ru: 'Удалить запись? Это обновит файл Excel.' , ar: 'هل تريد حذف السجل؟ سيؤدي هذا إلى تحديث ملف الإكسل.' },
-  'confirm.deleteCategoryRows': { he: 'למחוק את כל {n} הרשומות בקטגוריה "{cat}"? הפעולה בלתי הפיכה.', en: 'Delete all {n} records in category "{cat}"? This action is irreversible.', ru: 'Удалить все {n} записей в категории «{cat}»? Это действие необратимо.', ar: 'هل تريد حذف جميع الـ {n} سجلات في فئة "{cat}"؟ هذا الإجراء لا رجعة فيه.' },
   'toast.recordDeleted': { he: 'הרשומה נמחקה', en: 'Record deleted', ru: 'Запись удалена' , ar: 'تم حذف السجل' },
   'nav.mapsTitle': { he: 'פתיחה בגוגל מפות', en: 'Open in Google Maps', ru: 'Открыть в Google Картах' , ar: 'فتح في خرائط جوجل' },
   'nav.wazeTitle': { he: 'ניווט ב-Waze', en: 'Navigate with Waze', ru: 'Навигация в Waze' , ar: 'ملاحة عبر Waze' },
@@ -1361,43 +1177,9 @@ const I18N = {
   'opt.tripCatLodging': { he: 'לינה', en: 'Lodging', ru: 'Проживание' , ar: 'إقامة' },
   'opt.tripCatFood': { he: 'אוכל', en: 'Food', ru: 'Еда' , ar: 'طعام' },
   'opt.tripCatInsurance': { he: 'ביטוח', en: 'Insurance', ru: 'Страховка' , ar: 'تأمين' },
-  'field.apartment': { he: 'דירה', en: 'Apartment', ru: 'Квартира' , ar: 'شقة' },
-  'field.entrance': { he: 'כניסה', en: 'Entrance', ru: 'Подъезд' , ar: 'مدخل' },
-  'field.floor': { he: 'קומה', en: 'Floor', ru: 'Этаж' , ar: 'طابق' },
-  'field.size': { he: 'גודל (חדרים)', en: 'Size (rooms)', ru: 'Размер (комнат)' , ar: 'الحجم (غرف)' },
-  'field.duesILS': { he: 'תשלום חודשי (₪)', en: 'Monthly payment (₪)', ru: 'Ежемесячный платёж (₪)' , ar: 'الدفعة الشهرية (₪)' },
-  'field.residentName': { he: 'שם דייר', en: 'Resident name', ru: 'Имя жильца' , ar: 'اسم الساكن' },
-  'field.residentName2': { he: 'שם דייר נוסף', en: 'Second resident name', ru: 'Имя второго жильца', ar: 'اسم ساكن إضافي' },
-  'field.phone2': { he: 'טלפון דייר נוסף', en: 'Second resident phone', ru: 'Телефон второго жильца', ar: 'هاتف الساكن الإضافي' },
-  'field.phone': { he: 'טלפון', en: 'Phone', ru: 'Телефон' , ar: 'هاتف' },
-  'field.rented': { he: 'בשכירות?', en: 'Rented?', ru: 'Сдаётся в аренду?' , ar: 'مؤجرة؟' },
-  'field.ownerName': { he: 'שם בעל הדירה', en: 'Owner name', ru: 'Имя владельца' , ar: 'اسم مالك الشقة' },
-  'field.ownerPhone': { he: 'טלפון בעל הדירה', en: 'Owner phone', ru: 'Телефон владельца' , ar: 'هاتف مالك الشقة' },
-  'field.reporter': { he: 'מי מדווח', en: 'Reported by', ru: 'Кто сообщил' , ar: 'من يُبلّغ' },
-  'field.location': { he: 'דירה / מיקום', en: 'Apartment / location', ru: 'Квартира / место' , ar: 'شقة / موقع' },
-  'field.priority': { he: 'דחיפות', en: 'Priority', ru: 'Приоритет' , ar: 'أولوية' },
-  'field.status': { he: 'סטטוס', en: 'Status', ru: 'Статус' , ar: 'حالة' },
-  'field.projStart': { he: 'תאריך התחלה', en: 'Start date', ru: 'Дата начала' , ar: 'تاريخ البدء' },
-  'field.projDue': { he: 'תאריך יעד', en: 'Target date', ru: 'Целевая дата' , ar: 'التاريخ المستهدف' },
-  'field.budgetILS': { he: 'תקציב (₪)', en: 'Budget (₪)', ru: 'Бюджет (₪)' , ar: 'الميزانية (₪)' },
-  'field.parentProject': { he: 'פרויקט אב', en: 'Parent project', ru: 'Родительский проект', ar: 'المشروع الأب' },
-  'field.taskName': { he: 'שם המשימה', en: 'Task name', ru: 'Название задачи' , ar: 'اسم المهمة' },
-  'field.projectRef': { he: 'פרויקט', en: 'Project', ru: 'Проект' , ar: 'مشروع' },
-  'field.assignee': { he: 'אחראי', en: 'Assignee', ru: 'Ответственный' , ar: 'المسؤول' },
-  'field.dueDate': { he: 'תאריך יעד', en: 'Due date', ru: 'Срок выполнения' , ar: 'تاريخ الاستحقاق' },
   'field.name': { he: 'שם', en: 'Name', ru: 'Имя' , ar: 'اسم' },
   'field.url': { he: 'קישור', en: 'Link', ru: 'Ссылка' , ar: 'رابط' },
   'field.image': { he: 'תמונה', en: 'Image', ru: 'Изображение' , ar: 'صورة' },
-  'field.profession': { he: 'תחום', en: 'Profession', ru: 'Профессия' , ar: 'مجال' },
-  'field.vendor': { he: 'ספק', en: 'Vendor', ru: 'Поставщик', ar: 'المورّد' },
-  'field.group': { he: 'שכבה / קבוצה', en: 'Grade / group', ru: 'Класс / группа' , ar: 'صف / مجموعة' },
-  'field.birthdate': { he: 'תאריך לידה', en: 'Birth date', ru: 'Дата рождения' , ar: 'تاريخ الميلاد' },
-  'field.parentName': { he: 'שם הורה', en: 'Parent name', ru: 'Имя родителя' , ar: 'اسم الوالد' },
-  'field.parentPhone': { he: 'טלפון הורה', en: 'Parent phone', ru: 'Телефон родителя' , ar: 'هاتف الوالد' },
-  'field.memberFeeILS': { he: 'דמי חבר חודשי (₪)', en: 'Monthly membership fee (₪)', ru: 'Ежемесячный взнос (₪)' , ar: 'رسوم العضوية الشهرية (₪)' },
-  'field.item': { he: 'פריט', en: 'Item', ru: 'Предмет' , ar: 'عنصر' },
-  'field.qty': { he: 'כמות', en: 'Quantity', ru: 'Количество' , ar: 'كمية' },
-  'field.condition': { he: 'מצב', en: 'Condition', ru: 'Состояние' , ar: 'حالة' },
   'field.time': { he: 'שעה', en: 'Time', ru: 'Время' , ar: 'وقت' },
   'field.address': { he: 'כתובת', en: 'Address', ru: 'Адрес' , ar: 'عنوان' },
   'field.costILS': { he: 'עלות (₪)', en: 'Cost (₪)', ru: 'Стоимость (₪)' , ar: 'التكلفة (₪)' },
@@ -1417,29 +1199,6 @@ const I18N = {
   'field.pickupDate': { he: 'איסוף — תאריך', en: 'Pickup — date', ru: 'Забор — дата' , ar: 'الاستلام — تاريخ' },
   'field.returnLoc': { he: 'החזרה — מיקום', en: 'Return — location', ru: 'Возврат — место' , ar: 'الإرجاع — موقع' },
   'field.returnDate': { he: 'החזרה — תאריך', en: 'Return — date', ru: 'Возврат — дата' , ar: 'الإرجاع — تاريخ' },
-  'list.residents.addLabel': { he: 'הוספת דירה / דייר', en: 'Add apartment / resident', ru: 'Добавить квартиру / жильца' , ar: 'إضافة شقة / ساكن' },
-  'list.residents.title': { he: 'רשימת הדירות והדיירים', en: 'List of apartments & residents', ru: 'Список квартир и жильцов' , ar: 'قائمة الشقق والسكان' },
-  'list.residents.empty': { he: 'עדיין לא נוספו דירות.', en: 'No apartments added yet.', ru: 'Квартиры ещё не добавлены.' , ar: 'لم تتم إضافة شقق بعد.' },
-  'list.tickets.addLabel': { he: 'דיווח תקלה', en: 'Report an issue', ru: 'Сообщить о проблеме' , ar: 'الإبلاغ عن عطل' },
-  'list.tickets.title': { he: 'תקלות ופניות', en: 'Issues & requests', ru: 'Проблемы и обращения' , ar: 'الأعطال والطلبات' },
-  'list.tickets.empty': { he: 'אין תקלות פתוחות.', en: 'No open issues.', ru: 'Нет открытых проблем.' , ar: 'لا توجد أعطال مفتوحة.' },
-  'list.pros.addLabel': { he: 'הוספת בעל מקצוע', en: 'Add professional', ru: 'Добавить специалиста' , ar: 'إضافة صاحب مهنة' },
-  'list.pros.title': { he: 'ספר בעלי המקצוע', en: 'Directory of professionals', ru: 'Справочник специалистов' , ar: 'دليل أصحاب المهن' },
-  'list.pros.empty': { he: 'עדיין לא נוספו בעלי מקצוע.', en: 'No professionals added yet.', ru: 'Специалисты ещё не добавлены.' , ar: 'لم يتم إضافة أصحاب مهن بعد.' },
-  'list.vaadfixed.addLabel': { he: 'הוספת הוצאה', en: 'Add expense', ru: 'Добавить расход', ar: 'إضافة مصروف' },
-  'list.vaadfixed.title': { he: 'הוצאות', en: 'Expenses', ru: 'Расходы', ar: 'مصروفات' },
-  'list.vaadfixed.empty': { he: 'עדיין לא נוספו הוצאות.', en: 'No expenses added yet.', ru: 'Расходы ещё не добавлены.', ar: 'لم تتم إضافة مصروفات بعد.' },
-  'list.expfixed.addLabel': { he: 'הוספת מנוי', en: 'Add subscription', ru: 'Добавить подписку', ar: 'إضافة اشتراك' },
-  'list.expfixed.title': { he: 'מנויים ותשלומים חוזרים', en: 'Subscriptions & recurring payments', ru: 'Подписки и регулярные платежи', ar: 'الاشتراكات والمدفوعات المتكررة' },
-  'list.expfixed.empty': { he: 'עדיין לא נוספו מנויים.', en: 'No subscriptions added yet.', ru: 'Подписки ещё не добавлены.', ar: 'لم تتم إضافة اشتراكات بعد.' },
-  'list.buildingsys.addLabel': { he: 'הוספת רשומת מערכת', en: 'Add system record', ru: 'Добавить запись о системе', ar: 'إضافة سجل نظام' },
-  'list.buildingsys.title': { he: 'מערכות בבניין', en: 'Building systems', ru: 'Системы здания', ar: 'أنظمة المبنى' },
-  'list.buildingsys.empty': { he: 'עדיין לא נוספו רשומות מערכות.', en: 'No system records added yet.', ru: 'Записи о системах ещё не добавлены.', ar: 'لم تتم إضافة سجلات أنظمة بعد.' },
-  'vaad.tabBuildingSys': { he: 'מערכות בבניין', en: 'Building Systems', ru: 'Системы здания', ar: 'أنظمة المبنى' },
-  'field.system': { he: 'מערכת', en: 'System', ru: 'Система', ar: 'نظام' },
-  'vaad.totalExpenses': { he: 'סה"כ הוצאות', en: 'Total expenses', ru: 'Итого расходы', ar: 'إجمالي المصروفات' },
-  'settings.buildingSystems.heading': { he: 'מערכות בבניין', en: 'Building systems', ru: 'Системы здания', ar: 'أنظمة المبنى' },
-  'settings.buildingSystems.hint': { he: 'סמנו אילו מערכות קיימות בבניין שלכם — רק מערכות מסומנות יופיעו כאפשרות בלשונית "מערכות בבניין".', en: 'Check which systems exist in your building — only checked systems will appear as an option in the "Building Systems" tab.', ru: 'Отметьте, какие системы есть в вашем здании — только отмеченные системы будут доступны на вкладке «Системы здания».', ar: 'حددوا الأنظمة الموجودة في بنايتكم — الأنظمة المحددة فقط ستظهر كخيار في لسان "أنظمة المبنى".' },
   'opt.sysWaterPump': { he: 'משאבת מים', en: 'Water pump', ru: 'Водяной насос', ar: 'مضخة مياه' },
   'opt.sysSolar': { he: 'מערכת סולארית', en: 'Solar system', ru: 'Солнечная система', ar: 'نظام طاقة شمسية' },
   'opt.sysMainElectric': { he: 'מערכת חשמל ראשית', en: 'Main electrical system', ru: 'Главная электросистема', ar: 'نظام الكهرباء الرئيسي' },
@@ -1450,85 +1209,8 @@ const I18N = {
   'opt.sysLighting': { he: 'מערכת תאורה', en: 'Lighting system', ru: 'Система освещения', ar: 'نظام الإضاءة' },
   'opt.sysSewage': { he: 'מערכת ביוב וניקוז', en: 'Sewage & drainage system', ru: 'Система канализации и дренажа', ar: 'نظام الصرف الصحي والتصريف' },
   'opt.sysPestControl': { he: 'הדברה', en: 'Pest control', ru: 'Дезинсекция', ar: 'مكافحة الآفات' },
-  'list.projlist.addLabel': { he: 'הוספת פרויקט', en: 'Add project', ru: 'Добавить проект' , ar: 'إضافة مشروع' },
-  'list.projlist.title': { he: 'רשימת הפרויקטים', en: 'List of projects', ru: 'Список проектов' , ar: 'قائمة المشاريع' },
-  'list.projlist.empty': { he: 'עדיין לא נוספו פרויקטים.', en: 'No projects added yet.', ru: 'Проекты ещё не добавлены.' , ar: 'لم تتم إضافة مشاريع بعد.' },
-  'list.projtasks.addLabel': { he: 'הוספת משימה', en: 'Add task', ru: 'Добавить задачу' , ar: 'إضافة مهمة' },
-  'list.projtasks.title': { he: 'רשימת המשימות', en: 'List of tasks', ru: 'Список задач' , ar: 'قائمة المهام' },
-  'list.projtasks.empty': { he: 'עדיין לא נוספו משימות.', en: 'No tasks added yet.', ru: 'Задачи ещё не добавлены.' , ar: 'لم تتم إضافة مهام بعد.' },
-  'list.projexp.addLabel': { he: 'הוספת הוצאה', en: 'Add expense', ru: 'Добавить расход' , ar: 'إضافة مصروف' },
-  'list.projexp.title': { he: 'הוצאות הפרויקטים', en: 'Project expenses', ru: 'Расходы по проектам' , ar: 'مصروفات المشاريع' },
-  'list.projexp.empty': { he: 'עדיין לא נוספו הוצאות.', en: 'No expenses added yet.', ru: 'Расходы ещё не добавлены.' , ar: 'لم تتم إضافة مصروفات بعد.' },
-  'projects.tabOverview': { he: 'סקירה', en: 'Overview', ru: 'Обзор' , ar: 'نظرة عامة' },
-  'projects.tabProjects': { he: 'פרויקטים', en: 'Projects', ru: 'Проекты' , ar: 'مشاريع' },
-  'projects.tabTasks': { he: 'משימות', en: 'Tasks', ru: 'Задачи' , ar: 'مهام' },
-  'projects.tabExpenses': { he: 'הוצאות', en: 'Expenses', ru: 'Расходы' , ar: 'مصروفات' },
-  'projects.tabContacts': { he: 'אנשי קשר', en: 'Contacts', ru: 'Контакты', ar: 'جهات الاتصال' },
-  'field.contactRole': { he: 'תפקיד', en: 'Role', ru: 'Роль', ar: 'الدور' },
-  'list.projcontacts.addLabel': { he: 'הוספת איש קשר', en: 'Add contact', ru: 'Добавить контакт', ar: 'إضافة جهة اتصال' },
-  'list.projcontacts.title': { he: 'אנשי קשר', en: 'Contacts', ru: 'Контакты', ar: 'جهات الاتصال' },
-  'list.projcontacts.empty': { he: 'עדיין לא נוספו אנשי קשר.', en: 'No contacts added yet.', ru: 'Контакты ещё не добавлены.', ar: 'لم تتم إضافة جهات اتصال بعد.' },
-  'sheet.projcontacts': { he: 'אנשי קשר', en: 'Contacts', ru: 'Контакты', ar: 'جهات الاتصال' },
-  'projects.totalProjects': { he: 'סה"כ פרויקטים', en: 'Total projects', ru: 'Всего проектов' , ar: 'إجمالي المشاريع' },
-  'projects.dateRangeLabel': { he: 'טווח תאריכים', en: 'Date range', ru: 'Период', ar: 'النطاق الزمني' },
-  'projects.activeProjects': { he: 'פרויקטים פעילים', en: 'Active projects', ru: 'Активные проекты' , ar: 'المشاريع النشطة' },
-  'projects.openTasks': { he: 'משימות פתוחות', en: 'Open tasks', ru: 'Открытые задачи' , ar: 'المهام المفتوحة' },
-  'projects.totalBudget': { he: 'תקציב כולל', en: 'Total budget', ru: 'Общий бюджет' , ar: 'الميزانية الإجمالية' },
-  'projects.totalSpent': { he: 'סה"כ הוצאות', en: 'Total spent', ru: 'Всего потрачено' , ar: 'إجمالي المصروفات' },
-  'projects.remainingBudget': { he: 'יתרת תקציב', en: 'Remaining budget', ru: 'Остаток бюджета' , ar: 'رصيد الميزانية' },
-  'projects.overviewTableTitle': { he: 'מצב הפרויקטים', en: 'Project status', ru: 'Статус проектов' , ar: 'حالة المشاريع' },
-  'projects.noProjectsMsg': { he: 'עדיין לא נוספו פרויקטים.', en: 'No projects added yet.', ru: 'Проекты ещё не добавлены.' , ar: 'لم تتم إضافة مشاريع بعد.' },
-  'projects.addInSettingsHint': { he: 'הוספת פרויקט חדש נעשית מההגדרות.', en: 'Adding a new project is done from Settings.', ru: 'Добавление нового проекта выполняется в настройках.', ar: 'تتم إضافة مشروع جديد من الإعدادات.' },
-  'projects.noProjectsTitle': { he: 'אין עדיין פרויקטים', en: 'No projects yet', ru: 'Проектов пока нет', ar: 'لا توجد مشاريع بعد' },
-  'vaad.addSystemsOption': { he: '+ הוספת מערכות', en: '+ Add systems', ru: '+ Добавить системы', ar: '+ إضافة أنظمة' },
-  'vaad.noBuildingTitle': { he: 'עדיין לא הוזנו פרטי הבניין', en: 'Building details not entered yet', ru: 'Данные о здании ещё не введены', ar: 'لم تُدخل تفاصيل المبنى بعد' },
-  'vaad.noBuildingHint': { he: 'כדי שהדוחות והמסמכים יציגו את כתובת הבניין, הזינו את פרטיו בהגדרות.', en: 'So reports and documents can show the building address, enter its details in Settings.', ru: 'Чтобы отчёты и документы отображали адрес здания, введите его данные в настройках.', ar: 'حتى تعرض التقارير والمستندات عنوان المبنى، أدخلوا تفاصيله في الإعدادات.' },
   'projects.openSettingsBtn': { he: 'פתיחת הגדרות', en: 'Open Settings', ru: 'Открыть настройки', ar: 'فتح الإعدادات' },
-  'projects.timelineTitle': { he: 'ציר זמן', en: 'Timeline', ru: 'Хронология', ar: 'الجدول الزمني' },
-  'projects.allProjectsOpt': { he: 'כל הפרויקטים', en: 'All projects', ru: 'Все проекты', ar: 'جميع المشاريع' },
-  'projects.newProjectChip': { he: 'הקמת פרויקט חדש', en: 'New project', ru: 'Новый проект', ar: 'مشروع جديد' },
-  'projects.timelineEmptyMsg': { he: 'הוסיפו תאריך התחלה ותאריך יעד לפרויקטים כדי לראות אותם על ציר הזמן.', en: 'Add a start date and target date to projects to see them on the timeline.', ru: 'Добавьте дату начала и целевую дату к проектам, чтобы увидеть их на хронологии.', ar: 'أضيفوا تاريخ بدء وتاريخاً مستهدفاً للمشاريع لرؤيتها على الجدول الزمني.' },
-  'projects.advancedLabel': { he: 'תת-פרויקטים ומפת חשיבה', en: 'Sub-projects & mind map', ru: 'Подпроекты и карта разума', ar: 'مشاريع فرعية وخريطة ذهنية' },
-  'projects.tabMindMap': { he: 'מפת חשיבה', en: 'Mind map', ru: 'Карта разума', ar: 'خريطة ذهنية' },
-  'projects.noParentOpt': { he: '— ללא (פרויקט ראשי) —', en: '— None (top-level project) —', ru: '— Нет (проект верхнего уровня) —', ar: '— بدون (مشروع رئيسي) —' },
-  'projects.mindmap.emptyMsg': { he: 'עדיין אין פרויקטים להצגה במפת החשיבה. הוסיפו פרויקטים בהגדרות.', en: 'No projects yet to show on the mind map. Add projects in Settings.', ru: 'Пока нет проектов для отображения на карте разума. Добавьте проекты в настройках.', ar: 'لا توجد مشاريع بعد لعرضها في الخريطة الذهنية. أضيفوا مشاريع في الإعدادات.' },
-  'projects.mindmap.loadError': { he: 'לא הצלחנו לטעון את מפת החשיבה (בעיית חיבור לרשת). נסו לרענן את הדף.', en: 'Could not load the mind map (network issue). Try refreshing the page.', ru: 'Не удалось загрузить карту разума (проблема с сетью). Попробуйте обновить страницу.', ar: 'تعذر تحميل الخريطة الذهنية (مشكلة في الشبكة). حاولوا تحديث الصفحة.' },
   'projects.copyContactBtn': { he: '📋 העתקה לפרויקט אחר', en: '📋 Copy to another project', ru: '📋 Копировать в другой проект', ar: '📋 نسخ إلى مشروع آخر' },
-  'projects.copyContactTitle': { he: 'העתקת איש קשר לפרויקט אחר', en: 'Copy contact to another project', ru: 'Копировать контакт в другой проект', ar: 'نسخ جهة الاتصال إلى مشروع آخر' },
-  'projects.copyContactConfirmBtn': { he: 'העתקה', en: 'Copy', ru: 'Копировать', ar: 'نسخ' },
-  'projects.copyContactDone': { he: 'איש הקשר הועתק לפרויקט הנבחר.', en: 'The contact was copied to the selected project.', ru: 'Контакт скопирован в выбранный проект.', ar: 'تم نسخ جهة الاتصال إلى المشروع المحدد.' },
-  'projects.copyContactNoOtherProjects': { he: 'אין פרויקט אחר להעתיק אליו — הוסיפו עוד פרויקט בהגדרות.', en: 'There is no other project to copy to - add another project in Settings.', ru: 'Нет другого проекта для копирования — добавьте ещё один проект в настройках.', ar: 'لا يوجد مشروع آخر للنسخ إليه — أضيفوا مشروعاً آخر في الإعدادات.' },
-  'projects.mindmap.hint': { he: 'לחצו על פרויקט כדי לסנן אליו את שאר הטאבים, או לחצו קליק ימני עליו כדי לחבר אותו לפרויקט אחר.', en: 'Click a project to filter the other tabs to it, or right-click it to link it to another project.', ru: 'Нажмите на проект, чтобы отфильтровать по нему остальные вкладки, или щёлкните правой кнопкой, чтобы связать его с другим проектом.', ar: 'اضغطوا على مشروع لتصفية بقية علامات التبويب إليه، أو انقروا بزر الفأرة الأيمن لربطه بمشروع آخر.' },
-  'projects.parentCycleError': { he: 'לא ניתן לבחור תת-פרויקט של עצמו כפרויקט אב (יוצר מעגל).', en: 'A project cannot be set as a parent of its own sub-project (creates a cycle).', ru: 'Проект нельзя назначить родителем своего собственного подпроекта (создаёт цикл).', ar: 'لا يمكن جعل المشروع أباً لأحد مشاريعه الفرعية (ينشئ حلقة).' },
-  'projects.mindmap.pickParentBtn': { he: '👆 בחר אבא', en: '👆 Choose parent', ru: '👆 Выбрать родителя', ar: '👆 اختيار الأب' },
-  'projects.mindmap.pickChildBtn': { he: '👇 בחר בן', en: '👇 Choose child', ru: '👇 Выбрать потомка', ar: '👇 اختيار الابن' },
-  'projects.mindmap.gotoProjectBtn': { he: '📂 מעבר לדף הפרויקט', en: '📂 Go to project page', ru: '📂 Перейти на страницу проекта', ar: '📂 الانتقال إلى صفحة المشروع' },
-  'projects.mindmap.pickParentHint': { he: 'בחרו את הפרויקט שיהיה ה"אבא" של {name} — לחצו על פרויקט אחר במפה.', en: 'Choose the project that will be the "parent" of {name} — click another project on the map.', ru: 'Выберите проект, который станет «родителем» {name} — нажмите на другой проект на карте.', ar: 'اختاروا المشروع الذي سيكون "أباً" لـ {name} — اضغطوا على مشروع آخر في الخريطة.' },
-  'projects.mindmap.pickChildHint': { he: 'בחרו את הפרויקט שיהיה ה"בן" של {name} — לחצו על פרויקט אחר במפה.', en: 'Choose the project that will be the "child" of {name} — click another project on the map.', ru: 'Выберите проект, который станет «потомком» {name} — нажмите на другой проект на карте.', ar: 'اختاروا المشروع الذي سيكون "ابناً" لـ {name} — اضغطوا على مشروع آخر في الخريطة.' },
-  'projects.mindmap.linkCreated': { he: 'הקשר בין הפרויקטים נוצר.', en: 'The link between the projects was created.', ru: 'Связь между проектами создана.', ar: 'تم إنشاء الرابط بين المشروعين.' },
-  'projects.mindmap.pickSelfError': { he: 'לא ניתן לבחור את אותו הפרויקט.', en: 'Cannot pick the same project.', ru: 'Нельзя выбрать тот же проект.', ar: 'لا يمكن اختيار نفس المشروع.' },
-  'projects.mindmap.removeHierarchyBtn': { he: '🗑️ מחק היררכיה', en: '🗑️ Delete hierarchy link', ru: '🗑️ Удалить связь иерархии', ar: '🗑️ حذف رابط التسلسل الهرمي' },
-  'projects.mindmap.hierarchyRemoved': { he: 'הפרויקט הוסר מההיררכיה והפך לפרויקט ראשי.', en: 'The project was removed from the hierarchy and is now top-level.', ru: 'Проект удалён из иерархии и теперь верхнего уровня.', ar: 'تمت إزالة المشروع من التسلسل الهرمي وأصبح رئيسياً.' },
-  'field.spentILS': { he: 'הוצא (₪)', en: 'Spent (₪)', ru: 'Потрачено (₪)' , ar: 'تم إنفاقه (₪)' },
-  'field.remainingILS': { he: 'נותר (₪)', en: 'Remaining (₪)', ru: 'Осталось (₪)' , ar: 'المتبقي (₪)' },
-  'field.openTasksTh': { he: 'משימות פתוחות', en: 'Open tasks', ru: 'Открытые задачи' , ar: 'المهام المفتوحة' },
-  'projects.viewList': { he: 'רשימה', en: 'List', ru: 'Список', ar: 'قائمة' },
-  'projects.viewKanban': { he: 'Kanban', en: 'Kanban', ru: 'Канбан', ar: 'كانبان' },
-  'projects.overdueTitle': { he: 'באיחור', en: 'Overdue', ru: 'Просрочено', ar: 'متأخر' },
-  'projects.subtasksBtn': { he: 'תת-משימות', en: 'Subtasks', ru: 'Подзадачи', ar: 'مهام فرعية' },
-  'dialog.subtasksTitlePrefix': { he: 'תת-משימות — ', en: 'Subtasks — ', ru: 'Подзадачи — ', ar: 'مهام فرعية — ' },
-  'projects.addSubtaskPh': { he: 'הוסיפו תת-משימה...', en: 'Add a subtask...', ru: 'Добавить подзадачу...', ar: 'أضف مهمة فرعية...' },
-  'projects.noSubtasksMsg': { he: 'אין עדיין תת-משימות.', en: 'No subtasks yet.', ru: 'Пока нет подзадач.', ar: 'لا توجد مهام فرعية بعد.' },
-  'projects.kanbanDragHint': { he: 'גררו כרטיס לעמודה אחרת כדי לשנות סטטוס, או השתמשו בחצים שעל הכרטיס.', en: 'Drag a card to another column to change its status, or use the arrows on the card.', ru: 'Перетащите карточку в другой столбец, чтобы изменить статус, или используйте стрелки на карточке.', ar: 'اسحبوا البطاقة إلى عمود آخر لتغيير الحالة، أو استخدموا الأسهم الموجودة على البطاقة.' },
-  'list.members.addLabel': { he: 'הוספת חניך', en: 'Add member', ru: 'Добавить участника' , ar: 'إضافة عضو' },
-  'list.members.title': { he: 'רשימת החניכים', en: 'List of members', ru: 'Список участников' , ar: 'قائمة الأعضاء' },
-  'list.members.empty': { he: 'עדיין לא נוספו חניכים.', en: 'No members added yet.', ru: 'Участники ещё не добавлены.' , ar: 'لم تتم إضافة أعضاء بعد.' },
-  'list.guides.addLabel': { he: 'הוספת מדריך', en: 'Add guide', ru: 'Добавить руководителя' , ar: 'إضافة مرشد' },
-  'list.guides.title': { he: 'רשימת המדריכים', en: 'List of guides', ru: 'Список руководителей' , ar: 'قائمة المرشدين' },
-  'list.guides.empty': { he: 'עדיין לא נוספו מדריכים.', en: 'No guides added yet.', ru: 'Руководители ещё не добавлены.' , ar: 'لم تتم إضافة مرشدين بعد.' },
-  'list.equipment.addLabel': { he: 'הוספת פריט ציוד', en: 'Add equipment item', ru: 'Добавить единицу оборудования' , ar: 'إضافة عنصر معدات' },
-  'list.equipment.title': { he: 'מלאי הציוד', en: 'Equipment inventory', ru: 'Инвентарь оборудования' , ar: 'مخزون المعدات' },
-  'list.equipment.empty': { he: 'עדיין לא נוסף ציוד.', en: 'No equipment added yet.', ru: 'Оборудование ещё не добавлено.' , ar: 'لم تتم إضافة معدات بعد.' },
   'list.itinerary.addLabel': { he: 'הוספת נקודת עניין', en: 'Add point of interest', ru: 'Добавить достопримечательность' , ar: 'إضافة معلم سياحي' },
   'list.itinerary.title': { he: 'המסלול', en: 'The itinerary', ru: 'Маршрут' , ar: 'المسار' },
   'list.itinerary.empty': { he: 'עדיין לא נוספו נקודות עניין.', en: 'No points of interest added yet.', ru: 'Достопримечательности ещё не добавлены.' , ar: 'لم تتم إضافة معالم سياحية بعد.' },
@@ -1552,9 +1234,6 @@ const I18N = {
   'list.restaurants.empty': { he: 'עדיין לא נוספו מסעדות.', en: 'No restaurants added yet.', ru: 'Рестораны ещё не добавлены.' , ar: 'لم تتم إضافة مطاعم بعد.' },
   'trip.tabRestaurants': { he: 'מסעדות', en: 'Restaurants', ru: 'Рестораны' , ar: 'مطاعم' },
   'trip.coordsPlaceholder': { he: 'למשל: 32.0853, 34.7818', en: 'e.g. 32.0853, 34.7818', ru: 'например: 32.0853, 34.7818' , ar: 'مثال: 32.0853, 34.7818' },
-  'confirm.deleteGroup': { he: 'למחוק את השכבה "{name}"?', en: 'Delete the group "{name}"?', ru: 'Удалить группу «{name}»?' , ar: 'هل تريد حذف الصف "{name}"؟' },
-  'confirm.deleteGroupInUse': { he: 'שימו לב: {n} חניכים/מדריכים משויכים אליה (הם יישארו, רק השכבה תוסר מהרשימה).', en: 'Note: {n} members/guides are assigned to it (they will remain, only the group will be removed from the list).', ru: 'Обратите внимание: к ней привязано {n} участников/руководителей (они останутся, будет удалена только группа из списка).' , ar: 'تنبيه: {n} أعضاء/مرشدين مرتبطون به (سيبقون، وسيُزال الصف من القائمة فقط).' },
-  'toast.groupDeleted': { he: 'השכבה נמחקה', en: 'Group deleted', ru: 'Группа удалена' , ar: 'تم حذف الصف' },
   'toast.atLeastOneTool': { he: 'חייב להישאר לפחות כלי אחד פעיל', en: 'At least one tool must stay active', ru: 'Хотя бы один инструмент должен оставаться активным' , ar: 'يجب أن تبقى أداة واحدة على الأقل نشطة' },
   'bug.emailSubject': { he: 'דיווח באג — Or', en: 'Bug report — Or', ru: 'Отчёт об ошибке — Or' , ar: 'بلاغ خلل — Or' },
   'toast.bugEmailOpening': { he: 'נפתחת הודעת מייל — לחצו "שלח" כדי לשלוח את הדיווח', en: 'Opening an email — click "send" to send the report', ru: 'Открывается письмо — нажмите «Отправить», чтобы отправить отчёт' , ar: 'يتم فتح رسالة بريد إلكتروني — اضغطوا "إرسال" لإرسال البلاغ' },
@@ -1573,242 +1252,12 @@ const I18N = {
   'toast.importError': { he: 'שגיאה בייבוא: {msg}', en: 'Import error: {msg}', ru: 'Ошибка импорта: {msg}' , ar: 'خطأ في الاستيراد: {msg}' },
   'confirm.deleteAllData': { he: 'למחוק את כל הנתונים ולהתחיל מחדש?\nפעולה זו בלתי הפיכה — כדאי לייצא גיבוי לאקסל קודם.', en: 'Delete all data and start over?\nThis action is irreversible — you should export a backup to Excel first.', ru: 'Удалить все данные и начать заново?\nЭто действие необратимо — рекомендуется сначала экспортировать резервную копию в Excel.', ar: 'هل تريد حذف جميع البيانات والبدء من جديد؟\nهذا الإجراء لا رجعة فيه — يُنصح بتصدير نسخة احتياطية إلى إكسل أولاً.' },
   'toast.allDataDeleted': { he: 'כל הנתונים נמחקו', en: 'All data deleted', ru: 'Все данные удалены' , ar: 'تم حذف جميع البيانات' },
-  'toast.buildingSaved': { he: 'פרטי הבניין נשמרו', en: 'Building details saved', ru: 'Данные здания сохранены' , ar: 'تم حفظ بيانات البناية' },
-  'toast.enterGroupName': { he: 'הזינו שם שכבה', en: 'Enter a group name', ru: 'Введите название группы' , ar: 'أدخلوا اسم الصف' },
-  'toast.groupAlreadyExists': { he: 'השכבה כבר קיימת', en: 'The group already exists', ru: 'Группа уже существует' , ar: 'الصف موجود بالفعل' },
-  'toast.groupAdded': { he: 'השכבה "{name}" נוספה', en: 'Group "{name}" added', ru: 'Группа «{name}» добавлена' , ar: 'تمت إضافة الصف "{name}"' },
   'settings.toolTabPrefix': { he: 'הגדרות: ', en: 'Settings: ', ru: 'Настройки: ' , ar: 'الإعدادات: ' },
-  'tool.expenses.short': { he: 'הוצאות הבית', en: 'Home Expenses', ru: 'Домашние расходы' , ar: 'مصروفات المنزل' },
-  'tool.pettycash.short': { he: 'קופה קטנה', en: 'Petty Cash', ru: 'Мелкая касса' , ar: 'الصندوق الصغير' },
-  'tool.hours.short': { he: 'שעות עבודה', en: 'Work Hours', ru: 'Рабочие часы' , ar: 'ساعات العمل' },
-  'tool.vaad.short': { he: 'וועד בית', en: 'Building Committee', ru: 'Домовой комитет' , ar: 'لجنة البناية' },
-  'tool.chug.short': { he: 'תנועה / חוג', en: 'Youth Group', ru: 'Кружок' , ar: 'حركة / نادي' },
   'tool.trip.short': { he: 'חופשה', en: 'Vacation', ru: 'Отпуск' , ar: 'إجازة' },
   'settings.currentToolHeading': { he: 'הכלי הנוכחי', en: 'Current tool', ru: 'Текущий инструмент' , ar: 'الأداة الحالية' },
   'settings.currentToolBody': { he: 'הכלי <strong>"{name}"</strong> שומר את הנתונים בגיליון <strong>"{sheet}"</strong>. אין לו הגדרות ייעודיות — ההגדרות הכלליות נמצאות בטאבים האחרים.', en: 'The <strong>"{name}"</strong> tool saves its data in the <strong>"{sheet}"</strong> sheet. It has no dedicated settings — general settings are in the other tabs.', ru: 'Инструмент <strong>«{name}»</strong> сохраняет данные в листе <strong>«{sheet}»</strong>. У него нет специальных настроек — общие настройки находятся на других вкладках.' , ar: 'تحفظ أداة <strong>"{name}"</strong> بياناتها في ورقة <strong>"{sheet}"</strong>. ليس لها إعدادات مخصصة — الإعدادات العامة موجودة في الألسنة الأخرى.' },
-  'hours.manualEntry': { he: 'הזנה ידנית של משמרת', en: 'Manual shift entry', ru: 'Ручной ввод смены' , ar: 'إدخال يدوي لوردية' },
-  'field.startTime': { he: 'שעת התחלה', en: 'Start time', ru: 'Время начала' , ar: 'وقت البدء' },
-  'field.endTime': { he: 'שעת סיום', en: 'End time', ru: 'Время окончания' , ar: 'وقت الانتهاء' },
-  'field.note': { he: 'הערה', en: 'Note', ru: 'Примечание' , ar: 'ملاحظة' },
-  'hours.startWork': { he: '▶ התחל עבודה', en: '▶ Start work', ru: '▶ Начать работу' , ar: '▶ بدء العمل' },
-  'hours.endWork': { he: '■ סיים עבודה', en: '■ End work', ru: '■ Закончить работу' , ar: '■ إنهاء العمل' },
-  'hours.clockHint': { he: '"התחל עבודה" רושם עכשיו את שעת ההתחלה; "סיים עבודה" סוגר את המשמרת הפתוחה ומחשב שעות רגילות (עד 8) ונוספות (מעל 8). אפשר גם להזין משמרת ידנית למטה.', en: '"Start work" records the start time now; "End work" closes the open shift and calculates regular (up to 8) and overtime (above 8) hours. You can also enter a shift manually below.', ru: '«Начать работу» фиксирует текущее время начала; «Закончить работу» закрывает открытую смену и рассчитывает обычные (до 8) и сверхурочные (свыше 8) часы. Можно также ввести смену вручную ниже.' , ar: '"بدء العمل" يسجل وقت البدء الآن؛ "إنهاء العمل" يغلق الوردية المفتوحة ويحسب الساعات العادية (حتى 8) والإضافية (فوق 8). يمكن أيضاً إدخال وردية يدوياً أدناه.' },
-  'hours.chartTitle': { he: 'שעות רגילות ונוספות לפי חודש', en: 'Regular & overtime hours by month', ru: 'Обычные и сверхурочные часы по месяцам' , ar: 'الساعات العادية والإضافية حسب الشهر' },
-  'hours.chartAria': { he: 'גרף שעות חודשי', en: 'Monthly hours chart', ru: 'Ежемесячный график часов' , ar: 'رسم بياني شهري للساعات' },
-  'hours.allShifts': { he: 'כל המשמרות', en: 'All shifts', ru: 'Все смены' , ar: 'كل الورديات' },
-  'field.regular': { he: 'רגילות', en: 'Regular', ru: 'Обычные' , ar: 'عادية' },
-  'field.overtime': { he: 'נוספות', en: 'Overtime', ru: 'Сверхурочные' , ar: 'إضافية' },
-  'hours.shiftsEmpty': { he: 'אין עדיין משמרות. התחילו עבודה או הזינו ידנית.', en: 'No shifts yet. Start work or enter one manually.', ru: 'Пока нет смен. Начните работу или введите вручную.' , ar: 'لا توجد ورديات بعد. ابدأوا العمل أو أدخلوا يدوياً.' },
-  'hours.monthlyAnalysis': { he: 'ניתוח חודשי', en: 'Monthly analysis', ru: 'Ежемесячный анализ' , ar: 'تحليل شهري' },
   'field.month': { he: 'חודש', en: 'Month', ru: 'Месяц' , ar: 'شهر' },
-  'hours.avgPerDay': { he: 'ממוצע ליום', en: 'Average per day', ru: 'Среднее за день' , ar: 'المتوسط اليومي' },
-  'field.days': { he: 'ימים', en: 'Days', ru: 'Дней' , ar: 'أيام' },
-  'hours.noAnalysisData': { he: 'אין נתונים לניתוח.', en: 'No data to analyze.', ru: 'Нет данных для анализа.' , ar: 'لا توجد بيانات للتحليل.' },
-  'toast.shiftUpdated': { he: 'המשמרת עודכנה', en: 'Shift updated', ru: 'Смена обновлена' , ar: 'تم تحديث الوردية' },
-  'toast.shiftAdded': { he: 'המשמרת נוספה ונשמרה', en: 'Shift added and saved', ru: 'Смена добавлена и сохранена' , ar: 'تمت إضافة الوردية وحفظها' },
-  'toast.openShiftExists': { he: 'כבר יש משמרת פתוחה — סיימו אותה קודם', en: 'There is already an open shift — finish it first', ru: 'Уже есть открытая смена — сначала завершите её' , ar: 'توجد وردية مفتوحة بالفعل — أنهوها أولاً' },
-  'shift.startNote': { he: 'התחל עבודה', en: 'Start work', ru: 'Начало работы' , ar: 'بدء العمل' },
-  'toast.workStarted': { he: 'התחלת עבודה נרשמה', en: 'Work start recorded', ru: 'Начало работы зафиксировано' , ar: 'تم تسجيل بدء العمل' },
-  'confirm.deleteShift': { he: 'למחוק את המשמרת? הפעולה תעדכן את קובץ האקסל.', en: 'Delete this shift? This will update the Excel file.', ru: 'Удалить смену? Это обновит файл Excel.' , ar: 'هل تريد حذف الوردية؟ سيؤدي هذا إلى تحديث ملف الإكسل.' },
-  'toast.shiftDeleted': { he: 'המשמרת נמחקה', en: 'Shift deleted', ru: 'Смена удалена' , ar: 'تم حذف الوردية' },
-  'shift.endNote': { he: 'סיים עבודה', en: 'End work', ru: 'Конец работы' , ar: 'إنهاء العمل' },
-  'toast.workEnded': { he: 'סיום עבודה נרשם', en: 'Work end recorded', ru: 'Конец работы зафиксирован' , ar: 'تم تسجيل إنهاء العمل' },
-  'toast.noOpenShift': { he: 'אין משמרת פתוחה', en: 'No open shift', ru: 'Нет открытой смены' , ar: 'لا توجد وردية مفتوحة' },
-  'hours.liveOpen': { he: 'פתוח', en: 'Open', ru: 'Открыто' , ar: 'مفتوحة' },
-  'hours.activeShift': { he: 'משמרת פעילה — התחלה בשעה <strong>{start}</strong> ({date})', en: 'Active shift — started at <strong>{start}</strong> ({date})', ru: 'Активная смена — начало в <strong>{start}</strong> ({date})' , ar: 'وردية نشطة — بدأت الساعة <strong>{start}</strong> ({date})' },
-  'hours.noOpenShiftMsg': { he: 'אין משמרת פתוחה כרגע. לחצו "התחל עבודה" כדי לפתוח משמרת.', en: 'No open shift right now. Click "Start work" to open a shift.', ru: 'Сейчас нет открытой смены. Нажмите «Начать работу», чтобы открыть смену.' , ar: 'لا توجد وردية مفتوحة حالياً. اضغطوا "بدء العمل" لفتح وردية.' },
-  'hours.perShift': { he: 'שעות למשמרת', en: 'hours per shift', ru: 'часов за смену' , ar: 'ساعات لكل وردية' },
-  'hours.abnormalDays': { he: 'ימים חריגים', en: 'Abnormal days', ru: 'Нестандартные дни' , ar: 'أيام غير اعتيادية' },
-  'hours.over10h': { he: 'מעל 10 שעות ביום', en: 'Over 10 hours in a day', ru: 'Более 10 часов в день' , ar: 'أكثر من 10 ساعات في اليوم' },
-  'hours.totalHours': { he: 'סה"כ שעות', en: 'Total hours', ru: 'Всего часов' , ar: 'إجمالي الساعات' },
-  'hours.overtimeHours': { he: 'שעות נוספות', en: 'Overtime hours', ru: 'Сверхурочные часы' , ar: 'الساعات الإضافية' },
-  'hours.pctOfTotal': { he: '{pct}% מסך השעות', en: '{pct}% of total hours', ru: '{pct}% от общего числа часов' , ar: '{pct}% من إجمالي الساعات' },
-  'hours.shiftsCount': { he: '{n} משמרות', en: '{n} shifts', ru: '{n} смен' , ar: '{n} ورديات' },
-  'vaad.collectionTracking': { he: 'מעקב גבייה — שנת {year}', en: 'Collection tracking — {year}', ru: 'Учёт сборов — {year}' , ar: 'متابعة التحصيل — سنة {year}' },
-  'vaad.fixedExpTracking': { he: 'מעקב הוצאות — שנת {year}', en: 'Expense tracking — {year}', ru: 'Учёт расходов — {year}', ar: 'متابعة المصروفات — سنة {year}' },
-  'vaad.fixedMatrixHint': { he: 'כל תא מציג את סך ההוצאות באותה קטגוריה ובאותו חודש. ניתן להקליד קטגוריה חדשה בטופס אם היא לא ברשימה. ההוספה, העריכה והמחיקה של רשומות בפועל נעשות בטופס וברשימה שלמטה.', en: 'Each cell shows the total spent in that category for that month. You can type a new category in the form if it\'s not in the list. Add, edit and delete actual entries in the form and list below.', ru: 'Каждая ячейка показывает общую сумму расходов по этой категории за этот месяц. Если нужной категории нет в списке, её можно ввести в форме. Добавление, редактирование и удаление записей выполняется в форме и списке ниже.', ar: 'تعرض كل خلية إجمالي المصروفات في تلك الفئة لذلك الشهر. يمكن كتابة فئة جديدة في النموذج إذا لم تكن موجودة في القائمة. الإضافة والتعديل والحذف الفعلي للسجلات تتم في النموذج والقائمة أدناه.' },
-  'vaad.fixedTotalAnnual': { he: 'סה"כ הוצאות', en: 'Total expenses', ru: 'Итого расходы', ar: 'إجمالي المصروفات' },
-  'vaad.clickCellToEdit': { he: 'לחצו לעריכה', en: 'Click to edit', ru: 'Нажмите для редактирования', ar: 'انقر للتعديل' },
-  'vaad.deleteCategoryRows': { he: 'מחיקת כל רשומות הקטגוריה', en: 'Delete all records in this category', ru: 'Удалить все записи этой категории', ar: 'حذف جميع سجلات هذه الفئة' },
-  'toast.multipleRecordsInCell': { he: 'יש כמה רשומות בחודש הזה — ערכו מהרשימה למטה', en: 'There are several records this month — edit them in the list below', ru: 'В этом месяце несколько записей — отредактируйте их в списке ниже', ar: 'هناك عدة سجلات في هذا الشهر — عدّلوها من القائمة أدناه' },
-  'vaad.recordsListTitle': { he: 'כל רשומות התשלום', en: 'All payment records', ru: 'Все записи платежей', ar: 'جميع سجلات الدفع' },
-  'vaad.recordsListEmpty': { he: 'אין עדיין רשומות תשלום', en: 'No payment records yet', ru: 'Записей о платежах пока нет', ar: 'لا توجد سجلات دفع بعد' },
-  'vaad.chartTypeBar': { he: 'עמודות', en: 'Bar', ru: 'Столбцы', ar: 'أعمدة' },
-  'vaad.chartTypePie': { he: 'פילוח הוצאות', en: 'Expense breakdown', ru: 'Разбивка расходов', ar: 'توزيع المصروفات' },
-  'vaad.chartYearAll': { he: 'כל השנים', en: 'All years', ru: 'Все годы', ar: 'كل السنوات' },
-  'vaad.expenseBreakdownEmpty': { he: 'אין הוצאות בשנה זו', en: 'No expenses this year', ru: 'В этом году нет расходов', ar: 'لا توجد مصروفات هذه السنة' },
-  'vaad.tabMatrix': { he: 'גבייה חודשית', en: 'Monthly collection', ru: 'Ежемесячный сбор' , ar: 'التحصيل الشهري' },
-  'vaad.tabResidents': { he: 'דיירים ודירות', en: 'Residents & apartments', ru: 'Жильцы и квартиры' , ar: 'السكان والشقق' },
-  'vaad.tabTickets': { he: 'תקלות', en: 'Issues', ru: 'Проблемы' , ar: 'الأعطال' },
-  'vaad.tabPros': { he: 'בעלי מקצוע', en: 'Professionals', ru: 'Специалисты' , ar: 'أصحاب المهن' },
-  'vaad.tabFinance': { he: 'מאזן כספי', en: 'Financial Balance', ru: 'Финансовый баланс' , ar: 'الميزان المالي' },
-  'vaad.tabFixedExp': { he: 'הוצאות', en: 'Expenses', ru: 'Расходы', ar: 'مصروفات' },
-  'vaad.tabWhatsapp': { he: 'שליחת הודעות', en: 'Send messages', ru: 'Отправка сообщений', ar: 'إرسال رسائل' },
-  'vaad.tabMsgDesign': { he: 'תכנון הודעות', en: 'Message design', ru: 'Дизайн сообщений', ar: 'تصميم الرسائل' },
-  'vaad.msgDesign.heading': { he: 'תכנון ממשק שליחת הודעות', en: 'Messaging UI design', ru: 'Дизайн интерфейса сообщений', ar: 'تصميم واجهة الرسائل' },
-  'vaad.msgDesign.hint': { he: 'טאב פנימי לתכנון ולא חלק מתהליך המנוי האמיתי — משמש רק לבדיקת עיצוב הממשק, ללא הרשמה או תשלום.', en: 'An internal design sandbox, not part of the real subscription flow - used only to try out the interface, no sign-in or payment involved.', ru: 'Внутренняя песочница для дизайна, не часть реального процесса подписки — используется только для проверки интерфейса, без регистрации и оплаты.', ar: 'تبويب داخلي للتصميم وليس جزءاً من تدفق الاشتراك الفعلي — يُستخدم فقط لتجربة الواجهة، دون تسجيل أو دفع.' },
-  'vaad.msgDesign.messageLangLabel': { he: 'שפת ההודעה', en: 'Message language', ru: 'Язык сообщения', ar: 'لغة الرسالة' },
-  'vaad.msgDesign.messageLangHint': { he: 'ניתן לבחור את שפת ההודעה הנשלחת בנפרד משפת הממשק — למשל, ממשק באנגלית והודעה בעברית.', en: 'The message language can be chosen independently of the interface language - e.g. an English interface with a Hebrew message.', ru: 'Язык сообщения можно выбрать независимо от языка интерфейса — например, интерфейс на английском, а сообщение на иврите.', ar: 'يمكن اختيار لغة الرسالة بشكل مستقل عن لغة الواجهة — مثلاً، واجهة بالإنجليزية ورسالة بالعبرية.' },
-  'vaad.msgDesign.noResidents': { he: 'עדיין לא נוספו דיירים — הוסיפו אותם בטאב "דיירים ודירות" כדי לראות אותם כאן.', en: 'No residents added yet - add them in the "Residents & Apartments" tab to see them here.', ru: 'Жильцы ещё не добавлены — добавьте их на вкладке "Жильцы и квартиры", чтобы увидеть здесь.', ar: 'لم يُضف سكان بعد — أضيفوهم في تبويب "السكان والشقق" لرؤيتهم هنا.' },
-  'vaad.msgDesign.selectUnpaidBtn': { he: 'בחר את מי שלא שילם', en: 'Select unpaid', ru: 'Выбрать неоплативших', ar: 'اختيار غير الدافعين' },
-  'vaad.msgDesign.selectAllBtn': { he: 'בחר הכל', en: 'Select all', ru: 'Выбрать всех', ar: 'اختيار الكل' },
-  'vaad.msgDesign.selectNoneBtn': { he: 'נקה בחירה', en: 'Clear selection', ru: 'Очистить выбор', ar: 'مسح الاختيار' },
-  'vaad.msgDesign.paidYes': { he: 'שילם', en: 'Paid', ru: 'Оплачено', ar: 'دفع' },
-  'vaad.msgDesign.paidNo': { he: 'לא שילם', en: 'Unpaid', ru: 'Не оплачено', ar: 'لم يدفع' },
-  'vaad.msgDesign.selectedCount': { he: 'נבחרו {n} נמענים', en: '{n} recipients selected', ru: 'Выбрано получателей: {n}', ar: 'تم اختيار {n} مستلمين' },
-  'field.consent': { he: 'הסכמה', en: 'Consent', ru: 'Согласие', ar: 'الموافقة' },
-  'vaad.consent.none': { he: 'לא נשלחה בקשה', en: 'Not requested', ru: 'Не запрошено', ar: 'لم يُطلب' },
-  'vaad.consent.pending': { he: 'ממתין לתשובה', en: 'Awaiting reply', ru: 'Ожидает ответа', ar: 'بانتظار الرد' },
-  'vaad.consent.optedIn': { he: 'מסכים/ה', en: 'Consented', ru: 'Согласен(на)', ar: 'موافق/ة' },
-  'vaad.consent.optedOut': { he: 'לא מסכים/ה', en: 'Declined', ru: 'Отказался(лась)', ar: 'رافض/ة' },
-  'vaad.consent.demo': { he: '—', en: '—', ru: '—', ar: '—' },
-  'vaad.consent.requestBtn': { he: 'בקש אישור', en: 'Request consent', ru: 'Запросить согласие', ar: 'طلب الموافقة' },
-  'vaad.consent.requestSent': { he: 'בקשת אישור נשלחה', en: 'Consent request sent', ru: 'Запрос согласия отправлен', ar: 'تم إرسال طلب الموافقة' },
-  'vaad.consent.requestAlreadyPending': { he: 'כבר נשלחה בקשה לדייר הזה לאחרונה', en: 'A request was already sent to this resident recently', ru: 'Запрос этому жителю уже был недавно отправлен', ar: 'تم بالفعل إرسال طلب لهذا الساكن مؤخراً' },
-  'vaad.consent.requestAlreadyIn': { he: 'הדייר כבר אישר קבלת הודעות', en: 'This resident already consented', ru: 'Этот житель уже дал согласие', ar: 'وافق هذا الساكن بالفعل' },
-  'vaad.consent.requestFailed': { he: 'שליחת בקשת האישור נכשלה', en: 'Failed to send the consent request', ru: 'Не удалось отправить запрос согласия', ar: 'فشل إرسال طلب الموافقة' },
-  'vaad.consent.blockedToast': { he: 'הדייר הזה ביקש לא לקבל הודעות — השליחה חסומה', en: 'This resident opted out of messages - sending is blocked', ru: 'Этот житель отказался от сообщений - отправка заблокирована', ar: 'رفض هذا الساكن استلام الرسائل - تم حظر الإرسال' },
-  'vaad.consent.noPhone': { he: 'אין מספר טלפון לדייר הזה', en: 'This resident has no phone number', ru: 'У этого жителя нет номера телефона', ar: 'لا يوجد رقم هاتف لهذا الساكن' },
-  'vaad.msgDesign.templateGentle': { he: 'תבנית נעימה', en: 'Gentle template', ru: 'Мягкий шаблон', ar: 'قالب لطيف' },
-  'vaad.msgDesign.templateGentleText': { he: 'שלום! תזכורת קטנה וידידותית — טרם התקבל תשלום ועד הבית לחודש הנוכחי. נשמח אם תוכלו להסדיר בהקדם 🙂 תודה, הוועד.', en: 'Hi! Just a friendly reminder - this month\'s building committee payment hasn\'t come through yet. Whenever you get a chance 🙂 Thanks, the committee.', ru: 'Здравствуйте! Небольшое дружеское напоминание — платёж домовому комитету за этот месяц ещё не поступил. Буду признательны, если сможете оплатить 🙂 Спасибо, комитет.', ar: 'مرحباً! تذكير ودّي صغير — لم يصل بعد دفع لجنة البناية لهذا الشهر. سنكون ممتنين لو أمكن التسديد قريباً 🙂 شكراً، اللجنة.' },
-  'vaad.msgDesign.templateFirm': { he: 'תבנית תקיפה', en: 'Firm template', ru: 'Строгий шаблон', ar: 'قالب حازم' },
-  'vaad.msgDesign.templateFirmText': { he: 'שלום, זאת פנייה חוזרת בנושא תשלום ועד הבית שטרם התקבל\nנבקש להסדיר את התשלום\nתודה על ההבנה, הוועד', en: 'Hello, a repeat notice regarding the building committee payment that still hasn\'t been received\nPlease settle the payment\nThank you for understanding, the committee', ru: 'Здравствуйте, повторное уведомление о неоплаченном взносе домовому комитету\nПросим оплатить взнос\nСпасибо за понимание, комитет', ar: 'مرحباً، تذكير متكرر بخصوص دفعة لجنة البناية التي لم تصل بعد\nنرجو تسوية الدفعة\nشكراً لتفهمكم، اللجنة' },
-  'vaad.msgDesign.manualTab': { he: 'שליחה ידנית', en: 'Manual sending', ru: 'Ручная отправка', ar: 'إرسال يدوي' },
-  'vaad.msgDesign.autoTab': { he: 'שליחה אוטומטית', en: 'Automatic sending', ru: 'Автоматическая отправка', ar: 'إرسال تلقائي' },
-  'vaad.msgDesign.autoHint': { he: 'בחרו שני תאריכים בחודש ותבנית לכל אחד (למשל תזכורת נעימה ב-5 לחודש, ותבנית תקיפה יותר ב-25 לחודש למי שעדיין לא שילם). הערה: שליחה אוטומטית בפועל בתאריך עתידי דורשת עבודת פיתוח נוספת בשרת (משימה מתוזמנת) — עדיין לא קיימת, זו כרגע הדגמה של הממשק בלבד.', en: 'Pick two dates in the month and a template for each (e.g. a gentle reminder on the 5th, a firmer one on the 25th for anyone still unpaid). Note: actually sending automatically on a future date needs additional backend work (a scheduled job) - not built yet, this is currently an interface demo only.', ru: 'Выберите две даты в месяце и шаблон для каждой (например, мягкое напоминание 5-го числа и более строгое 25-го для неоплативших). Примечание: фактическая автоматическая отправка в будущую дату требует дополнительной серверной разработки (запланированное задание) — пока не реализовано, сейчас это только демонстрация интерфейса.', ar: 'اختاروا تاريخين في الشهر وقالباً لكل منهما (مثلاً تذكير لطيف في اليوم 5، وأكثر حزماً في اليوم 25 لمن لم يدفع بعد). ملاحظة: الإرسال التلقائي الفعلي في تاريخ مستقبلي يتطلب عملاً إضافياً على الخادم (مهمة مجدولة) — غير موجود بعد، هذا حالياً عرض للواجهة فقط.' },
-  'vaad.msgDesign.activeLabel': { he: 'פעיל', en: 'Active', ru: 'Активно', ar: 'مفعّل' },
-  'vaad.msgDesign.noActiveReminders': { he: 'סמנו לפחות תזכורת אחת כפעילה', en: 'Mark at least one reminder as active', ru: 'Отметьте хотя бы одно активное напоминание', ar: 'حددوا تذكيراً واحداً على الأقل كمفعّل' },
-  'vaad.msgDesign.autoDate1': { he: 'תזכורת 1', en: 'Reminder 1', ru: 'Напоминание 1', ar: 'تذكير 1' },
-  'vaad.msgDesign.autoDate2': { he: 'תזכורת 2', en: 'Reminder 2', ru: 'Напоминание 2', ar: 'تذكير 2' },
-  'vaad.msgDesign.dayOfMonthWord': { he: 'לחודש', en: 'of the month', ru: 'числа месяца', ar: 'من الشهر' },
-  'vaad.msgDesign.saveAutoBtn': { he: 'שמירת תזמון', en: 'Save schedule', ru: 'Сохранить расписание', ar: 'حفظ الجدولة' },
-  'vaad.msgDesign.autoDatesTooClose': { he: 'צריך מרווח של לפחות {gap} ימים בין שתי התזכורות (למשל 5 ו-15)', en: 'The two reminders need at least {gap} days apart (e.g. 5 and 15)', ru: 'Между двумя напоминаниями должно быть не менее {gap} дней (например, 5 и 15)', ar: 'يجب أن يكون هناك فاصل {gap} أيام على الأقل بين التذكيرين (مثلاً 5 و15)' },
-  'vaad.msgDesign.autoDatesMissing': { he: 'יש לבחור יום חוקי בחודש (1–31) לשני התזכורות', en: 'Please pick a valid day of the month (1-31) for both reminders', ru: 'Пожалуйста, выберите допустимый день месяца (1–31) для обоих напоминаний', ar: 'يرجى اختيار يوم صالح من الشهر (1-31) لكلا التذكيرين' },
-  'vaad.msgDesign.autoSavedToast': { he: 'הדגמה: היה נשמר תזמון ל-{n} דיירים — יום {d1} לחודש (תבנית 1) ויום {d2} לחודש (תבנית 2)', en: 'Demo: a schedule would be saved for {n} residents - day {d1} of the month (template 1) and day {d2} (template 2)', ru: 'Демо: расписание было бы сохранено для {n} жильцов — {d1}-е число (шаблон 1) и {d2}-е число (шаблон 2)', ar: 'عرض: كانت ستُحفظ جدولة لـ {n} سكان — اليوم {d1} من الشهر (قالب 1) واليوم {d2} (قالب 2)' },
-  'vaad.msgDesign.sendBtn': { he: 'שליחה לנבחרים', en: 'Send to selected', ru: 'Отправить выбранным', ar: 'إرسال للمختارين' },
-  'vaad.msgDesign.sentToast': { he: 'הדגמה: ההודעה הייתה נשלחת עכשיו ל-{n} דיירים', en: 'Demo: the message would be sent now to {n} residents', ru: 'Демо: сообщение было бы отправлено {n} жильцам', ar: 'عرض: كانت ستُرسل الرسالة الآن إلى {n} سكان' },
-  'vaad.whatsapp.title': { he: 'שליחת הודעות WhatsApp', en: 'Send WhatsApp messages', ru: 'Отправка сообщений WhatsApp', ar: 'إرسال رسائل واتساب' },
-  'vaad.whatsapp.composeTitle': { he: 'כתיבת הודעה', en: 'Compose a message', ru: 'Написать сообщение', ar: 'كتابة رسالة' },
-  'vaad.whatsapp.demoModeLabel': { he: 'מצב הדגמה (מדלג ישר למסך שליחת הודעה, לבדיקה בלבד)', en: 'Demo mode (skip straight to the message screen, testing only)', ru: 'Демо-режим (сразу к экрану сообщения, только для теста)', ar: 'وضع العرض (تخطي مباشرة إلى شاشة الرسالة، للاختبار فقط)' },
-  'vaad.whatsapp.introSignedOut': { he: 'נמאס לרדוף אחרי דיירים עם תזכורות תשלום, אחד-אחד? אור עושה את זה בשבילכם — הודעת WhatsApp מסודרת, ישירה לדייר, בלחיצת כפתור אחת. פשוט, מהיר, ובלי לרדוף אחרי אף אחד. תכונה בתשלום — התחברו עם Google כדי להתחיל.', en: 'Tired of chasing residents for payment reminders one by one? Or does it for you — a tidy WhatsApp message, straight to the resident, with one click. Simple, fast, no more chasing. This is a paid feature — sign in with Google to get started.', ru: 'Устали гоняться за жильцами с напоминаниями об оплате по одному? Or сделает это за вас — аккуратное сообщение WhatsApp прямо жильцу, в один клик. Просто, быстро, без беготни. Платная функция — войдите через Google, чтобы начать.', ar: 'تعبتم من ملاحقة السكان لتذكيرهم بالدفع واحداً تلو الآخر؟ يقوم Or بذلك نيابة عنكم — رسالة واتساب مرتبة، مباشرة للساكن، بضغطة واحدة. بسيط وسريع، بلا ملاحقة لأحد. ميزة مدفوعة — سجّلوا الدخول عبر Google للبدء.' },
-  'vaad.whatsapp.introUnsubscribed': { he: 'כדי לשלוח הודעות יש להפעיל מנוי חודשי.', en: 'A monthly subscription is required to send messages.', ru: 'Для отправки сообщений требуется ежемесячная подписка.', ar: 'يلزم اشتراك شهري لإرسال الرسائل.' },
-  'vaad.whatsapp.signedInAs': { he: 'מחוברים כ-{email}', en: 'Signed in as {email}', ru: 'Вы вошли как {email}', ar: 'تم تسجيل الدخول باسم {email}' },
-  'vaad.whatsapp.subscribeBtn': { he: 'הפעלת מנוי', en: 'Subscribe', ru: 'Оформить подписку', ar: 'تفعيل الاشتراك' },
-  'vaad.whatsapp.recipientLabel': { he: 'נמען', en: 'Recipient', ru: 'Получатель', ar: 'المستلم' },
-  'vaad.whatsapp.messageLabel': { he: 'הודעה', en: 'Message', ru: 'Сообщение', ar: 'الرسالة' },
-  'vaad.whatsapp.messagePh': { he: 'כתבו כאן את ההודעה לדייר...', en: 'Write the message to the resident here...', ru: 'Напишите здесь сообщение для жильца...', ar: 'اكتبوا هنا الرسالة للساكن...' },
-  'vaad.whatsapp.previewDefaultName': { he: 'בחרו נמען', en: 'Choose a recipient', ru: 'Выберите получателя', ar: 'اختاروا مستلماً' },
-  'vaad.whatsapp.previewSubtitle': { he: 'תצוגה מקדימה', en: 'Preview', ru: 'Предпросмотр', ar: 'معاينة' },
-  'vaad.whatsapp.previewPlaceholder': { he: 'ההודעה תוצג כאן בזמן שאתם כותבים', en: 'Your message will appear here as you type', ru: 'Ваше сообщение появится здесь по мере набора', ar: 'ستظهر رسالتكم هنا أثناء الكتابة' },
-  'vaad.whatsapp.sendBtn': { he: 'שליחה', en: 'Send', ru: 'Отправить', ar: 'إرسال' },
-  'vaad.whatsapp.sendSuccess': { he: 'ההודעה נשלחה', en: 'Message sent', ru: 'Сообщение отправлено', ar: 'تم إرسال الرسالة' },
-  'vaad.whatsapp.sendError': { he: 'שליחת ההודעה נכשלה', en: 'Failed to send the message', ru: 'Не удалось отправить сообщение', ar: 'فشل إرسال الرسالة' },
-  'vaad.whatsapp.sendMissing': { he: 'בחרו נמען וכתבו הודעה', en: 'Choose a recipient and write a message', ru: 'Выберите получателя и напишите сообщение', ar: 'اختاروا مستلماً واكتبوا رسالة' },
-  'vaad.whatsapp.checkoutError': { he: 'לא הצלחנו לפתוח את עמוד התשלום', en: 'Could not open the payment page', ru: 'Не удалось открыть страницу оплаты', ar: 'تعذّر فتح صفحة الدفع' },
-  'vaad.whatsapp.verifyError': { he: 'אימות ההתחברות מול השרת נכשל', en: 'Sign-in verification against the server failed', ru: 'Проверка входа на сервере не удалась', ar: 'فشل التحقق من تسجيل الدخول لدى الخادم' },
-  'vaad.whatsapp.quotaInfo': { he: '{total} הודעות בחודש קלנדרי, 2 הודעות בחודש לאותו מספר.', en: 'Up to {total} messages per calendar month, and up to 2 messages per month to the same number.', ru: 'До {total} сообщений в календарный месяц и до 2 сообщений в месяц на один номер.', ar: 'يُسمح بإرسال حتى {total} رسالة في الشهر التقويمي، وحتى رسالتين في الشهر لنفس الرقم.' },
-  'vaad.whatsapp.tierContactsLimit': { he: '{n} אנשי קשר לשליחת הודעות', en: 'Up to {n} contacts for sending messages', ru: 'До {n} контактов для рассылки', ar: 'حتى {n} جهة اتصال لإرسال الرسائل' },
-  'vaad.whatsapp.templateBtn': { he: 'תבנית תזכורת תשלום', en: 'Payment reminder template', ru: 'Шаблон напоминания об оплате', ar: 'قالب تذكير بالدفع' },
-  'vaad.whatsapp.templateNoMissing': { he: 'לדייר הזה אין חודשים פתוחים השנה — כל הכבוד!', en: 'This resident has no open months this year — well done!', ru: 'У этого жильца нет открытых месяцев в этом году — отлично!', ar: 'لا توجد أشهر مفتوحة لهذا الساكن هذه السنة — أحسنتم!' },
-  'vaad.whatsapp.templateText': { he: 'שלום, זוהי הודעת מערכת אוטומטית מוועד הבית. שמנו לב שקיים חוב פתוח בתשלום ועד הבית עבור דירה {apartment} עבור החודשים הבאים: {months}. נבקש להסדיר את התשלום בהקדם האפשרי. תודה, ועד הבית.', en: 'Hello, this is an automatic system message from the building committee. We noticed an open balance for apartment {apartment} for the following months: {months}. Please settle the payment as soon as possible. Thank you, the building committee.', ru: 'Здравствуйте, это автоматическое системное сообщение от домового комитета. Мы заметили задолженность по квартире {apartment} за следующие месяцы: {months}. Просим погасить платёж как можно скорее. Спасибо, домовой комитет.', ar: 'مرحباً، هذه رسالة نظام آلية من لجنة البناية. لاحظنا وجود رصيد مفتوح للشقة {apartment} عن الأشهر التالية: {months}. يُرجى تسوية الدفع في أقرب وقت ممكن. شكراً، لجنة البناية.' },
-  'vaad.whatsapp.tiersTitle': { he: 'מסלולי המחיר', en: 'Pricing tiers', ru: 'Тарифные планы', ar: 'خطط الأسعار' },
-  'vaad.whatsapp.tierSmall': { he: '15 דירות', en: 'Up to 15 units', ru: 'До 15 квартир', ar: 'حتى 15 شقة' },
-  'vaad.whatsapp.tierMedium': { he: '16–50 דירות', en: '16–50 units', ru: '16–50 квартир', ar: '16–50 شقة' },
-  'vaad.whatsapp.tierLarge': { he: '51–100 דירות', en: '51–100 units', ru: '51–100 квартир', ar: '51–100 شقة' },
-  'vaad.whatsapp.tierAboveMax': { he: 'בניין עם יותר מ-100 דירות? צרו קשר לתמחור מותאם.', en: 'Building with more than 100 units? Contact us for custom pricing.', ru: 'Дом более чем на 100 квартир? Свяжитесь с нами для индивидуальной цены.', ar: 'بناية بأكثر من 100 شقة؟ تواصلوا معنا لتسعير مخصص.' },
-  'vaad.whatsapp.yourTier': { he: 'מומלץ לבניין שלכם', en: 'Recommended for your building', ru: 'Рекомендовано для вашего дома', ar: 'موصى به لبنايتكم' },
-  'vaad.whatsapp.perMonth': { he: 'לחודש', en: 'per month', ru: 'в месяц', ar: 'شهرياً' },
-  'vaad.whatsapp.recipientsNote': { he: 'ניתן לשלוח הודעות רק לדיירים הרשומים בכלי הוועד (טאב "דיירים ודירות").', en: 'Messages can only be sent to residents registered in the building-committee tool (the "Residents & apartments" tab).', ru: 'Сообщения можно отправлять только жильцам, зарегистрированным в инструменте домового комитета (вкладка «Жильцы и квартиры»).', ar: 'يمكن إرسال الرسائل فقط للسكان المسجلين في أداة لجنة البناية (لسان "السكان والشقق").' },
-  'vaad.whatsapp.approvalPending': { he: 'התשלום אושר — מפעילים את המנוי, רגע בבקשה...', en: 'Payment approved — activating your subscription, one moment...', ru: 'Платёж подтверждён — активируем подписку, одну минуту...', ar: 'تمت الموافقة على الدفع — يتم تفعيل الاشتراك، لحظة من فضلكم...' },
-  'vaad.whatsapp.priceSmall': { he: 'מחיר לבניין שלכם ({n} דירות): ₪50 לחודש', en: 'Price for your building ({n} units): ₪50/month', ru: 'Цена для вашего дома ({n} квартир): ₪50/месяц', ar: 'السعر لبنايتكم ({n} شقة): 50 ₪ شهرياً' },
-  'vaad.whatsapp.priceMedium': { he: 'מחיר לבניין שלכם ({n} דירות): ₪100 לחודש', en: 'Price for your building ({n} units): ₪100/month', ru: 'Цена для вашего дома ({n} квартир): ₪100/месяц', ar: 'السعر لبنايتكم ({n} شقة): 100 ₪ شهرياً' },
-  'vaad.whatsapp.priceLarge': { he: 'מחיר לבניין שלכם ({n} דירות): ₪150 לחודש', en: 'Price for your building ({n} units): ₪150/month', ru: 'Цена для вашего дома ({n} квартир): ₪150/месяц', ar: 'السعر لبنايتكم ({n} شقة): 150 ₪ شهرياً' },
-  'vaad.whatsapp.aboveMaxIntro': { he: 'לבניין שלכם ({n} דירות) מומלץ תמחור מותאם אישית — צרו קשר. אפשר גם לבחור אחד מהמסלולים הקבועים למטה, אם רק חלק מהדיירים צריכים לקבל הודעות.', en: 'For your building ({n} units), custom pricing is recommended - contact us. You can also pick one of the fixed plans below if only some residents need to receive messages.', ru: 'Для вашего дома ({n} квартир) рекомендуется индивидуальная цена — свяжитесь с нами. Также можно выбрать один из фиксированных тарифов ниже, если сообщения нужны не всем жильцам.', ar: 'لبنايتكم ({n} شقة) يُنصح بتسعير مخصص — تواصلوا معنا. يمكنكم أيضاً اختيار إحدى الخطط الثابتة أدناه إذا كان الإرسال مطلوباً لبعض السكان فقط.' },
-  'vaad.whatsapp.agreementReadBtn': { he: 'קראו ואשרו את הסכם השימוש', en: 'Read and confirm the usage agreement', ru: 'Прочитайте и подтвердите соглашение об использовании', ar: 'اقرؤوا وأكّدوا اتفاقية الاستخدام' },
-  'vaad.whatsapp.agreementHideBtn': { he: 'הסתירו את הסכם השימוש', en: 'Hide the usage agreement', ru: 'Скрыть соглашение об использовании', ar: 'إخفاء اتفاقية الاستخدام' },
-  'vaad.whatsapp.agreementCheckHiddenHint': { he: 'תיבת האישור נמצאת בסוף הסכם השימוש — פתחו אותו וקראו עד הסוף כדי לאשר.', en: 'The confirmation box is at the end of the usage agreement — open it and read to the end to confirm.', ru: 'Флажок подтверждения находится в конце соглашения — откройте его и прочитайте до конца, чтобы подтвердить.', ar: 'مربع التأكيد موجود في نهاية اتفاقية الاستخدام — افتحوها واقرؤوا حتى النهاية للتأكيد.' },
-  'vaad.whatsapp.agreementCheckLabel': { he: 'קראתי ואני מאשר/ת את הסכם השימוש בשירות שליחת ההודעות', en: 'I have read and agree to the messaging-service usage agreement', ru: 'Я прочитал(а) и согласен(на) с соглашением об использовании сервиса рассылки', ar: 'قرأت وأوافق على اتفاقية استخدام خدمة إرسال الرسائل' },
-  'vaad.whatsapp.idNumberLabel': { he: 'תעודת זהות המאשר/ת', en: 'ID number of the person confirming', ru: 'Номер удостоверения личности подтверждающего', ar: 'رقم هوية المُصادق' },
-  'vaad.whatsapp.idNumberPh': { he: '9 ספרות', en: '9 digits', ru: '9 цифр', ar: '9 أرقام' },
-  'vaad.whatsapp.agreementIntro': { he: 'לפני חיבור חשבון Google — קראו את הסכם השימוש, סמנו את תיבת האישור והזינו תעודת זהות. רק לאחר מכן תוכלו להתחבר ולהמשיך לתשלום.', en: 'Before connecting a Google account — read the usage agreement, check the confirmation box and enter your ID number. Only then can you sign in and continue to payment.', ru: 'Перед подключением аккаунта Google — прочитайте соглашение, отметьте флажок подтверждения и введите номер удостоверения личности. Только после этого можно войти и перейти к оплате.', ar: 'قبل ربط حساب Google — اقرؤوا اتفاقية الاستخدام، ضعوا علامة على مربع التأكيد وأدخلوا رقم الهوية. بعد ذلك فقط يمكنكم تسجيل الدخول والمتابعة إلى الدفع.' },
-  'vaad.whatsapp.agreementContinueBtn': { he: 'אישור והמשך לחיבור Google', en: 'Confirm and continue to Google sign-in', ru: 'Подтвердить и перейти к входу через Google', ar: 'تأكيد والمتابعة لتسجيل الدخول عبر Google' },
-  'vaad.whatsapp.introSignin': { he: 'האישור נקלט. התחברו עם Google כדי להמשיך לתשלום.', en: 'Confirmation received. Sign in with Google to continue to payment.', ru: 'Подтверждение получено. Войдите через Google, чтобы перейти к оплате.', ar: 'تم استلام التأكيد. سجّلوا الدخول عبر Google للمتابعة إلى الدفع.' },
-  'vaad.whatsapp.agreementRequiredHint': { he: 'כדי להמשיך לתשלום — קראו את הסכם השימוש, סמנו את תיבת האישור והזינו תעודת זהות תקינה.', en: 'To continue to payment — read the usage agreement, check the confirmation box and enter a valid ID number.', ru: 'Чтобы перейти к оплате — прочитайте соглашение, отметьте флажок подтверждения и введите действительный номер удостоверения.', ar: 'للمتابعة إلى الدفع — اقرؤوا الاتفاقية، ضعوا علامة على مربع التأكيد وأدخلوا رقم هوية صحيحاً.' },
-  'vaad.whatsapp.idNumberInvalid': { he: 'תעודת הזהות שהוזנה אינה תקינה', en: 'The ID number entered is not valid', ru: 'Введённый номер удостоверения недействителен', ar: 'رقم الهوية المُدخل غير صالح' },
-  'vaad.whatsapp.agreementText': { he: 'הסכם שימוש בשירות שליחת הודעות WhatsApp — אור (Or)\n\n1. השירות מאפשר לוועד הבית לשלוח הודעות WhatsApp לדיירים הרשומים בכלי הוועד, בכפוף למכסה חודשית (עד 30 הודעות בחודש קלנדרי, ועד 2 הודעות בחודש לאותו מספר טלפון).\n2. הרוכש/ת מצהיר/ה כי הוא/היא מוסמך/ת לפעול בשם ועד הבית ולשלוח הודעות בשמו לדיירי הבניין.\n3. האחריות לתוכן ההודעות הנשלחות, לדיוק פרטי הדיירים ולעדכניותם חלה במלואה על הרוכש/ת ו/או ועד הבית, ולא על אור.\n4. אור אינה אחראית לעיכובים, אי-הגעה או תקלות בשירותי הצד השלישי (WhatsApp/Twilio) המשמשים להעברת ההודעות.\n5. התשלום הינו מנוי חודשי המתחדש אוטומטית עד לביטול על ידי הרוכש/ת דרך חשבון ה-PayPal שלו/ה.\n6. פרטי הזיהוי (מספר תעודת זהות) הנמסרים באישור זה נשמרים לצורך תיעוד ההסכמה וזיהוי המנוי בלבד, ולא יועברו לצד שלישי אלא ככל שנדרש על פי דין.\n7. הרוכש/ת מצהיר/ה כי הוא/היא מעל גיל 18.\n8. סימון תיבת האישור מהווה הסכמה מלאה ומחייבת לכל תנאי הסכם זה.', en: 'Or WhatsApp Messaging Service — Usage Agreement\n\n1. The service allows the building committee to send WhatsApp messages to residents registered in the committee tool, subject to a monthly quota (up to 30 messages per calendar month, and up to 2 messages per month to the same phone number).\n2. The purchaser declares that they are authorized to act on behalf of the building committee and to send messages on its behalf to the building\'s residents.\n3. Responsibility for the content of messages sent, and for the accuracy and up-to-dateness of resident details, rests entirely with the purchaser and/or the building committee — not with Or.\n4. Or is not responsible for delays, non-delivery, or malfunctions of the third-party services (WhatsApp/Twilio) used to transmit messages.\n5. Payment is a monthly subscription that renews automatically until cancelled by the purchaser via their PayPal account.\n6. The identifying details (ID number) provided in this confirmation are kept solely to document consent and identify the subscription, and will not be shared with a third party except as required by law.\n7. The purchaser declares that they are over 18 years of age.\n8. Checking the confirmation box constitutes full and binding agreement to all terms of this agreement.', ru: 'Соглашение об использовании сервиса рассылки WhatsApp — Or\n\n1. Сервис позволяет домовому комитету отправлять сообщения WhatsApp жильцам, зарегистрированным в инструменте комитета, в рамках месячной квоты (до 30 сообщений в календарный месяц и до 2 сообщений в месяц на один номер телефона).\n2. Покупатель заявляет, что уполномочен действовать от имени домового комитета и отправлять сообщения от его имени жильцам дома.\n3. Ответственность за содержание отправляемых сообщений, а также за точность и актуальность данных жильцов полностью лежит на покупателе и/или домовом комитете, а не на Or.\n4. Or не несёт ответственности за задержки, недоставку или сбои сторонних сервисов (WhatsApp/Twilio), используемых для передачи сообщений.\n5. Оплата представляет собой ежемесячную подписку, которая автоматически продлевается до отмены покупателем через его аккаунт PayPal.\n6. Идентификационные данные (номер удостоверения личности), предоставленные при этом подтверждении, хранятся исключительно для документирования согласия и идентификации подписки и не передаются третьим лицам, кроме случаев, предусмотренных законом.\n7. Покупатель заявляет, что ему исполнилось 18 лет.\n8. Установка флажка подтверждения означает полное и обязывающее согласие со всеми условиями настоящего соглашения.', ar: 'اتفاقية استخدام خدمة إرسال رسائل واتساب — Or\n\n1. تتيح الخدمة للجنة البناية إرسال رسائل واتساب للسكان المسجلين في أداة اللجنة، ضمن حصة شهرية (حتى 30 رسالة في الشهر التقويمي، وحتى رسالتين في الشهر لنفس رقم الهاتف).\n2. يُقر المشتري بأنه مخوّل بالتصرف نيابة عن لجنة البناية وإرسال الرسائل باسمها لسكان البناية.\n3. تقع المسؤولية الكاملة عن محتوى الرسائل المُرسلة، وعن دقة بيانات السكان وتحديثها، على عاتق المشتري و/أو لجنة البناية، وليس على Or.\n4. لا تتحمل Or مسؤولية التأخير أو عدم الوصول أو الأعطال في خدمات الطرف الثالث (واتساب/Twilio) المستخدمة لنقل الرسائل.\n5. الدفع هو اشتراك شهري يتجدد تلقائياً حتى يقوم المشتري بإلغائه عبر حساب PayPal الخاص به.\n6. تُحفظ بيانات التعريف (رقم الهوية) المُقدَّمة في هذا التأكيد فقط لتوثيق الموافقة وتحديد هوية المشترك، ولن تُشارك مع طرف ثالث إلا وفق ما يقتضيه القانون.\n7. يُقرّ المشتري بأنه فوق سن 18 عاماً.\n8. تمثل علامة مربع التأكيد موافقة كاملة وملزمة على جميع بنود هذه الاتفاقية.' },
-  'common.prevYear': { he: '‹ שנה קודמת', en: '‹ Previous year', ru: '‹ Пред. год' , ar: '‹ السنة السابقة' },
-  'common.nextYear': { he: 'שנה הבאה ›', en: 'Next year ›', ru: 'След. год ›' , ar: 'السنة التالية ›' },
-  'vaad.matrixHint': { he: 'כל תא מציג את <strong>הסכום שלא שולם, מצטבר מתחילת השנה</strong> עד אותו חודש (✓ = שולם הכל עד כה). לחצו על תא כדי לסמן <strong>שולם</strong> / <strong>לא שולם</strong> לאותו חודש. לחצו על מספר הדירה (בעמודה הימנית) כדי לראות את פרטי הדייר.', en: 'Each cell shows the <strong>unpaid amount, accumulated from the start of the year</strong> through that month (✓ = fully paid so far). Click a cell to mark that month <strong>paid</strong> / <strong>unpaid</strong>. Click the apartment number (right column) to see resident details.', ru: 'Каждая ячейка показывает <strong>неоплаченную сумму, накопленную с начала года</strong> до этого месяца (✓ = всё оплачено на данный момент). Нажмите на ячейку, чтобы отметить этот месяц как <strong>оплачено</strong> / <strong>не оплачено</strong>. Нажмите на номер квартиры (правый столбец), чтобы увидеть данные жильца.' , ar: 'تعرض كل خلية <strong>المبلغ غير المدفوع، المتراكم منذ بداية السنة</strong> حتى ذلك الشهر (✓ = تم الدفع بالكامل حتى الآن). انقروا على خلية لتحديد ذلك الشهر كـ<strong>مدفوع</strong> / <strong>غير مدفوع</strong>. انقروا على رقم الشقة (العمود الأيمن) لعرض بيانات الساكن.' },
-  'vaad.pnlTitle': { he: 'דוח רווח והפסד', en: 'Profit & loss report', ru: 'Отчёт о прибылях и убытках' , ar: 'تقرير الأرباح والخسائر' },
-  'vaad.pnlPeriodLabel': { he: 'החודש הנוכחי: {range}', en: 'Current month: {range}', ru: 'Текущий месяц: {range}', ar: 'الشهر الحالي: {range}' },
-  'vaad.allSourcesLabel': { he: 'מכל המקורות', en: 'From all sources', ru: 'Из всех источников', ar: 'من جميع المصادر' },
-  'vaad.noApartmentsMsg': { he: 'כדי לנהל גבייה, הוסיפו קודם דירות בלשונית "דיירים ודירות".', en: 'To manage collections, first add apartments in the "Residents & Apartments" tab.', ru: 'Чтобы управлять сборами, сначала добавьте квартиры на вкладке «Жильцы и квартиры».' , ar: 'لإدارة التحصيل، أضيفوا أولاً شققاً في لسان "السكان والشقق".' },
-  'field.apartmentTh': { he: 'דירה', en: 'Apartment', ru: 'Квартира' , ar: 'شقة' },
-  'field.paid': { he: 'שולם', en: 'Paid', ru: 'Оплачено' , ar: 'مدفوع' },
-  'vaad.clickResidentInfo': { he: 'לחצו לפרטי הדייר', en: 'Click for resident details', ru: 'Нажмите для данных жильца' , ar: 'انقروا لعرض بيانات الساكن' },
-  'vaad.expectedAnnual': { he: 'צפי גבייה שנתי', en: 'Expected annual collection', ru: 'Ожидаемый годовой сбор' , ar: 'التحصيل السنوي المتوقع' },
-  'vaad.apartmentsXMonths': { he: '{n} דירות × 12 חודשים', en: '{n} apartments × 12 months', ru: '{n} квартир × 12 месяцев' , ar: '{n} شقق × 12 شهراً' },
-  'vaad.actuallyCollected': { he: 'נגבה בפועל', en: 'Actually collected', ru: 'Фактически собрано' , ar: 'تم تحصيله فعلياً' },
-  'common.yearOf': { he: 'שנת {year}', en: 'Year {year}', ru: '{year} год' , ar: 'سنة {year}' },
-  'vaad.outstandingDebt': { he: 'חוב פתוח', en: 'Outstanding debt', ru: 'Непогашенный долг' , ar: 'دين مستحق' },
-  'vaad.remainingThisYear': { he: 'נותר לגבייה השנה', en: 'Remaining to collect this year', ru: 'Осталось собрать в этом году' , ar: 'المتبقي للتحصيل هذه السنة' },
-  'vaad.apartmentPrefix': { he: 'דירה', en: 'Apartment', ru: 'Квартира' , ar: 'شقة' },
-  'vaad.entrancePrefix': { he: 'כניסה', en: 'entrance', ru: 'подъезд' , ar: 'مدخل' },
-  'vaad.floorPrefix': { he: 'קומה', en: 'floor', ru: 'этаж' , ar: 'طابق' },
-  'vaad.roomsSuffix': { he: 'חדרים', en: 'rooms', ru: 'комнат' , ar: 'غرف' },
-  'vaad.residentLabel': { he: 'דייר', en: 'Resident', ru: 'Жилец' , ar: 'ساكن' },
-  'vaad.monthlyPaymentLabel': { he: 'תשלום חודשי', en: 'Monthly payment', ru: 'Ежемесячный платёж' , ar: 'الدفعة الشهرية' },
-  'vaad.rentedLine': { he: 'הדירה בשכירות — בעל הדירה: <strong>{owner}</strong>, טלפון: <span dir="ltr">{phone}</span>', en: 'The apartment is rented — owner: <strong>{owner}</strong>, phone: <span dir="ltr">{phone}</span>', ru: 'Квартира сдаётся в аренду — владелец: <strong>{owner}</strong>, телефон: <span dir="ltr">{phone}</span>' , ar: 'الشقة مؤجرة — مالك الشقة: <strong>{owner}</strong>، الهاتف: <span dir="ltr">{phone}</span>' },
-  'vaad.otherIncome': { he: 'הכנסות נוספות', en: 'Other income', ru: 'Прочие доходы' , ar: 'إيرادات إضافية' },
-  'vaad.duesIncome': { he: 'הכנסות מגביית וועד (כל השנים)', en: 'Income from committee dues (all years)', ru: 'Доход от взносов комитета (за все годы)' , ar: 'إيرادات تحصيل اللجنة (كل السنوات)' },
-  'vaad.duesIncomeLine': { he: 'מגביית וועד', en: 'Committee dues', ru: 'Взнос комитета', ar: 'تحصيل اللجنة' },
-  'vaad.totalIncome': { he: 'סה"כ הכנסות', en: 'Total income', ru: 'Итого доходы' , ar: 'إجمالي الإيرادات' },
-  'vaad.buildingExpenses': { he: 'הוצאות הבניין (כולל חשמל, מים, בעלי מקצוע)', en: 'Building expenses (incl. electricity, water, professionals)', ru: 'Расходы здания (вкл. электричество, воду, специалистов)' , ar: 'مصروفات البناية (تشمل الكهرباء، المياه، أصحاب المهن)' },
-  'common.netProfitLoss': { he: 'רווח / הפסד נטו', en: 'Net profit / loss', ru: 'Чистая прибыль / убыток' , ar: 'صافي الربح / الخسارة' },
-  'chug.clubBarLabel': { he: 'בחר שכבה / קבוצה', en: 'Choose grade / group', ru: 'Выберите класс / группу' , ar: 'اختر صف / مجموعة' },
-  'chug.allGrades': { he: 'כל השכבות', en: 'All grades', ru: 'Все классы' , ar: 'كل الصفوف' },
-  'chug.clubBarHint': { he: 'שמות השכבות מנוהלים בהגדרות (⚙️); הבחירה מסננת את הנוכחות והתשלומים.', en: 'Grade names are managed in Settings (⚙️); the choice filters attendance and payments.', ru: 'Названия классов управляются в настройках (⚙️); выбор фильтрует посещаемость и платежи.' , ar: 'تُدار أسماء الصفوف في الإعدادات (⚙️)؛ الاختيار يقوم بتصفية الحضور والمدفوعات.' },
-  'chug.tabAttendance': { he: 'נוכחות', en: 'Attendance', ru: 'Посещаемость' , ar: 'حضور' },
-  'chug.tabPayments': { he: 'תשלומים', en: 'Payments', ru: 'Платежи' , ar: 'مدفوعات' },
-  'chug.tabMembers': { he: 'חניכים', en: 'Members', ru: 'Участники' , ar: 'أعضاء' },
-  'chug.tabGuides': { he: 'מדריכים', en: 'Guides', ru: 'Руководители' , ar: 'مرشدون' },
-  'chug.tabEquipment': { he: 'ציוד', en: 'Equipment', ru: 'Оборудование' , ar: 'معدات' },
-  'chug.tabFinance': { he: 'קופה ורווח/הפסד', en: 'Cash & P&L', ru: 'Касса и прибыль/убыток' , ar: 'الصندوق والأرباح/الخسائر' },
-  'chug.feePaymentsTitle': { he: 'תשלומי דמי חבר — שנת {year}', en: 'Membership fee payments — {year}', ru: 'Оплата членских взносов — {year}' , ar: 'مدفوعات رسوم العضوية — سنة {year}' },
-  'chug.paymentsMatrixHint': { he: 'לחצו על תא כדי לסמן ששולם / לא שולם דמי חבר לאותו חודש. לחצו על שם חניך לצפייה בפרטים.', en: 'Click a cell to mark the membership fee for that month as paid / unpaid. Click a member\'s name to view details.', ru: 'Нажмите на ячейку, чтобы отметить членский взнос за месяц как оплаченный / неоплаченный. Нажмите на имя участника для просмотра данных.' , ar: 'انقروا على خلية لتحديد أن رسوم العضوية لذلك الشهر مدفوعة / غير مدفوعة. انقروا على اسم عضو لعرض التفاصيل.' },
-  'chug.attendanceTracking': { he: 'מעקב נוכחות', en: 'Attendance tracking', ru: 'Учёт посещаемости' , ar: 'متابعة الحضور' },
-  'chug.addMeeting': { he: 'הוסף מפגש', en: 'Add session', ru: 'Добавить встречу' , ar: 'إضافة لقاء' },
-  'chug.attendanceHint': { he: 'לחצו על תא כדי לסמן <strong>נוכח</strong> / <strong>נעדר</strong>. לחצו על שם חניך לצפייה בפרטים. הוסיפו מפגש חדש בעזרת בחירת תאריך.', en: 'Click a cell to mark <strong>present</strong> / <strong>absent</strong>. Click a member\'s name to view details. Add a new session by choosing a date.', ru: 'Нажмите на ячейку, чтобы отметить <strong>присутствие</strong> / <strong>отсутствие</strong>. Нажмите на имя участника для просмотра данных. Добавьте новую встречу, выбрав дату.' , ar: 'انقروا على خلية لتحديد <strong>حاضر</strong> / <strong>غائب</strong>. انقروا على اسم عضو لعرض التفاصيل. أضيفوا لقاءً جديداً باختيار تاريخ.' },
-  'chug.noMembersMsg': { he: 'כדי לנהל נוכחות, הוסיפו קודם חניכים בלשונית "חניכים".', en: 'To manage attendance, first add members in the "Members" tab.', ru: 'Чтобы вести учёт посещаемости, сначала добавьте участников на вкладке «Участники».' , ar: 'لإدارة الحضور، أضيفوا أولاً أعضاء في لسان "أعضاء".' },
-  'chug.noMeetingsMsg': { he: 'הוסיפו מפגש (תאריך) כדי להתחיל לרשום נוכחות.', en: 'Add a session (date) to start recording attendance.', ru: 'Добавьте встречу (дату), чтобы начать вести учёт посещаемости.' , ar: 'أضيفوا لقاءً (تاريخاً) لبدء تسجيل الحضور.' },
-  'field.memberTh': { he: 'חניך', en: 'Member', ru: 'Участник' , ar: 'عضو' },
-  'field.attendanceTh': { he: 'נוכחות', en: 'Attendance', ru: 'Посещаемость' , ar: 'حضور' },
-  'chug.clickMemberInfo': { he: 'לחצו לפרטי החניך', en: 'Click for member details', ru: 'Нажмите для данных участника' , ar: 'انقروا لعرض بيانات العضو' },
-  'field.membersLabel': { he: 'חניכים', en: 'Members', ru: 'Участники' , ar: 'أعضاء' },
-  'chug.allClubs': { he: 'כל החוגים', en: 'All groups', ru: 'Все кружки' , ar: 'كل الأندية' },
-  'chug.meetingsLabel': { he: 'מפגשים', en: 'Meetings', ru: 'Встречи' , ar: 'لقاءات' },
-  'chug.avgAttendance': { he: 'נוכחות ממוצעת', en: 'Average attendance', ru: 'Средняя посещаемость' , ar: 'متوسط الحضور' },
-  'chug.ofAllMeetings': { he: 'מכלל המפגשים', en: 'of all meetings', ru: 'от всех встреч' , ar: 'من إجمالي اللقاءات' },
-  'common.agePrefix': { he: 'גיל', en: 'age', ru: 'возраст' , ar: 'العمر' },
-  'field.parentLabel': { he: 'הורה', en: 'Parent', ru: 'Родитель' , ar: 'والد' },
-  'field.monthlyMemberFee': { he: 'דמי חבר חודשי', en: 'Monthly membership fee', ru: 'Ежемесячный членский взнос' , ar: 'رسوم العضوية الشهرية' },
-  'chug.pnlIncome': { he: 'הכנסות (דמי חבר, תרומות)', en: 'Income (fees, donations)', ru: 'Доходы (взносы, пожертвования)' , ar: 'إيرادات (رسوم عضوية، تبرعات)' },
-  'chug.pnlExpenses': { he: 'הוצאות (פעילויות, ציוד)', en: 'Expenses (activities, equipment)', ru: 'Расходы (мероприятия, оборудование)' , ar: 'مصروفات (أنشطة، معدات)' },
-  'chug.expectedMonthlyFees': { he: 'צפי דמי חבר חודשי ({n} חניכים)', en: 'Expected monthly fees ({n} members)', ru: 'Ожидаемые ежемесячные взносы ({n} участников)' , ar: 'رسوم العضوية الشهرية المتوقعة ({n} أعضاء)' },
-  'chug.noMembersFiltered': { he: 'אין חניכים{club}. הוסיפו חניכים בלשונית "חניכים".', en: 'No members{club}. Add members in the "Members" tab.', ru: 'Нет участников{club}. Добавьте участников на вкладке «Участники».' , ar: 'لا يوجد أعضاء{club}. أضيفوا أعضاء في لسان "أعضاء".' },
-  'chug.inSelectedClub': { he: ' בחוג שנבחר', en: ' in the selected group', ru: ' в выбранной группе' , ar: ' في النادي المختار' },
-  'chug.expectedAnnualPayments': { he: 'צפי תשלומים שנתי', en: 'Expected annual payments', ru: 'Ожидаемые годовые платежи' , ar: 'المدفوعات السنوية المتوقعة' },
-  'chug.membersXTwelve': { he: '{n} חניכים × 12', en: '{n} members × 12', ru: '{n} участников × 12' , ar: '{n} أعضاء × 12' },
-  'cal.selectHint': { he: 'לחצו לבחירה / ביטול בחירה', en: 'Click to select / deselect', ru: 'Нажмите, чтобы выбрать / отменить выбор' , ar: 'انقروا للاختيار / إلغاء الاختيار' },
-  'cal.daysSelected': { he: '{n} ימים נבחרו', en: '{n} days selected', ru: 'Выбрано дней: {n}' , ar: 'تم اختيار {n} أيام' },
-  'cal.noDaysSelected': { he: 'לא נבחרו ימים', en: 'No days selected', ru: 'Дни не выбраны' , ar: 'لم يتم اختيار أيام' },
-  'cal.noSpecialDays': { he: 'אין ימים מיוחדים מסומנים', en: 'No special days marked', ru: 'Особые дни не отмечены' , ar: 'لا توجد أيام خاصة محددة' },
-  'toast.selectDaysFirst': { he: 'בחרו קודם ימים בלוח', en: 'Select days on the calendar first', ru: 'Сначала выберите дни в календаре' , ar: 'اختاروا أياماً في التقويم أولاً' },
-  'toast.calendarSaved': { he: 'לוח העבודה נשמר', en: 'Work calendar saved', ru: 'Рабочий календарь сохранён' , ar: 'تم حفظ جدول العمل' },
-  'cal.saturday': { he: 'שבת', en: 'Sat', ru: 'Сб' , ar: 'سبت' },
   'toast.tripDetailsSaved': { he: 'פרטי הטיול נשמרו', en: 'Trip details saved', ru: 'Данные поездки сохранены' , ar: 'تم حفظ بيانات الرحلة' },
-  'chug.deleteGroupAria': { he: 'מחיקת שכבה {name}', en: 'Delete group {name}', ru: 'Удалить группу {name}' , ar: 'حذف الصف {name}' },
-  'chug.noGroupsYet': { he: 'עדיין לא הוגדרו שכבות — הבורר לא יוצג במסך הראשי.', en: 'No groups defined yet — the picker won\'t show on the main screen.', ru: 'Группы ещё не заданы — селектор не отобразится на главном экране.' , ar: 'لم تُعرَّف صفوف بعد — لن يظهر المُنتقي في الشاشة الرئيسية.' },
   'trip.pickDatesBtn': { he: 'בחר תאריכים', en: 'Choose dates', ru: 'Выбрать даты' , ar: 'اختيار التواريخ' },
   'trip.pickDestBtn': { he: 'בחר יעד', en: 'Choose destination', ru: 'Выбрать направление' , ar: 'اختيار الوجهة' },
   'trip.tabAgenda': { he: 'סדר יום', en: 'Daily agenda', ru: 'Распорядок дня' , ar: 'جدول اليوم' },
@@ -1860,193 +1309,6 @@ const I18N = {
   'toast.tripDatesSaved': { he: 'תאריכי הטיול נשמרו', en: 'Trip dates saved', ru: 'Даты поездки сохранены' , ar: 'تم حفظ تواريخ الرحلة' },
   'trip.destSaved': { he: 'היעד נשמר: {dest}', en: 'Destination saved: {dest}', ru: 'Направление сохранено: {dest}' , ar: 'تم حفظ الوجهة: {dest}' },
   'trip.destCleared': { he: 'היעד נוקה', en: 'Destination cleared', ru: 'Направление очищено' , ar: 'تم مسح الوجهة' },
-  'help.expenses.body': {
-    he: `<p>מעקב אחר חשבונות הבית הקבועים: <strong>ארנונה, מים, חשמל וגז</strong>.</p>
-      <ul>
-        <li>כרטיסי הסיכום למעלה מציגים כמה שולם בכל קטגוריה <strong>בתקופת החיוב הנוכחית</strong> — קטגוריה דו-חודשית (כמו ארנונה) מסכמת חודשיים.</li>
-        <li>מוסיפים הוצאה עם תאריך, קטגוריה, סכום והערה. אפשר לערוך ולמחוק כל שורה.</li>
-        <li>שני גרפים: מגמה חודשית לפי קטגוריה, והשוואת סך ההוצאות בין חודשים.</li>
-        <li>ב<span class="help-tag">הגדרות ⚙️</span> מזינים את מספרי החשבון (מספר משלם, חוזה, שעון, לקוח), תדירות תשלום, ואפשר לכבות חשבון שאין לכם.</li>
-      </ul>
-      <p>נשמר בגיליונות <strong>"הוצאות"</strong> ו-<strong>"פרטי חשבונות"</strong>.</p>`,
-    en: `<p>Track your fixed home bills: <strong>property tax, water, electricity and gas</strong>.</p>
-      <ul>
-        <li>The summary cards above show how much was paid per category <strong>in the current billing period</strong> — a bimonthly category (like property tax) sums two months.</li>
-        <li>Add an expense with a date, category, amount and note. You can edit and delete any row.</li>
-        <li>Two charts: monthly trend by category, and total-expense comparison between months.</li>
-        <li>In <span class="help-tag">Settings ⚙️</span> you enter your account numbers (payer, contract, meter, customer), payment frequency, and can turn off an account you don't have.</li>
-      </ul>
-      <p>Saved to the <strong>"Expenses"</strong> and <strong>"Account details"</strong> sheets.</p>`,
-    ru: `<p>Учёт постоянных домашних счетов: <strong>налог на недвижимость, вода, электричество и газ</strong>.</p>
-      <ul>
-        <li>Карточки сводки вверху показывают, сколько оплачено по каждой категории <strong>за текущий расчётный период</strong> — категория с оплатой раз в два месяца (как налог на недвижимость) суммирует два месяца.</li>
-        <li>Добавьте расход с датой, категорией, суммой и примечанием. Любую строку можно редактировать и удалять.</li>
-        <li>Два графика: динамика по месяцам и категориям, и сравнение общих расходов между месяцами.</li>
-        <li>В <span class="help-tag">настройках ⚙️</span> вводятся номера счетов (плательщика, договора, счётчика, клиента), периодичность оплаты, и можно отключить счёт, которого у вас нет.</li>
-      </ul>
-      <p>Сохраняется в листах <strong>«Расходы»</strong> и <strong>«Данные счетов»</strong>.</p>`,
-    ar: `<p>متابعة فواتير المنزل الثابتة: <strong>الأرنونا، المياه، الكهرباء والغاز</strong>.</p>
-      <ul>
-        <li>تُظهر بطاقات الملخص أعلاه مقدار ما تم دفعه لكل فئة <strong>في فترة الفوترة الحالية</strong> — فئة كل شهرين (مثل الأرنونا) تجمع شهرين.</li>
-        <li>أضيفوا مصروفاً بتاريخ وفئة ومبلغ وملاحظة. يمكن تعديل وحذف أي سطر.</li>
-        <li>رسمان بيانيان: الاتجاه الشهري حسب الفئة، ومقارنة إجمالي المصروفات بين الأشهر.</li>
-        <li>في <span class="help-tag">الإعدادات ⚙️</span> تُدخلون أرقام الحسابات (رقم الدافع، العقد، العداد، العميل)، وتيرة الدفع، ويمكن إيقاف حساب لا يوجد لديكم.</li>
-      </ul>
-      <p>يُحفظ في ورقتي <strong>"مصروفات"</strong> و<strong>"بيانات الحسابات"</strong>.</p>`
-  },
-  'help.pettycash.body': {
-    he: `<p>ניהול קופה קטנה של הכנסות והוצאות שוטפות.</p>
-      <ul>
-        <li>כל תנועה: תאריך, סוג (<strong>הכנסה</strong> או <strong>הוצאה</strong>), תיאור וסכום.</li>
-        <li>עמודת <strong>"יתרה מצטברת"</strong> מראה את יתרת הקופה אחרי כל תנועה, לפי סדר כרונולוגי.</li>
-        <li>הכרטיסים למעלה: סך ההכנסות, סך ההוצאות, והיתרה הנוכחית בקופה.</li>
-        <li>הגרף משווה הכנסות מול הוצאות בכל חודש.</li>
-      </ul>
-      <p>נשמר בגיליון <strong>"קופה קטנה"</strong>.</p>`,
-    en: `<p>Manage a petty cash box of ongoing income and expenses.</p>
-      <ul>
-        <li>Each transaction: date, type (<strong>income</strong> or <strong>expense</strong>), description and amount.</li>
-        <li>The <strong>"Running balance"</strong> column shows the cash balance after each transaction, in chronological order.</li>
-        <li>The cards above: total income, total expenses, and the current cash balance.</li>
-        <li>The chart compares income vs. expenses per month.</li>
-      </ul>
-      <p>Saved to the <strong>"Petty cash"</strong> sheet.</p>`,
-    ru: `<p>Управление мелкой кассой текущих доходов и расходов.</p>
-      <ul>
-        <li>Каждая операция: дата, тип (<strong>доход</strong> или <strong>расход</strong>), описание и сумма.</li>
-        <li>Столбец <strong>«Текущий остаток»</strong> показывает остаток кассы после каждой операции в хронологическом порядке.</li>
-        <li>Карточки вверху: общий доход, общий расход и текущий остаток кассы.</li>
-        <li>График сравнивает доходы и расходы по месяцам.</li>
-      </ul>
-      <p>Сохраняется в листе <strong>«Мелкая касса»</strong>.</p>`,
-    ar: `<p>إدارة صندوق نقدية صغير للإيرادات والمصروفات الجارية.</p>
-      <ul>
-        <li>كل حركة: تاريخ، نوع (<strong>إيراد</strong> أو <strong>مصروف</strong>)، وصف ومبلغ.</li>
-        <li>عمود <strong>"الرصيد التراكمي"</strong> يُظهر رصيد الصندوق بعد كل حركة، بالترتيب الزمني.</li>
-        <li>البطاقات أعلاه: إجمالي الإيرادات، إجمالي المصروفات، والرصيد الحالي في الصندوق.</li>
-        <li>يقارن الرسم البياني الإيرادات مقابل المصروفات في كل شهر.</li>
-      </ul>
-      <p>يُحفظ في ورقة <strong>"الصندوق الصغير"</strong>.</p>`
-  },
-  'help.hours.body': {
-    he: `<p>תיעוד משמרות עבודה עם חישוב אוטומטי של שעות רגילות ונוספות.</p>
-      <ul>
-        <li><strong>שעון נוכחות:</strong> "התחל עבודה" פותח משמרת עם שעת ההתחלה הנוכחית; "סיים עבודה" סוגר אותה ומחשב את השעות. אפשר גם להזין משמרת ידנית (תאריך, שעת התחלה, שעת סיום).</li>
-        <li><strong>חישוב שעות:</strong> עד 8 שעות = רגילות, כל שעה מעבר לכך = שעות נוספות. חישוב תקין גם למשמרת שחוצה חצות.</li>
-        <li><strong>ניתוח:</strong> הכרטיסים מציגים סה"כ שעות, שעות נוספות ואחוזן, ממוצע שעות למשמרת, וימים חריגים (מעל 10 שעות).</li>
-        <li><strong>ניתוח חודשי:</strong> טבלה לפי חודש עם סה"כ שעות, שעות נוספות וממוצע יומי; והגרף מציג שעות רגילות מול נוספות בכל חודש.</li>
-      </ul>
-      <p>נשמר בגיליון <strong>"שעות עבודה"</strong> (עמודות: תאריך, שעת התחלה, שעת סיום, שעות רגילות, שעות נוספות, סה"כ, הערה).</p>`,
-    en: `<p>Track work shifts with automatic calculation of regular and overtime hours.</p>
-      <ul>
-        <li><strong>Time clock:</strong> "Start work" opens a shift with the current start time; "End work" closes it and calculates the hours. You can also enter a shift manually (date, start time, end time).</li>
-        <li><strong>Hour calculation:</strong> up to 8 hours = regular, every hour beyond that = overtime. Calculated correctly for shifts crossing midnight too.</li>
-        <li><strong>Analysis:</strong> the cards show total hours, overtime hours and their percentage, average hours per shift, and abnormal days (over 10 hours).</li>
-        <li><strong>Monthly analysis:</strong> a table by month with total hours, overtime and daily average; and the chart shows regular vs. overtime hours per month.</li>
-      </ul>
-      <p>Saved to the <strong>"Work hours"</strong> sheet (columns: date, start time, end time, regular hours, overtime hours, total, note).</p>`,
-    ru: `<p>Учёт рабочих смен с автоматическим расчётом обычных и сверхурочных часов.</p>
-      <ul>
-        <li><strong>Табель:</strong> «Начать работу» открывает смену с текущим временем начала; «Закончить работу» закрывает её и рассчитывает часы. Можно также ввести смену вручную (дата, время начала, время окончания).</li>
-        <li><strong>Расчёт часов:</strong> до 8 часов — обычные, каждый час сверх этого — сверхурочные. Корректный расчёт и для смен, переходящих через полночь.</li>
-        <li><strong>Анализ:</strong> карточки показывают общее количество часов, сверхурочные часы и их процент, среднее количество часов за смену и нестандартные дни (более 10 часов).</li>
-        <li><strong>Ежемесячный анализ:</strong> таблица по месяцам с общим количеством часов, сверхурочными и средним за день; график показывает обычные и сверхурочные часы по месяцам.</li>
-      </ul>
-      <p>Сохраняется в листе <strong>«Рабочие часы»</strong> (столбцы: дата, время начала, время окончания, обычные часы, сверхурочные часы, итого, примечание).</p>`,
-    ar: `<p>توثيق ورديات العمل مع حساب تلقائي للساعات العادية والإضافية.</p>
-      <ul>
-        <li><strong>ساعة الحضور:</strong> "بدء العمل" يفتح وردية بوقت البدء الحالي؛ "إنهاء العمل" يغلقها ويحسب الساعات. يمكن أيضاً إدخال وردية يدوياً (تاريخ، وقت بدء، وقت انتهاء).</li>
-        <li><strong>حساب الساعات:</strong> حتى 8 ساعات = عادية، كل ساعة إضافية بعد ذلك = ساعات إضافية. الحساب صحيح أيضاً للوردية التي تعبر منتصف الليل.</li>
-        <li><strong>التحليل:</strong> تعرض البطاقات إجمالي الساعات، الساعات الإضافية ونسبتها، متوسط الساعات لكل وردية، والأيام غير الاعتيادية (أكثر من 10 ساعات).</li>
-        <li><strong>تحليل شهري:</strong> جدول حسب الشهر مع إجمالي الساعات، الساعات الإضافية والمتوسط اليومي؛ ويعرض الرسم البياني الساعات العادية مقابل الإضافية في كل شهر.</li>
-      </ul>
-      <p>يُحفظ في ورقة <strong>"ساعات العمل"</strong> (الأعمدة: تاريخ، وقت البدء، وقت الانتهاء، ساعات عادية، ساعات إضافية، الإجمالي، ملاحظة).</p>`
-  },
-  'help.vaad.body': {
-    he: `<p>ניהול מלא של וועד הבית, בהשראת מערכות ניהול בנייני מגורים (כמו OpenCondo). הכלי מחולק לשבע לשוניות בראש המסך:</p>
-      <ul>
-        <li><strong>גבייה חודשית</strong> — מטריצת תשלומים לפי דירה וחודש, וכרטיסי סיכום גבייה.</li>
-        <li><strong>דיירים</strong> — רשימת הדירות והדיירים: מספר דירה, שם, טלפון, תשלום חודשי והערות. כך יש לכם פנקס דיירים מסודר תמיד בהישג יד.</li>
-        <li><strong>תקלות</strong> — מעקב אחר תקלות ופניות: תאריך, דירה/מיקום, תיאור, רמת דחיפות (רגילה / דחוף / קריטי) וסטטוס (פתוח / בטיפול / טופל).</li>
-        <li><strong>בעלי מקצוע</strong> — ספר בעלי המקצוע העובדים עם הבניין: שם, תחום, טלפון והערות.</li>
-        <li><strong>הוצאות</strong> — מעקב אחר הוצאות הבניין לפי קטגוריה: מים, חשמל, ניקיון, מעלית, חומרי ניקוי, תחזוקה כללית או כל קטגוריה אחרת שתקלידו — עם תאריך, ספק וסכום.</li>
-        <li><strong>מערכות בבניין</strong> — יומן מעקב לתחזוקה ותקלות במערכות הבניין (מעלית, משאבת מים, מערכת סולארית, חשמל ראשי, גנרטור, גילוי וכיבוי אש, אינטרקום, אוורור ומיזוג, תאורה, ביוב וניקוז). ב<span class="help-tag">הגדרות ⚙️</span> מסמנים אילו מערכות קיימות בבניין שלכם — רק מערכות מסומנות מופיעות כאפשרות ברשומה.</li>
-        <li><strong>כספים ורווח/הפסד</strong> — כל תנועה כספית: גבייה מדייר, הכנסות נוספות, הוצאות הבניין, ההוצאות הקבועות והוצאות מערכות הבניין — יחד בדוח רווח/הפסד אחד.</li>
-      </ul>
-      <p>נשמר בגיליונות: <strong>"וועד בית"</strong> (תשלומים), <strong>"דיירים"</strong>, <strong>"תקלות"</strong>, <strong>"בעלי מקצוע"</strong>, <strong>"הוצאות ועד"</strong> ו-<strong>"מערכות בבניין"</strong>.</p>`,
-    en: `<p>Full building-committee management, inspired by residential-building management systems (like OpenCondo). The tool is split into seven tabs at the top of the screen:</p>
-      <ul>
-        <li><strong>Monthly collection</strong> — a payment matrix by apartment and month, and collection summary cards.</li>
-        <li><strong>Residents</strong> — list of apartments and residents: apartment number, name, phone, monthly payment and notes. A tidy resident directory always at hand.</li>
-        <li><strong>Issues</strong> — track issues and requests: date, apartment/location, description, priority level (normal / urgent / critical) and status (open / in progress / resolved).</li>
-        <li><strong>Professionals</strong> — a directory of professionals who work with the building: name, profession, phone and notes.</li>
-        <li><strong>Expenses</strong> — track the building's expenses by category: water, electricity, cleaning, elevator, cleaning supplies, general maintenance, or any category you type in — with date, vendor and amount.</li>
-        <li><strong>Building Systems</strong> — a maintenance/issue log for the building's systems (elevator, water pump, solar system, main electrical system, generator, fire detection & suppression, intercom, ventilation & AC, lighting, sewage & drainage). In <span class="help-tag">Settings ⚙️</span> check which systems exist in your building — only checked systems appear as an option on a record.</li>
-        <li><strong>Finance & P&L</strong> — every financial transaction: resident collections, other income, building expenses, fixed expenses and building-system expenses — all together in one profit/loss report.</li>
-      </ul>
-      <p>Saved to the sheets: <strong>"Building committee"</strong> (payments), <strong>"Residents"</strong>, <strong>"Issues"</strong>, <strong>"Professionals"</strong>, <strong>"Committee expenses"</strong> and <strong>"Building systems"</strong>.</p>`,
-    ru: `<p>Полное управление домовым комитетом, вдохновлено системами управления жилыми зданиями (как OpenCondo). Инструмент разделён на семь вкладок в верхней части экрана:</p>
-      <ul>
-        <li><strong>Ежемесячный сбор</strong> — матрица платежей по квартирам и месяцам, и карточки сводки сборов.</li>
-        <li><strong>Жильцы</strong> — список квартир и жильцов: номер квартиры, имя, телефон, ежемесячный платёж и примечания. Аккуратный справочник жильцов всегда под рукой.</li>
-        <li><strong>Проблемы</strong> — учёт проблем и обращений: дата, квартира/место, описание, уровень срочности (обычная / срочно / критично) и статус (открыто / в работе / решено).</li>
-        <li><strong>Специалисты</strong> — справочник специалистов, работающих со зданием: имя, профессия, телефон и примечания.</li>
-        <li><strong>Расходы</strong> — учёт расходов здания по категориям: вода, электричество, уборка, лифт, чистящие средства, общее обслуживание или любая категория, которую вы введёте сами — с датой, поставщиком и суммой.</li>
-        <li><strong>Системы здания</strong> — журнал обслуживания и неисправностей систем здания (лифт, водяной насос, солнечная система, главная электросистема, генератор, пожарная сигнализация и тушение, домофон, вентиляция и кондиционирование, освещение, канализация и дренаж). В <span class="help-tag">настройках ⚙️</span> отметьте, какие системы есть в вашем здании — только отмеченные системы будут доступны как вариант в записи.</li>
-        <li><strong>Финансы и прибыль/убыток</strong> — каждая финансовая операция: сборы с жильцов, прочие доходы, расходы здания, постоянные расходы и расходы на системы здания — всё вместе в одном отчёте о прибылях и убытках.</li>
-      </ul>
-      <p>Сохраняется в листах: <strong>«Домовой комитет»</strong> (платежи), <strong>«Жильцы»</strong>, <strong>«Проблемы»</strong>, <strong>«Специалисты»</strong>, <strong>«Расходы комитета»</strong> и <strong>«Системы здания»</strong>.</p>`,
-    ar: `<p>إدارة كاملة للجنة البناية، مستوحاة من أنظمة إدارة المباني السكنية (مثل OpenCondo). تنقسم الأداة إلى سبعة ألسنة في أعلى الشاشة:</p>
-      <ul>
-        <li><strong>التحصيل الشهري</strong> — مصفوفة مدفوعات حسب الشقة والشهر، وبطاقات ملخص التحصيل.</li>
-        <li><strong>السكان</strong> — قائمة الشقق والسكان: رقم الشقة، الاسم، الهاتف، الدفعة الشهرية والملاحظات. بذلك يكون لديكم سجل سكان منظم دائماً في متناول اليد.</li>
-        <li><strong>الأعطال</strong> — متابعة الأعطال والطلبات: التاريخ، الشقة/الموقع، الوصف، مستوى الأولوية (عادية / عاجل / حرج) والحالة (مفتوح / قيد المعالجة / تم الحل).</li>
-        <li><strong>أصحاب مهن</strong> — دليل أصحاب المهن الذين يعملون مع البناية: الاسم، المجال، الهاتف والملاحظات.</li>
-        <li><strong>مصروفات</strong> — متابعة مصروفات البناية حسب الفئة: مياه، كهرباء، تنظيف، مصعد، مواد تنظيف، صيانة عامة، أو أي فئة تكتبونها بأنفسكم — مع تاريخ ومورّد ومبلغ.</li>
-        <li><strong>أنظمة المبنى</strong> — سجل صيانة وأعطال لأنظمة المبنى (المصعد، مضخة المياه، النظام الشمسي، الكهرباء الرئيسية، المولد، كشف وإطفاء الحريق، الاتصال الداخلي، التهوية والتكييف، الإضاءة، الصرف الصحي والتصريف). في <span class="help-tag">الإعدادات ⚙️</span> حددوا الأنظمة الموجودة في بنايتكم — الأنظمة المحددة فقط تظهر كخيار في السجل.</li>
-        <li><strong>المالية والأرباح/الخسائر</strong> — كل حركة مالية: تحصيل من السكان، إيرادات إضافية، مصروفات البناية، المصروفات الثابتة ومصروفات أنظمة المبنى — كلها معاً في تقرير أرباح/خسائر واحد.</li>
-      </ul>
-      <p>يُحفظ في الأوراق: <strong>"لجنة البناية"</strong> (المدفوعات)، <strong>"السكان"</strong>، <strong>"الأعطال"</strong>، <strong>"أصحاب مهن"</strong>، <strong>"مصروفات اللجنة"</strong> و<strong>"أنظمة المبنى"</strong>.</p>`
-  },
-  'help.chug.body': {
-    he: `<p>ניהול תנועת נוער או חוג, בהשראת מערכות לניהול תנועות צופים (Dolphine Scout Management). מחולק לחמש לשוניות:</p>
-      <ul>
-        <li><strong>נוכחות</strong> (מסך ראשי) — טבלת מטריצה של חניכים מול מפגשים. הוסיפו מפגש (תאריך), ולחצו על תא לסימון נוכח / נעדר. לחיצה על שם חניך מציגה את פרטיו. למעלה: מספר חניכים, מספר מפגשים ואחוז נוכחות ממוצע.</li>
-        <li><strong>חניכים</strong> — רשימת החניכים: שם, שכבה/קבוצה, תאריך לידה, טלפון, שם וטלפון הורה ודמי חבר.</li>
-        <li><strong>מדריכים</strong> — רשימת המדריכים לפי שכבה.</li>
-        <li><strong>ציוד</strong> — מלאי הציוד של התנועה, כולל כמות ומצב.</li>
-        <li><strong>קופה ורווח/הפסד</strong> — הכנסות (דמי חבר, תרומות) מול הוצאות, עם דוח רווח/הפסד.</li>
-      </ul>
-      <p>נשמר בגיליונות: <strong>"חניכים"</strong>, <strong>"מדריכים"</strong>, <strong>"נוכחות"</strong>, <strong>"ציוד"</strong> ו-<strong>"תנועה - קופה"</strong>.</p>`,
-    en: `<p>Manage a youth movement or club, inspired by scout-troop management systems (Dolphine Scout Management). Split into five tabs:</p>
-      <ul>
-        <li><strong>Attendance</strong> (main screen) — a matrix table of members vs. sessions. Add a session (date), and click a cell to mark present / absent. Clicking a member's name shows their details. Above: number of members, number of sessions and average attendance percentage.</li>
-        <li><strong>Members</strong> — list of members: name, grade/group, birth date, phone, parent name and phone, and membership fee.</li>
-        <li><strong>Guides</strong> — list of guides by group.</li>
-        <li><strong>Equipment</strong> — the movement's equipment inventory, including quantity and condition.</li>
-        <li><strong>Cash & P&L</strong> — income (fees, donations) vs. expenses, with a profit/loss report.</li>
-      </ul>
-      <p>Saved to the sheets: <strong>"Members"</strong>, <strong>"Guides"</strong>, <strong>"Attendance"</strong>, <strong>"Equipment"</strong> and <strong>"Club cash"</strong>.</p>`,
-    ru: `<p>Управление молодёжным движением или кружком, вдохновлено системами управления скаутскими отрядами (Dolphine Scout Management). Разделено на пять вкладок:</p>
-      <ul>
-        <li><strong>Посещаемость</strong> (главный экран) — таблица-матрица участников и встреч. Добавьте встречу (дату) и нажмите на ячейку, чтобы отметить присутствие / отсутствие. Нажатие на имя участника показывает его данные. Вверху: количество участников, количество встреч и средний процент посещаемости.</li>
-        <li><strong>Участники</strong> — список участников: имя, класс/группа, дата рождения, телефон, имя и телефон родителя, членский взнос.</li>
-        <li><strong>Руководители</strong> — список руководителей по группам.</li>
-        <li><strong>Оборудование</strong> — инвентарь оборудования движения, включая количество и состояние.</li>
-        <li><strong>Касса и прибыль/убыток</strong> — доходы (взносы, пожертвования) относительно расходов, с отчётом о прибылях и убытках.</li>
-      </ul>
-      <p>Сохраняется в листах: <strong>«Участники»</strong>, <strong>«Руководители»</strong>, <strong>«Посещаемость»</strong>, <strong>«Оборудование»</strong> и <strong>«Касса кружка»</strong>.</p>`,
-    ar: `<p>إدارة حركة شبابية أو نادٍ، مستوحاة من أنظمة إدارة فرق الكشافة (Dolphine Scout Management). تنقسم إلى خمسة ألسنة:</p>
-      <ul>
-        <li><strong>الحضور</strong> (الشاشة الرئيسية) — جدول مصفوفة للأعضاء مقابل اللقاءات. أضيفوا لقاءً (تاريخاً)، وانقروا على خلية لتحديد حاضر / غائب. النقر على اسم عضو يعرض بياناته. أعلاه: عدد الأعضاء، عدد اللقاءات ومتوسط نسبة الحضور.</li>
-        <li><strong>الأعضاء</strong> — قائمة الأعضاء: الاسم، الصف/المجموعة، تاريخ الميلاد، الهاتف، اسم وهاتف الوالد ورسوم العضوية.</li>
-        <li><strong>المرشدون</strong> — قائمة المرشدين حسب الصف.</li>
-        <li><strong>المعدات</strong> — مخزون معدات الحركة، بما في ذلك الكمية والحالة.</li>
-        <li><strong>الصندوق والأرباح/الخسائر</strong> — الإيرادات (رسوم العضوية، التبرعات) مقابل المصروفات، مع تقرير أرباح/خسائر.</li>
-      </ul>
-      <p>يُحفظ في الأوراق: <strong>"أعضاء"</strong>، <strong>"مرشدون"</strong>، <strong>"حضور"</strong>، <strong>"معدات"</strong> و<strong>"حركة - صندوق"</strong>.</p>`
-  },
-  'help.aboutCurrentTool': { he: 'על הכלי הנוכחי: ', en: 'About the current tool: ', ru: 'О текущем инструменте: ' , ar: 'عن الأداة الحالية: ' },
   'help.tabSystem': { he: 'מידע כללי על אור', en: 'General info about Or', ru: 'Общая информация о Or', ar: 'معلومات عامة عن أور' },
   'help.tabTool': { he: 'מידע על הכלי', en: 'About the tool', ru: 'Об инструменте', ar: 'معلومات عن الأداة' },
   'help.tabToolPrefix': { he: 'מידע על ', en: 'About ', ru: 'О разделе ', ar: 'معلومات عن ' },
@@ -2073,16 +1335,8 @@ const I18N = {
   'help.gen.creditsIcons': { he: 'אייקונים (רישיון ISC)', en: 'icons (ISC license)', ru: 'иконки (лицензия ISC)' , ar: 'أيقونات (ترخيص ISC)' },
   'help.gen.creditsFont': { he: 'גופן (רישיון SIL OFL)', en: 'font (SIL OFL license)', ru: 'шрифт (лицензия SIL OFL)' , ar: 'خط (ترخيص SIL OFL)' },
   'help.gen.creditsFooter': { he: 'פירוט מלא של הרישיונות והקרדיטים בקובץ THIRD-PARTY-NOTICES.md.', en: 'Full license and credit details are in THIRD-PARTY-NOTICES.md.', ru: 'Полная информация о лицензиях и благодарностях — в файле THIRD-PARTY-NOTICES.md.' , ar: 'التفاصيل الكاملة للتراخيص والشكر في ملف THIRD-PARTY-NOTICES.md.' },
-  'report.expenses.title': { he: 'דוח הוצאות הבית', en: 'Home Expense Report', ru: 'Отчёт о домашних расходах' , ar: 'تقرير مصروفات المنزل' },
-  'report.pettycash.title': { he: 'דוח קופה קטנה', en: 'Petty Cash Report', ru: 'Отчёт по мелкой кассе' , ar: 'تقرير الصندوق الصغير' },
-  'report.hours.title': { he: 'דוח שעות עבודה', en: 'Work Hours Report', ru: 'Отчёт по рабочим часам' , ar: 'تقرير ساعات العمل' },
-  'report.vaad.title': { he: 'דוח כספי — וועד בית', en: 'Financial Report — Building Committee', ru: 'Финансовый отчёт — Домовой комитет' , ar: 'تقرير مالي — لجنة البناية' },
-  'report.chug.title': { he: 'דוח כספי — תנועה / חוג', en: 'Financial Report — Youth Group', ru: 'Финансовый отчёт — Кружок' , ar: 'تقرير مالي — حركة / نادي' },
   'report.trip.title': { he: 'דוח הוצאות טיול', en: 'Trip Expense Report', ru: 'Отчёт о расходах поездки' , ar: 'تقرير مصروفات الرحلة' },
-  'report.projects.title': { he: 'דוח הוצאות פרויקטים', en: 'Project Expense Report', ru: 'Отчёт о расходах по проектам' , ar: 'تقرير مصروفات المشاريع' },
   'report.noGroup': { he: 'ללא קיבוץ', en: 'No grouping', ru: 'Без группировки' , ar: 'بدون تجميع' },
-  'field.start': { he: 'התחלה', en: 'Start', ru: 'Начало' , ar: 'بداية' },
-  'field.end': { he: 'סיום', en: 'End', ru: 'Конец' , ar: 'نهاية' },
   'report.period': { he: 'תקופה', en: 'Period', ru: 'Период' , ar: 'فترة' },
   'report.wholePeroid': { he: 'כל התקופה', en: 'Whole period', ru: 'Весь период' , ar: 'الفترة كاملة' },
   'report.wholeYearBtn': { he: 'כל שנת {year}', en: 'Whole {year}', ru: 'Весь {year} год' , ar: 'كل سنة {year}' },
@@ -2101,27 +1355,8 @@ const I18N = {
   'report.sheetName': { he: 'דוח', en: 'Report', ru: 'Отчёт' , ar: 'تقرير' },
   'toast.installConfirmed': { he: 'אם אישרתם — Or יופיע עם אייקון ושם על המסך', en: 'If you confirmed — Or will appear with an icon and name on your screen', ru: 'Если вы подтвердили — Or появится с иконкой и названием на экране' , ar: 'إذا وافقتم — سيظهر Or بأيقونة واسم على الشاشة' },
   'field.id': { he: 'מזהה', en: 'ID', ru: 'ID' , ar: 'معرّف' },
-  'field.year': { he: 'שנה', en: 'Year', ru: 'Год' , ar: 'سنة' },
-  'field.idType': { he: 'סוג מזהה', en: 'ID type', ru: 'Тип идентификатора' , ar: 'نوع المعرّف' },
-  'field.idNumber': { he: 'מספר', en: 'Number', ru: 'Номер' , ar: 'رقم' },
-  'field.active': { he: 'פעיל', en: 'Active', ru: 'Активен' , ar: 'نشط' },
-  'field.firstSat': { he: 'שבת ראשונה', en: 'First Saturday', ru: 'Первая суббота' , ar: 'أول سبت' },
-  'field.specialDays': { he: 'ימים מיוחדים', en: 'Special days', ru: 'Особые дни' , ar: 'أيام خاصة' },
   'field.toolOrPage': { he: 'כלי / עמוד', en: 'Tool / page', ru: 'Инструмент / страница' , ar: 'أداة / صفحة' },
   'field.browser': { he: 'דפדפן', en: 'Browser', ru: 'Браузер' , ar: 'متصفح' },
-  'field.hoursRegular': { he: 'שעות רגילות', en: 'Regular hours', ru: 'Обычные часы' , ar: 'ساعات عادية' },
-  'field.hoursOvertime': { he: 'שעות נוספות', en: 'Overtime hours', ru: 'Сверхурочные часы' , ar: 'ساعات إضافية' },
-  'field.hoursTotal': { he: 'סה"כ שעות', en: 'Total hours', ru: 'Всего часов' , ar: 'إجمالي الساعات' },
-  'field.duesPlain': { he: 'תשלום חודשי', en: 'Monthly payment', ru: 'Ежемесячный платёж' , ar: 'الدفعة الشهرية' },
-  'field.paidDate': { he: 'תאריך תשלום', en: 'Payment date', ru: 'Дата платежа' , ar: 'تاريخ الدفع' },
-  'field.serviceDate': { he: 'תאריך ביצוע', en: 'Service date', ru: 'Дата выполнения' , ar: 'تاريخ التنفيذ' },
-  'field.nextServiceDate': { he: 'תאריך לביצוע חוזר', en: 'Next service due', ru: 'Дата следующего выполнения' , ar: 'تاريخ التنفيذ التالي' },
-  'field.warrantyExpiry': { he: 'תוקף אחריות', en: 'Warranty expiry', ru: 'Срок действия гарантии' , ar: 'انتهاء الضمان' },
-  'field.insuranceExpiry': { he: 'תוקף ביטוח', en: 'Insurance expiry', ru: 'Срок действия страховки' , ar: 'انتهاء التأمين' },
-  'field.meetingDate': { he: 'תאריך מפגש', en: 'Session date', ru: 'Дата встречи' , ar: 'تاريخ اللقاء' },
-  'field.present': { he: 'נוכח', en: 'Present', ru: 'Присутствовал' , ar: 'حاضر' },
-  'field.groupName': { he: 'שם שכבה / קבוצה', en: 'Group name', ru: 'Название группы' , ar: 'اسم الصف / المجموعة' },
-  'field.systemName': { he: 'שם מערכת', en: 'System name', ru: 'Название системы', ar: 'اسم النظام' },
   'field.travelersCount': { he: 'מספר נוסעים', en: 'Number of travelers', ru: 'Количество путешественников' , ar: 'عدد المسافرين' },
   'field.budgetPlain': { he: 'תקציב', en: 'Budget', ru: 'Бюджет' , ar: 'ميزانية' },
   'field.insPhonePlain': { he: 'טלפון ביטוח', en: 'Insurance phone', ru: 'Телефон страховой' , ar: 'هاتف التأمين' },
@@ -2130,30 +1365,8 @@ const I18N = {
   'sheet.meta': { he: 'מטא-נתונים', en: 'Metadata', ru: 'Метаданные', ar: 'بيانات وصفية' },
   'field.orVersion': { he: 'גרסת אור', en: 'Or version', ru: 'Версия Or', ar: 'إصدار Or' },
   'field.backupDate': { he: 'תאריך גיבוי', en: 'Backup date', ru: 'Дата резервной копии', ar: 'تاريخ النسخة الاحتياطية' },
-  'sheet.expenses': { he: 'הוצאות', en: 'Expenses', ru: 'Расходы' , ar: 'مصروفات' },
-  'sheet.accountDetails': { he: 'פרטי חשבונות', en: 'Account details', ru: 'Данные счетов' , ar: 'بيانات الحسابات' },
-  'sheet.building': { he: 'פרטי בניין', en: 'Building details', ru: 'Данные здания' , ar: 'بيانات البناية' },
-  'sheet.workcal': { he: 'לוח עבודה', en: 'Work calendar', ru: 'Рабочий календарь' , ar: 'جدول العمل' },
-  'sheet.groups': { he: 'שכבות', en: 'Groups', ru: 'Группы' , ar: 'صفوف' },
-  'sheet.buildingSystemsList': { he: 'מערכות מוגדרות', en: 'Configured systems', ru: 'Настроенные системы', ar: 'الأنظمة المُعرَّفة' },
   'sheet.trip': { he: 'פרטי טיול', en: 'Trip details', ru: 'Данные поездки' , ar: 'بيانات الرحلة' },
   'sheet.bugs': { he: 'דיווחי באגים', en: 'Bug reports', ru: 'Отчёты об ошибках' , ar: 'بلاغات الأعطال' },
-  'sheet.pettycash': { he: 'קופה קטנה', en: 'Petty cash', ru: 'Мелкая касса' , ar: 'الصندوق الصغير' },
-  'sheet.hours': { he: 'שעות עבודה', en: 'Work hours', ru: 'Рабочие часы' , ar: 'ساعات العمل' },
-  'sheet.vaad': { he: 'וועד בית', en: 'Building committee', ru: 'Домовой комитет' , ar: 'لجنة البناية' },
-  'sheet.residents': { he: 'דיירים', en: 'Residents', ru: 'Жильцы' , ar: 'سكان' },
-  'sheet.tickets': { he: 'תקלות', en: 'Issues', ru: 'Проблемы' , ar: 'أعطال' },
-  'sheet.pros': { he: 'בעלי מקצוע', en: 'Professionals', ru: 'Специалисты' , ar: 'أصحاب مهن' },
-  'sheet.vaadfixed': { he: 'הוצאות ועד', en: 'Committee expenses', ru: 'Расходы комитета', ar: 'مصروفات اللجنة' },
-  'sheet.expfixed': { he: 'מנויים', en: 'Subscriptions', ru: 'Подписки', ar: 'الاشتراكات' },
-  'sheet.buildingsys': { he: 'מערכות בבניין', en: 'Building systems', ru: 'Системы здания', ar: 'أنظمة المبنى' },
-  'sheet.vaadpay': { he: 'גביית וועד', en: 'Committee dues', ru: 'Сборы комитета' , ar: 'تحصيل اللجنة' },
-  'sheet.chug': { he: 'תנועה - קופה', en: 'Club cash', ru: 'Касса кружка' , ar: 'حركة - صندوق' },
-  'sheet.members': { he: 'חניכים', en: 'Members', ru: 'Участники' , ar: 'أعضاء' },
-  'sheet.guides': { he: 'מדריכים', en: 'Guides', ru: 'Руководители' , ar: 'مرشدون' },
-  'sheet.attendance': { he: 'נוכחות', en: 'Attendance', ru: 'Посещаемость' , ar: 'حضور' },
-  'sheet.equipment': { he: 'ציוד', en: 'Equipment', ru: 'Оборудование' , ar: 'معدات' },
-  'sheet.chugpay': { he: 'תשלומי חוג', en: 'Club payments', ru: 'Платежи кружка' , ar: 'مدفوعات النادي' },
   'sheet.flights': { he: 'טיסות', en: 'Flights', ru: 'Рейсы' , ar: 'رحلات طيران' },
   'sheet.hotels': { he: 'מלונות', en: 'Hotels', ru: 'Отели' , ar: 'فنادق' },
   'sheet.restaurants': { he: 'מסעדות', en: 'Restaurants', ru: 'Рестораны' , ar: 'مطاعم' },
@@ -2161,16 +1374,9 @@ const I18N = {
   'sheet.itinerary': { he: 'מסלול הטיול', en: 'Trip itinerary', ru: 'Маршрут поездки' , ar: 'مسار الرحلة' },
   'sheet.tripexp': { he: 'הוצאות טיול', en: 'Trip expenses', ru: 'Расходы поездки' , ar: 'مصروفات الرحلة' },
   'sheet.triplinks': { he: 'קישורים', en: 'Links', ru: 'Ссылки' , ar: 'روابط' },
-  'sheet.projlist': { he: 'פרויקטים', en: 'Projects', ru: 'Проекты' , ar: 'مشاريع' },
-  'sheet.projtasks': { he: 'משימות', en: 'Tasks', ru: 'Задачи' , ar: 'مهام' },
-  'sheet.projexp': { he: 'הוצאות פרויקטים', en: 'Project expenses', ru: 'Расходы по проектам' , ar: 'مصروفات المشاريع' },
-  'err.requiredExpenseFields': { he: 'חובה למלא תאריך, קטגוריה וסכום', en: 'Date, category and amount are required', ru: 'Обязательны дата, категория и сумма' , ar: 'يجب ملء التاريخ، الفئة والمبلغ' },
-  'err.categoryAlreadyExists': { he: 'קטגוריה בשם הזה כבר קיימת', en: 'A category with this name already exists', ru: 'Категория с таким названием уже существует' , ar: 'توجد بالفعل فئة بهذا الاسم' },
-  'err.cannotDeleteBuiltinCategory': { he: 'לא ניתן למחוק קטגוריית ברירת מחדל', en: 'A default category cannot be deleted', ru: 'Категорию по умолчанию нельзя удалить' , ar: 'لا يمكن حذف فئة افتراضية' },
   'err.recordNotFound': { he: 'רשומה לא נמצאה', en: 'Record not found', ru: 'Запись не найдена' , ar: 'السجل غير موجود' },
   'err.toolNotFound': { he: 'כלי לא קיים', en: 'Tool does not exist', ru: 'Инструмент не существует' , ar: 'الأداة غير موجودة' },
   'err.requiredDate': { he: 'חובה למלא תאריך', en: 'Date is required', ru: 'Обязательна дата' , ar: 'يجب ملء التاريخ' },
-  'err.missingMonth': { he: 'חסר חודש', en: 'Month is missing', ru: 'Не указан месяц' , ar: 'الشهر مفقود' },
   'err.missingDescription': { he: 'חסר תיאור', en: 'Description is missing', ru: 'Не указано описание' , ar: 'الوصف مفقود' },
   'err.unsupportedOperation': { he: 'פעולה לא נתמכת: {op}', en: 'Unsupported operation: {op}', ru: 'Неподдерживаемая операция: {op}' , ar: 'عملية غير مدعومة: {op}' },
   'storage.browserLabel': { he: 'אחסון בדפדפן (localStorage)', en: 'Browser storage (localStorage)', ru: 'Хранилище браузера (localStorage)' , ar: 'تخزين المتصفح (localStorage)' },
@@ -2216,40 +1422,6 @@ const I18N = {
       </ul>
       <p>في البطاقات أعلاه: الوجهة والتواريخ، الميزانية، المصروفات حتى الآن (بما فيها للشخص الواحد)، وكم تبقى.</p>
       <p>في <span class="help-tag">الإعدادات ⚙️</span> تحددون بيانات الإجازة: الوجهة، التواريخ، <strong>عدد المسافرين</strong>، الميزانية، وبيانات <strong>التأمين الطبي</strong> (الشركة، رقم البوليصة وهاتف الطوارئ).</p>`
-  },
-  'help.projects.body': {
-    he: `<p>ניהול פרויקטים אישיים או ביתיים — משימות, תקציב ומעקב התקדמות. ארבע לשוניות:</p>
-      <ul>
-        <li><strong>סקירה</strong> — כרטיסי סיכום (מס' פרויקטים, פרויקטים פעילים, משימות פתוחות, תקציב כולל, הוצאות ויתרה) וטבלת מצב לכל פרויקט.</li>
-        <li><strong>פרויקטים</strong> — שם, תיאור, סטטוס (בתכנון / פעיל / מושהה / הושלם), תאריך התחלה ויעד, ותקציב.</li>
-        <li><strong>משימות</strong> — שם המשימה, שיוך לפרויקט (לפי שם), אחראי, תאריך יעד, דחיפות וסטטוס.</li>
-        <li><strong>הוצאות</strong> — כל הוצאה בפועל, משויכת לפרויקט לפי שם, לצורך חישוב היתרה מול התקציב.</li>
-      </ul>
-      <p>שיוך משימות והוצאות לפרויקט נעשה לפי הקלדת שם הפרויקט זהה לשם שמופיע בלשונית "פרויקטים".</p>`,
-    en: `<p>Manage personal or household projects — tasks, budget and progress tracking. Four tabs:</p>
-      <ul>
-        <li><strong>Overview</strong> — summary cards (project count, active projects, open tasks, total budget, spending and remaining) and a status table per project.</li>
-        <li><strong>Projects</strong> — name, description, status (planning / active / paused / completed), start and target dates, and budget.</li>
-        <li><strong>Tasks</strong> — task name, linked project (by name), assignee, due date, priority and status.</li>
-        <li><strong>Expenses</strong> — each actual expense, linked to a project by name, used to calculate remaining budget.</li>
-      </ul>
-      <p>Link tasks and expenses to a project by typing the project name exactly as it appears in the "Projects" tab.</p>`,
-    ru: `<p>Управление личными или домашними проектами — задачи, бюджет и отслеживание прогресса. Четыре вкладки:</p>
-      <ul>
-        <li><strong>Обзор</strong> — карточки сводки (число проектов, активные проекты, открытые задачи, общий бюджет, расходы и остаток) и таблица статуса по каждому проекту.</li>
-        <li><strong>Проекты</strong> — название, описание, статус (в планировании / активен / приостановлен / завершён), даты начала и завершения, бюджет.</li>
-        <li><strong>Задачи</strong> — название задачи, связанный проект (по названию), ответственный, срок выполнения, приоритет и статус.</li>
-        <li><strong>Расходы</strong> — каждый фактический расход, связанный с проектом по названию, для расчёта остатка бюджета.</li>
-      </ul>
-      <p>Чтобы связать задачу или расход с проектом, введите название проекта точно так же, как оно указано на вкладке "Проекты".</p>`,
-    ar: `<p>إدارة مشاريع شخصية أو منزلية — مهام، ميزانية ومتابعة التقدم. أربعة ألسنة:</p>
-      <ul>
-        <li><strong>نظرة عامة</strong> — بطاقات ملخص (عدد المشاريع، المشاريع النشطة، المهام المفتوحة، الميزانية الإجمالية، المصروفات والرصيد) وجدول حالة لكل مشروع.</li>
-        <li><strong>مشاريع</strong> — الاسم، الوصف، الحالة (قيد التخطيط / نشط / معلّق / مكتمل)، تاريخ البدء والتاريخ المستهدف، والميزانية.</li>
-        <li><strong>مهام</strong> — اسم المهمة، ربط بمشروع (حسب الاسم)، المسؤول، تاريخ الاستحقاق، الأولوية والحالة.</li>
-        <li><strong>مصروفات</strong> — كل مصروف فعلي، مرتبط بمشروع حسب الاسم، لحساب الرصيد المتبقي من الميزانية.</li>
-      </ul>
-      <p>يتم ربط المهام والمصروفات بمشروع عن طريق كتابة اسم المشروع مطابقاً تماماً للاسم الظاهر في لسان "مشاريع".</p>`
   },
   'help.checkUpdateBtn': { he: 'בדיקת עדכונים', en: 'Check for updates', ru: 'Проверить обновления' , ar: 'التحقق من التحديثات' },
   'help.versionLabel': { he: 'גרסה {v}', en: 'Version {v}', ru: 'Версия {v}' , ar: 'الإصدار {v}' },

@@ -77,19 +77,20 @@
   header > .brand { justify-self: start; min-width: 0; }
   header > .brand-center { justify-self: center; }
   header > .header-actions { justify-self: end; min-width: 0; }
-  .home-wrap { position: relative; display: inline-flex; align-items: center; }
   @media (max-width: 600px) {
     header { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 6px; }
     header > .brand { display: contents; }                                          /* let its children join the header's own flex row */
     header > .brand-center { display: none; }                                       /* logo hidden on mobile */
-    .home-wrap { order: 1; }                                                        /* row 1: home button ... */
-    header > .header-actions { order: 1; flex: 1 1 auto; justify-content: flex-end; gap: 6px; } /* ...+ the rest of the buttons */
+    header > .header-actions { order: 1; flex: 1 1 auto; justify-content: flex-end; gap: 6px; } /* row 1: the header's icon buttons */
     header h1#appTitle { order: 2; flex: 1 1 100%; margin: 0; justify-content: center; text-align: center; } /* row 2: tool title */
   }
   header h1 { font-size: 24px; font-weight: 700; display: flex; align-items: center; gap: var(--space-2); }
   header h1 svg { color: var(--color-secondary); }
   .header-actions { display: flex; gap: var(--space-2); align-items: center; }
   .file-hint { color: var(--color-text-dim); font-size: 13px; }
+  .app-footer { display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: var(--space-5); padding-top: var(--space-3); border-top: 1px solid var(--color-border); font-size: 13px; color: var(--color-text-dim); }
+  .app-footer a { color: var(--color-text-dim); text-decoration: none; }
+  .app-footer a:hover { color: var(--color-secondary); text-decoration: underline; }
   /* Save icon, grouped with the rest of the header icon buttons - color
      switches to the destructive/red tone once the backup is overdue (the
      actual elapsed time lives in the button's title/aria-label tooltip,
@@ -174,7 +175,6 @@
 
   /* Brand + tool menu */
   .brand { display: flex; align-items: center; gap: var(--space-2); position: relative; }
-  .home-btn svg { color: var(--color-secondary); }
   .help-btn svg { color: var(--color-accent); }
   .help-btn:hover { border-color: var(--color-accent); color: var(--color-accent); }
   #helpDialog { max-width: 640px; width: 92%; }
@@ -199,33 +199,6 @@
   .help-body li { margin-bottom: 7px; }
   .help-body strong { color: var(--color-fg); font-weight: 500; }
   .help-body .help-tag { display: inline-block; background: var(--color-muted); border: 1px solid var(--color-border); border-radius: 6px; padding: 1px 8px; font-size: 13px; }
-  .tool-menu {
-    position: absolute; top: calc(100% + 8px); inset-inline-start: 0; z-index: 1000;
-    background: var(--color-card); border: 1px solid var(--color-border);
-    border-radius: var(--radius); padding: var(--space-1);
-    min-width: 280px; box-shadow: 0 12px 40px rgba(0,0,0,0.45);
-    display: flex; flex-direction: column; gap: 2px;
-  }
-  .tool-menu[hidden] { display: none; }
-  .tool-menu-head { font-size: 12px; color: var(--color-text-dim); padding: 8px 12px 4px; font-weight: 500; }
-  .tool-item {
-    display: flex; align-items: center; gap: var(--space-2);
-    background: transparent; color: var(--color-fg); text-align: start;
-    padding: 10px 12px; border-radius: 8px; min-height: 44px;
-  }
-  .tool-item svg { color: var(--color-secondary); flex-shrink: 0; }
-  .tool-item span { display: flex; flex-direction: column; }
-  .tool-item small { color: var(--color-text-dim); font-size: 12px; }
-  .tool-item:hover { background: var(--color-muted); }
-  .tool-item.active { background: rgba(59,130,246,0.15); }
-  .tool-item[hidden] { display: none; }
-  .tool-menu-showall {
-    display: block; width: 100%; text-align: center; background: transparent; color: var(--color-secondary);
-    font-size: 12.5px; font-weight: 600; padding: 9px 12px; border-radius: 8px; margin-top: 2px;
-    border-top: 1px solid var(--color-border);
-  }
-  .tool-menu-showall:hover { background: var(--color-muted); }
-  .tool-menu-showall[hidden] { display: none; }
 
   .lang-wrap { position: relative; display: inline-flex; align-items: center; }
   .lang-menu {
@@ -338,12 +311,8 @@
 
   .empty { text-align: center; color: var(--color-text-dim); padding: var(--space-5); }
 
-  /* Field grids (settings sections, tool-selection checkboxes) */
+  /* Field grid (settings sections) */
   .details-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: var(--space-2); }
-  /* Checkbox lists (e.g. tool selection) are much shorter than a details-grid
-     field, so they get their own tighter grid instead of sharing its wide
-     card-sized columns. */
-  .checkbox-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: var(--space-1); }
   .details-footer { margin-top: var(--space-2); display: flex; align-items: center; gap: var(--space-2); }
 
   /* Toast */
@@ -466,7 +435,6 @@
     .tab { padding: 9px 12px; font-size: 14px; }
     th, td { padding: 8px 8px; font-size: 13px; }
     .details-grid { grid-template-columns: 1fr; }
-    .tool-menu { min-width: min(280px, calc(100vw - 32px)); }
     dialog { width: 94%; }
   }
   @media (max-width: 360px) {
@@ -494,7 +462,7 @@
     @page { margin: 1.2cm; }
     html, body { background: #fff !important; color: #000 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
     #splash, header, #toast, dialog,
-    .header-actions, .tool-menu, .add-form, form, .actions-cell,
+    .header-actions, .add-form, form, .actions-cell,
     .tabs, .file-hint, .empty, .details-footer { display: none !important; }
     .container { max-width: 100% !important; padding: 0 !important; }
     .print-only { display: flex !important; }
@@ -522,11 +490,6 @@
   .report-controls { display: flex; flex-wrap: wrap; gap: 10px; align-items: end; margin-bottom: 14px; }
   .report-controls label { flex: 1 1 140px; }
   .report-controls .btn-primary { min-height: 44px; }
-  .quick-period-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
-  .qp-btn { background: var(--color-muted); border: none; border-radius: 999px; padding: 5px 14px; font-size: 13px; color: var(--color-fg); }
-  .qp-btn:hover { background: var(--color-secondary); color: #fff; }
-  .qp-btn.qp-year { background: var(--color-secondary); color: #fff; font-weight: 600; }
-  .qp-btn.qp-year:hover { filter: brightness(1.15); }
   .report-preview { max-height: 60vh; overflow: auto; border: 1px solid var(--color-border); border-radius: 8px; padding: 16px; background: var(--color-muted); }
   #reportPrintArea { display: none; }
   /* Report document (on white, print-like) */
@@ -608,20 +571,7 @@
 <div class="container">
   <header>
     <div class="brand">
-      <div class="home-wrap">
-        <button type="button" class="icon-btn home-btn" id="homeBtn" data-i18n-aria="nav.chooseTool" aria-label="בחירת כלי" aria-haspopup="true" aria-expanded="false">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9.5L12 3l9 6.5"/><path d="M5 10v10h14V10"/><path d="M9 20v-6h6v6"/></svg>
-        </button>
-        <nav class="tool-menu" id="toolMenu" hidden data-i18n-aria="nav.toolsHeading" aria-label="כלים באתר">
-          <p class="tool-menu-head" data-i18n="nav.toolsHeading">כלים באתר</p>
-          <button type="button" class="tool-item" data-tool="trip">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg>
-            <span><strong data-i18n="tool.trip.name">ניהול חופשה</strong><small data-i18n="tool.trip.desc">מסלול, טיסות, מלונות ותקציב</small></span>
-          </button>
-          <button type="button" class="tool-menu-showall" id="toolMenuShowAll" data-i18n="nav.showAllTools" hidden>הצג את כל הכלים</button>
-        </nav>
-      </div>
-      <h1 id="appTitle">ניהול הוצאות הבית</h1>
+      <h1 id="appTitle">ניהול חופשה</h1>
     </div>
 
     <a class="brand-center" href="./" data-i18n-aria="nav.homeLink" data-i18n-title="nav.homeLink" aria-label="Or — דף הבית" title="Or — דף הבית">
@@ -679,6 +629,12 @@
   </div>
 
   <div id="dynamicViews"></div>
+
+  <footer class="app-footer">
+    <a href="privacy.html" data-i18n="footer.privacy">מדיניות פרטיות</a>
+    <span aria-hidden="true">·</span>
+    <a href="terms.html" data-i18n="footer.terms">תנאי שימוש</a>
+  </footer>
 </div><!-- /container -->
 
 <dialog id="settingsDialog">
@@ -690,21 +646,14 @@
   </div>
 
   <div class="tabs settings-tabs" id="settingsTabs">
-    <button type="button" class="tab active" data-stab="tools" data-i18n="settings.tabs.tools">בחירת כלים</button>
-    <button type="button" class="tab" data-stab="data" data-i18n="settings.tabs.data">נתונים מקומיים</button>
+    <button type="button" class="tab active" data-stab="data" data-i18n="settings.tabs.data">נתונים מקומיים</button>
     <button type="button" class="tab" data-stab="backup" data-i18n="settings.tabs.backup">תזכורת גיבוי</button>
     <button type="button" class="tab" data-stab="drive" data-i18n="settings.tabs.drive">Google Drive</button>
     <button type="button" class="tab" data-stab="tool" id="settingsToolTab" data-i18n="settings.tabs.tool">הגדרות הכלי</button>
     <button type="button" class="tab" data-stab="more" data-i18n="settings.tabs.more">עוד</button>
   </div>
 
-  <section class="settings-section" id="toolsSection" data-stab="tools">
-    <h4 data-i18n="settings.tools.heading">כלים פעילים באתר</h4>
-    <p class="file-hint" data-i18n="settings.tools.hint">סמנו אילו כלים יופיעו בתפריט הבחירה. אפשר לבחור כמה שרוצים — אבל חייב להישאר לפחות כלי אחד פעיל.</p>
-    <div class="checkbox-grid" id="toolsCheckboxes"></div>
-  </section>
-
-  <section class="settings-section" id="dataSection" data-stab="data" hidden>
+  <section class="settings-section" id="dataSection" data-stab="data">
     <h4 data-i18n="settings.data.heading">הנתונים המקומיים</h4>
     <div class="file-status" id="fileStatus" data-i18n="settings.data.loading">טוען...</div>
     <div class="file-actions">
@@ -740,6 +689,14 @@
       <p class="file-hint" data-i18n="drive.uploadLocalHint" style="margin-top:var(--space-1)">מעלה קובץ אקסל שבחרתם מהמחשב כקובץ חדש ב-Drive שלכם (בנוסף לקובץ הגיבוי הקבוע).</p>
       <h4 style="margin-top:var(--space-4)" data-i18n="drive.filesHeading">קבצים ב-Drive</h4>
       <div id="driveFilesList" class="drive-files-list"></div>
+
+      <div class="file-actions" style="margin-top:var(--space-4)">
+        <button type="button" class="btn-edit" id="driveUploadDocBtn" data-i18n="drive.uploadDocBtn">העלאת מסמך (PDF)</button>
+        <input type="file" id="driveDocFileInput" accept=".pdf,application/pdf" hidden>
+      </div>
+      <p class="file-hint" data-i18n="drive.uploadDocHint" style="margin-top:var(--space-1)">מעלה קובץ PDF שבחרתם מהמחשב (כרטיס טיסה, שובר מלון, אישור ביטוח וכו') לתוך תיקייה ב-Drive שנקראת על שם הטיול והתאריך.</p>
+      <h4 style="margin-top:var(--space-4)" data-i18n="drive.docsHeading">מסמכים שמורים</h4>
+      <div id="driveDocsList" class="drive-files-list"></div>
     </div>
 
   </section>
@@ -779,8 +736,6 @@
       <button type="button" class="btn-primary" id="saveTripBtn" data-i18n="settings.trip.saveBtn">שמור פרטי טיול</button>
     </div>
   </section>
-
-  <section class="settings-section" id="toolSettingsNote" data-stab="tool" hidden></section>
 
   <section class="settings-section" id="installSection" data-stab="more" hidden>
     <h4 data-i18n="settings.install.heading">התקנה וקיצור דרך</h4>
@@ -885,17 +840,10 @@
   <h3 id="reportTitle" data-i18n="report.title">מרכז הדוחות</h3>
   <div class="report-controls">
     <label><span data-i18n="report.label">דוח</span> <select id="reportSelect"></select></label>
-    <span id="reportDateFilters">
-      <label><span data-i18n="field.dateFrom">מתאריך</span> <input type="date" id="reportFrom" lang="he-IL"></label>
-      <label><span data-i18n="field.dateTo">עד תאריך</span> <input type="date" id="reportTo" lang="he-IL"></label>
-      <label><span data-i18n="report.groupLabel">קיבוץ לפי</span> <select id="reportGroup"></select></label>
-    </span>
     <button type="button" class="btn-primary" id="reportGenerate" data-i18n="report.generateBtn">הפק דוח</button>
   </div>
-  <div class="quick-period-row" id="reportQuickPeriods"></div>
   <div class="dialog-actions">
     <button type="button" class="btn-edit" id="reportPrint" data-i18n="report.printBtn">הדפסה / PDF</button>
-    <button type="button" class="btn-edit" id="reportExport" data-i18n="report.exportBtn">ייצוא לאקסל</button>
     <button type="button" class="btn-ghost" id="closeReport" data-i18n="common.close">סגור</button>
   </div>
   <div id="reportPreview" class="report-preview"><p class="file-hint" data-i18n="report.chooseHint">בחרו דוח ולחצו "הפק דוח".</p></div>
@@ -931,24 +879,10 @@
     try { Object.defineProperty(window, 'localStorage', { configurable: true, value: shim }); } catch (e2) { /* can't redefine — nothing more we can do */ }
   }
 })();
-const CAT_I18N_KEY = { 'ארנונה': 'cat.arnona', 'מים': 'cat.water', 'חשמל': 'cat.electricity', 'גז': 'cat.gas' };
 const OPT_I18N_KEY = {
-  'לא': 'opt.no', 'כן': 'opt.yes',
-  'רגילה': 'opt.priorityNormal', 'דחוף': 'opt.priorityUrgent', 'קריטי': 'opt.priorityCritical',
-  'פתוח': 'opt.statusOpen', 'בטיפול': 'opt.statusInProgress', 'טופל': 'opt.statusDone',
-  'תקין': 'opt.conditionOk', 'דורש תיקון': 'opt.conditionRepair', 'חסר': 'opt.conditionMissing',
   'אטרקציה': 'opt.catAttraction', 'אטרקציות': 'opt.catAttractions', 'מסעדה': 'opt.catRestaurant', 'מלון': 'opt.catHotel',
   'תחבורה': 'opt.catTransport', 'קניות': 'opt.catShopping', 'אחר': 'opt.catOther',
-  'טיסות': 'opt.tripCatFlights', 'לינה': 'opt.tripCatLodging', 'אוכל': 'opt.tripCatFood', 'ביטוח': 'opt.tripCatInsurance',
-  'בתכנון': 'opt.statusPlanning', 'פעיל': 'opt.statusActive', 'מושהה': 'opt.statusPaused', 'הושלם': 'opt.statusCompleted',
-  'מים': 'cat.water', 'חשמל': 'cat.electricity', 'ניקיון': 'opt.catCleaning', 'מעלית': 'opt.catElevator',
-  'חומרי ניקוי': 'opt.catCleaningSupplies', 'תחזוקה כללית': 'opt.catGeneralMaintenance',
-  'משאבת מים': 'opt.sysWaterPump', 'מערכת סולארית': 'opt.sysSolar', 'מערכת חשמל ראשית': 'opt.sysMainElectric',
-  'גנרטור': 'opt.sysGenerator', 'מערכת גילוי וכיבוי אש': 'opt.sysFireSystem', 'אבטחה ואינטרקום': 'opt.sysIntercom',
-  'מערכת אוורור ומיזוג': 'opt.sysHVAC', 'מערכת תאורה': 'opt.sysLighting', 'מערכת ביוב וניקוז': 'opt.sysSewage',
-  'גינון': 'opt.catGardening', 'הדברה': 'opt.sysPestControl',
-  'חד פעמי': 'freq.oneTime', 'חודשי': 'freq.monthly', 'דו-חודשי': 'freq.bimonthly', 'תלת חודשי': 'freq.triMonthly',
-  'רבעוני': 'freq.quarterly', 'חצי שנתי': 'freq.semiAnnual', 'שנתי': 'freq.yearly'
+  'טיסות': 'opt.tripCatFlights', 'לינה': 'opt.tripCatLodging', 'אוכל': 'opt.tripCatFood', 'ביטוח': 'opt.tripCatInsurance'
 };
 const optLabel = v => OPT_I18N_KEY[v] ? t(OPT_I18N_KEY[v]) : v;
 const MONTH_NAMES = {
@@ -987,12 +921,10 @@ const I18N = {
   'help.title': { he: 'עזרה', en: 'Help', ru: 'Справка' , ar: 'مساعدة' },
   'trip.date.pastError': { he: 'תאריך ההתחלה לא יכול להיות בעבר', en: 'Start date cannot be in the past', ru: 'Дата начала не может быть в прошлом' , ar: 'لا يمكن أن يكون تاريخ البدء في الماضي' },
   'trip.date.endBeforeStartError': { he: 'תאריך הסיום לפני תאריך ההתחלה', en: 'End date is before the start date', ru: 'Дата окончания раньше даты начала' , ar: 'تاريخ الانتهاء قبل تاريخ البدء' },
-  'nav.chooseTool': { he: 'בחירת כלי', en: 'Choose a tool', ru: 'Выбрать инструмент' , ar: 'اختيار أداة' },
-  'nav.toolsHeading': { he: 'כלים באתר', en: 'Tools', ru: 'Инструменты' , ar: 'الأدوات' },
-  'nav.showAllTools': { he: 'הצג את כל הכלים', en: 'Show all tools', ru: 'Показать все инструменты', ar: 'عرض جميع الأدوات' },
   'nav.homeLink': { he: 'Or — דף הבית', en: 'Or — Home', ru: 'Or — Главная' , ar: 'Or — الصفحة الرئيسية' },
+  'footer.privacy': { he: 'מדיניות פרטיות', en: 'Privacy Policy', ru: 'Политика конфиденциальности', ar: 'سياسة الخصوصية' },
+  'footer.terms': { he: 'תנאי שימוש', en: 'Terms of Service', ru: 'Условия использования', ar: 'شروط الاستخدام' },
   'tool.trip.name': { he: 'ניהול חופשה', en: 'Vacation Management', ru: 'Управление отпуском' , ar: 'إدارة الإجازة' },
-  'tool.trip.desc': { he: 'מסלול, טיסות, מלונות ותקציב', en: 'Itinerary, flights, hotels & budget', ru: 'Маршрут, рейсы, отели и бюджет' , ar: 'المسار، الرحلات، الفنادق والميزانية' },
   'header.reportCenter': { he: 'מרכז הדוחות', en: 'Report Center', ru: 'Центр отчётов' , ar: 'مركز التقارير' },
   'header.settings': { he: 'הגדרות — פרטי החשבונות', en: 'Settings — account details', ru: 'Настройки — данные счетов' , ar: 'الإعدادات — بيانات الحسابات' },
   'header.themeToggle': { he: 'החלפת עיצוב כהה / בהיר', en: 'Toggle dark / light theme', ru: 'Переключить тёмную / светлую тему' , ar: 'تبديل المظهر الداكن / الفاتح' },
@@ -1009,15 +941,6 @@ const I18N = {
   'field.notes': { he: 'הערות', en: 'Notes', ru: 'Примечания' , ar: 'ملاحظات' },
   'field.dateFrom': { he: 'מתאריך', en: 'From date', ru: 'С даты' , ar: 'من تاريخ' },
   'field.dateTo': { he: 'עד תאריך', en: 'To date', ru: 'По дату' , ar: 'إلى تاريخ' },
-  'cat.arnona': { he: 'ארנונה', en: 'Property Tax', ru: 'Муниципальный налог' , ar: 'أرنونا' },
-  'cat.water': { he: 'מים', en: 'Water', ru: 'Вода' , ar: 'مياه' },
-  'cat.electricity': { he: 'חשמל', en: 'Electricity', ru: 'Электричество' , ar: 'كهرباء' },
-  'cat.gas': { he: 'גז', en: 'Gas', ru: 'Газ' , ar: 'غاز' },
-  'daytype.eve': { he: 'ערב חג', en: 'Holiday eve', ru: 'Канун праздника' , ar: 'ليلة عيد' },
-  'daytype.holiday': { he: 'חג', en: 'Holiday', ru: 'Праздник' , ar: 'عيد' },
-  'daytype.rest': { he: 'שבתון', en: 'Day off', ru: 'Выходной' , ar: 'يوم راحة' },
-  'daytype.vacation': { he: 'חופש', en: 'Vacation', ru: 'Отпуск' , ar: 'إجازة' },
-  'settings.tabs.tools': { he: 'בחירת כלים', en: 'Choose tools', ru: 'Выбор инструментов' , ar: 'اختيار الأدوات' },
   'settings.tabs.data': { he: 'נתונים מקומיים', en: 'Local data', ru: 'Локальные данные' , ar: 'البيانات المحلية' },
   'settings.tabs.backup': { he: 'תזכורת גיבוי', en: 'Backup reminder', ru: 'Напоминание о резервной копии' , ar: 'تذكير النسخ الاحتياطي' },
   'settings.tabs.drive': { he: 'Google Drive', en: 'Google Drive', ru: 'Google Диск' , ar: 'Google Drive' },
@@ -1032,8 +955,6 @@ const I18N = {
   'settings.backupReminder.off': { he: 'בלי תזכורת', en: 'No reminder', ru: 'Без напоминания' , ar: 'بدون تذكير' },
   'settings.tabs.tool': { he: 'הגדרות הכלי', en: 'Tool settings', ru: 'Настройки инструмента' , ar: 'إعدادات الأداة' },
   'settings.tabs.more': { he: 'עוד', en: 'More', ru: 'Ещё' , ar: 'المزيد' },
-  'settings.tools.heading': { he: 'כלים פעילים באתר', en: 'Active tools', ru: 'Активные инструменты' , ar: 'الأدوات النشطة في الموقع' },
-  'settings.tools.hint': { he: 'סמנו אילו כלים יופיעו בתפריט הבחירה. אפשר לבחור כמה שרוצים — אבל חייב להישאר לפחות כלי אחד פעיל.', en: 'Check which tools appear in the selection menu. Pick as many as you like — but at least one tool must stay active.', ru: 'Отметьте инструменты, которые появятся в меню выбора. Можно выбрать сколько угодно — но хотя бы один должен остаться активным.' , ar: 'حددوا الأدوات التي ستظهر في قائمة الاختيار. يمكن اختيار أي عدد — لكن يجب أن تبقى أداة واحدة على الأقل نشطة.' },
   'settings.data.heading': { he: 'הנתונים המקומיים', en: 'Local data', ru: 'Локальные данные' , ar: 'البيانات المحلية' },
   'settings.data.loading': { he: 'טוען...', en: 'Loading...', ru: 'Загрузка...' , ar: 'جارٍ التحميل...' },
   'settings.data.exportBtn': { he: 'ייצוא לאקסל (הורדה)', en: 'Export to Excel (download)', ru: 'Экспорт в Excel (скачать)' , ar: 'تصدير إلى إكسل (تنزيل)' },
@@ -1068,7 +989,7 @@ const I18N = {
   'drive.pickSharedHint': { he: 'כדי לראות נתונים של בן/בת הזוג: תבקשו מהם לשתף איתכם את קובץ הגיבוי שלהם ב-Drive (כפתור השיתוף הרגיל של Drive), ואז השתמשו כאן ב"בחירת קובץ משותף" כדי לבחור אותו.', en: 'To see your spouse\'s data: ask them to share their Drive backup file with you (Drive\'s regular share button), then use "Pick a shared file" here to select it.', ru: 'Чтобы увидеть данные супруга(-и): попросите его/её поделиться с вами файлом резервной копии в Drive (обычная кнопка «Поделиться» в Drive), затем используйте здесь «Выбрать общий файл».', ar: 'لرؤية بيانات الزوج/الزوجة: اطلبوا منهم مشاركة ملف النسخة الاحتياطية الخاص بهم على Drive معكم (زر المشاركة العادي في Drive)، ثم استخدموا هنا "اختيار ملف مشترك" لتحديده.' },
   'drive.pickerNotConfigured': { he: 'בחירת קובץ משותף עדיין לא הוגדרה על ידי מפתח האתר', en: 'Picking a shared file has not been configured by the site developer yet', ru: 'Выбор общего файла ещё не настроен разработчиком сайта', ar: 'لم يتم إعداد اختيار ملف مشترك بعد من قبل مطور الموقع' },
   'drive.disconnectBtn': { he: 'ניתוק', en: 'Disconnect', ru: 'Отключить', ar: 'قطع الاتصال' },
-  'drive.scopeHint': { he: 'אור מקבל גישה רק לקובץ הגיבוי שהוא עצמו יוצר ב-Drive שלכם (לא לכל הקבצים שלכם).', en: 'Or only gets access to the backup file it creates in your Drive (not all of your files).', ru: 'Or получает доступ только к резервному файлу, который сам создаёт в вашем Drive (не ко всем вашим файлам).', ar: 'يحصل Or فقط على صلاحية الوصول إلى ملف النسخة الاحتياطية الذي ينشئه بنفسه في Drive الخاص بكم (وليس كل ملفاتكم).' },
+  'drive.scopeHint': { he: 'אור מקבל גישה רק לקבצים שהוא עצמו יוצר ב-Drive שלכם (לא לכל הקבצים שלכם).', en: 'Or only gets access to the files it creates in your Drive (not all of your files).', ru: 'Or получает доступ только к файлам, которые сам создаёт в вашем Drive (не ко всем вашим файлам).', ar: 'يحصل Or فقط على صلاحية الوصول إلى الملفات التي ينشئها بنفسه في Drive الخاص بكم (وليس كل ملفاتكم).' },
   'drive.lastBackup': { he: 'גיבוי אחרון: {time}', en: 'Last backup: {time}', ru: 'Последняя резервная копия: {time}', ar: 'آخر نسخة احتياطية: {time}' },
   'drive.lastRestore': { he: 'שוחזר לאחרונה: {time}', en: 'Last restored: {time}', ru: 'Последнее восстановление: {time}', ar: 'آخر استعادة: {time}' },
   'drive.backupSuccess': { he: 'הגיבוי הועלה בהצלחה ל-Drive', en: 'Backup uploaded to Drive successfully', ru: 'Резервная копия успешно загружена в Drive', ar: 'تم رفع النسخة الاحتياطية إلى Drive بنجاح' },
@@ -1085,6 +1006,12 @@ const I18N = {
   'drive.filesEmpty': { he: 'אין עדיין קבצים ב-Drive. גבו נתונים או העלו קובץ מקומי כדי להתחיל.', en: 'No files in Drive yet. Back up or upload a local file to get started.', ru: 'В Drive пока нет файлов. Сделайте резервную копию или загрузите локальный файл, чтобы начать.', ar: 'لا توجد ملفات في Drive بعد. قوموا بالنسخ الاحتياطي أو رفع ملف محلي للبدء.' },
   'drive.filesLoadError': { he: 'שגיאה בטעינת רשימת הקבצים: {msg}', en: 'Error loading the file list: {msg}', ru: 'Ошибка загрузки списка файлов: {msg}', ar: 'خطأ في تحميل قائمة الملفات: {msg}' },
   'drive.restoreFromFileBtn': { he: 'שחזור מקובץ זה', en: 'Restore from this file', ru: 'Восстановить из этого файла', ar: 'استعادة من هذا الملف' },
+  'drive.uploadDocBtn': { he: 'העלאת מסמך (PDF)', en: 'Upload a document (PDF)', ru: 'Загрузить документ (PDF)', ar: 'رفع مستند (PDF)' },
+  'drive.uploadDocHint': { he: 'מעלה קובץ PDF שבחרתם מהמחשב (כרטיס טיסה, שובר מלון, אישור ביטוח וכו\') לתוך תיקייה ב-Drive שנקראת על שם הטיול והתאריך.', en: 'Uploads a PDF file you choose from your computer (boarding pass, hotel voucher, insurance certificate, etc.) into a Drive folder named after the trip and its date.', ru: 'Загружает выбранный на компьютере файл PDF (посадочный талон, ваучер отеля, страховой полис и т.д.) в папку Drive, названную по названию поездки и дате.', ar: 'يرفع ملف PDF تختارونه من جهازكم (بطاقة صعود، قسيمة فندق، شهادة تأمين، إلخ) إلى مجلد في Drive يحمل اسم الرحلة وتاريخها.' },
+  'drive.docsHeading': { he: 'מסמכים שמורים', en: 'Saved documents', ru: 'Сохранённые документы', ar: 'المستندات المحفوظة' },
+  'drive.docsEmpty': { he: 'אין עדיין מסמכים שמורים. העלו PDF כדי להתחיל.', en: 'No documents saved yet. Upload a PDF to get started.', ru: 'Документов пока нет. Загрузите PDF, чтобы начать.', ar: 'لا توجد مستندات محفوظة بعد. ارفعوا ملف PDF للبدء.' },
+  'drive.docsLoadError': { he: 'שגיאה בטעינת המסמכים: {msg}', en: 'Error loading the documents: {msg}', ru: 'Ошибка загрузки документов: {msg}', ar: 'خطأ في تحميل المستندات: {msg}' },
+  'drive.openFileBtn': { he: 'פתיחה', en: 'Open', ru: 'Открыть', ar: 'فتح' },
   'drive.confirmRestoreFile': { he: 'לשחזר נתונים מ-"{name}"? הנתונים הנוכחיים בדפדפן יוחלפו.', en: 'Restore data from "{name}"? The current data in this browser will be replaced.', ru: 'Восстановить данные из «{name}»? Текущие данные в этом браузере будут заменены.', ar: 'استعادة البيانات من "{name}"؟ سيتم استبدال البيانات الحالية في هذا المتصفح.' },
   'settings.trip.heading': { he: 'פרטי הטיול', en: 'Trip details', ru: 'Данные поездки' , ar: 'بيانات الرحلة' },
   'settings.trip.dest': { he: 'יעד', en: 'Destination', ru: 'Направление' , ar: 'الوجهة' },
@@ -1116,27 +1043,16 @@ const I18N = {
   'report.tripTitle': { he: 'בחירת טאב להדפסה', en: 'Choose a tab to print', ru: 'Выберите вкладку для печати' , ar: 'اختيار تبويب للطباعة' },
   'report.tripNoDataMsg': { he: 'אין עדיין נתונים בטאב הזה.', en: 'No data in this tab yet.', ru: 'На этой вкладке пока нет данных.' , ar: 'لا توجد بيانات في هذا التبويب بعد.' },
   'report.label': { he: 'דוח', en: 'Report', ru: 'Отчёт' , ar: 'تقرير' },
-  'report.groupLabel': { he: 'קיבוץ לפי', en: 'Group by', ru: 'Группировать по' , ar: 'تجميع حسب' },
   'report.generateBtn': { he: 'הפק דוח', en: 'Generate report', ru: 'Сформировать отчёт' , ar: 'إنشاء تقرير' },
   'report.chooseHint': { he: 'בחרו דוח ולחצו "הפק דוח".', en: 'Choose a report and click "Generate report".', ru: 'Выберите отчёт и нажмите «Сформировать отчёт».' , ar: 'اختاروا تقريراً واضغطوا "إنشاء تقرير".' },
   'report.printBtn': { he: 'הדפסה / PDF', en: 'Print / PDF', ru: 'Печать / PDF' , ar: 'طباعة / PDF' },
-  'report.exportBtn': { he: 'ייצוא לאקסל', en: 'Export to Excel', ru: 'Экспорт в Excel' , ar: 'تصدير إلى إكسل' },
   'dialog.settingsTitlePrefix': { he: 'הגדרות — ', en: 'Settings — ', ru: 'Настройки — ' , ar: 'الإعدادات — ' },
   'dialog.helpTitlePrefix': { he: 'עזרה — ', en: 'Help — ', ru: 'Справка — ' , ar: 'مساعدة — ' },
   'field.amount': { he: 'סכום', en: 'Amount', ru: 'Сумма' , ar: 'مبلغ' },
   'expenses.editBtn': { he: 'עריכה', en: 'Edit', ru: 'Редактировать' , ar: 'تعديل' },
   'expenses.deleteBtn': { he: 'מחיקה', en: 'Delete', ru: 'Удалить' , ar: 'حذف' },
-  'freq.monthly': { he: 'חודשי', en: 'Monthly', ru: 'Ежемесячно' , ar: 'شهري' },
-  'freq.bimonthly': { he: 'דו-חודשי', en: 'Bimonthly', ru: 'Раз в 2 месяца' , ar: 'كل شهرين' },
-  'freq.quarterly': { he: 'רבעוני', en: 'Quarterly', ru: 'Ежеквартально' , ar: 'ربع سنوي' },
-  'freq.yearly': { he: 'שנתי', en: 'Yearly', ru: 'Ежегодно' , ar: 'سنوي' },
-  'freq.oneTime': { he: 'חד פעמי', en: 'One-time', ru: 'Разовый', ar: 'مرة واحدة' },
-  'freq.triMonthly': { he: 'תלת חודשי', en: 'Every 3 months', ru: 'Раз в 3 месяца', ar: 'كل 3 أشهر' },
-  'freq.semiAnnual': { he: 'חצי שנתי', en: 'Semi-annual', ru: 'Раз в полгода', ar: 'نصف سنوي' },
   'common.add': { he: 'הוספה', en: 'Add', ru: 'Добавить' , ar: 'إضافة' },
   'common.update': { he: 'עדכון', en: 'Update', ru: 'Обновить' , ar: 'تحديث' },
-  'daytype.regular': { he: 'רגיל', en: 'Regular', ru: 'Обычный' , ar: 'عادي' },
-  'daytype.sick': { he: 'מחלה', en: 'Sick', ru: 'Больничный' , ar: 'مرضي' },
   'field.description': { he: 'תיאור', en: 'Description', ru: 'Описание' , ar: 'وصف' },
   'field.noGroup': { he: '— ללא שכבה —', en: '— No group —', ru: '— Без группы —' , ar: '— بدون صف —' },
   'toast.recordUpdated': { he: 'הרשומה עודכנה', en: 'Record updated', ru: 'Запись обновлена' , ar: 'تم تحديث السجل' },
@@ -1146,21 +1062,6 @@ const I18N = {
   'nav.mapsTitle': { he: 'פתיחה בגוגל מפות', en: 'Open in Google Maps', ru: 'Открыть в Google Картах' , ar: 'فتح في خرائط جوجل' },
   'nav.wazeTitle': { he: 'ניווט ב-Waze', en: 'Navigate with Waze', ru: 'Навигация в Waze' , ar: 'ملاحة عبر Waze' },
   'nav.mapsLabel': { he: 'מפות', en: 'Maps', ru: 'Карты' , ar: 'خرائط' },
-  'opt.no': { he: 'לא', en: 'No', ru: 'Нет' , ar: 'لا' },
-  'opt.yes': { he: 'כן', en: 'Yes', ru: 'Да' , ar: 'نعم' },
-  'opt.priorityNormal': { he: 'רגילה', en: 'Normal', ru: 'Обычная' , ar: 'عادية' },
-  'opt.priorityUrgent': { he: 'דחוף', en: 'Urgent', ru: 'Срочно' , ar: 'عاجل' },
-  'opt.priorityCritical': { he: 'קריטי', en: 'Critical', ru: 'Критично' , ar: 'حرج' },
-  'opt.statusOpen': { he: 'פתוח', en: 'Open', ru: 'Открыто' , ar: 'مفتوح' },
-  'opt.statusInProgress': { he: 'בטיפול', en: 'In progress', ru: 'В работе' , ar: 'قيد المعالجة' },
-  'opt.statusDone': { he: 'טופל', en: 'Resolved', ru: 'Решено' , ar: 'تم الحل' },
-  'opt.statusPlanning': { he: 'בתכנון', en: 'Planning', ru: 'В планировании' , ar: 'قيد التخطيط' },
-  'opt.statusActive': { he: 'פעיל', en: 'Active', ru: 'Активен' , ar: 'نشط' },
-  'opt.statusPaused': { he: 'מושהה', en: 'Paused', ru: 'Приостановлен' , ar: 'معلّق' },
-  'opt.statusCompleted': { he: 'הושלם', en: 'Completed', ru: 'Завершён' , ar: 'مكتمل' },
-  'opt.conditionOk': { he: 'תקין', en: 'OK', ru: 'Исправно' , ar: 'سليم' },
-  'opt.conditionRepair': { he: 'דורש תיקון', en: 'Needs repair', ru: 'Требует ремонта' , ar: 'يحتاج إصلاح' },
-  'opt.conditionMissing': { he: 'חסר', en: 'Missing', ru: 'Отсутствует' , ar: 'مفقود' },
   'opt.catAttraction': { he: 'אטרקציה', en: 'Attraction', ru: 'Достопримечательность' , ar: 'معلم سياحي' },
   'opt.catAttractions': { he: 'אטרקציות', en: 'Attractions', ru: 'Достопримечательности' , ar: 'معالم سياحية' },
   'opt.catRestaurant': { he: 'מסעדה', en: 'Restaurant', ru: 'Ресторан' , ar: 'مطعم' },
@@ -1168,11 +1069,6 @@ const I18N = {
   'opt.catTransport': { he: 'תחבורה', en: 'Transport', ru: 'Транспорт' , ar: 'مواصلات' },
   'opt.catShopping': { he: 'קניות', en: 'Shopping', ru: 'Покупки' , ar: 'تسوق' },
   'opt.catOther': { he: 'אחר', en: 'Other', ru: 'Другое' , ar: 'أخرى' },
-  'opt.catCleaning': { he: 'ניקיון', en: 'Cleaning', ru: 'Уборка', ar: 'تنظيف' },
-  'opt.catElevator': { he: 'מעלית', en: 'Elevator', ru: 'Лифт', ar: 'مصعد' },
-  'opt.catCleaningSupplies': { he: 'חומרי ניקוי', en: 'Cleaning supplies', ru: 'Чистящие средства', ar: 'مواد التنظيف' },
-  'opt.catGeneralMaintenance': { he: 'תחזוקה כללית', en: 'General maintenance', ru: 'Общее обслуживание', ar: 'صيانة عامة' },
-  'opt.catGardening': { he: 'גינון', en: 'Gardening', ru: 'Озеленение', ar: 'تنسيق الحدائق' },
   'opt.tripCatFlights': { he: 'טיסות', en: 'Flights', ru: 'Перелёты' , ar: 'رحلات طيران' },
   'opt.tripCatLodging': { he: 'לינה', en: 'Lodging', ru: 'Проживание' , ar: 'إقامة' },
   'opt.tripCatFood': { he: 'אוכל', en: 'Food', ru: 'Еда' , ar: 'طعام' },
@@ -1199,18 +1095,7 @@ const I18N = {
   'field.pickupDate': { he: 'איסוף — תאריך', en: 'Pickup — date', ru: 'Забор — дата' , ar: 'الاستلام — تاريخ' },
   'field.returnLoc': { he: 'החזרה — מיקום', en: 'Return — location', ru: 'Возврат — место' , ar: 'الإرجاع — موقع' },
   'field.returnDate': { he: 'החזרה — תאריך', en: 'Return — date', ru: 'Возврат — дата' , ar: 'الإرجاع — تاريخ' },
-  'opt.sysWaterPump': { he: 'משאבת מים', en: 'Water pump', ru: 'Водяной насос', ar: 'مضخة مياه' },
-  'opt.sysSolar': { he: 'מערכת סולארית', en: 'Solar system', ru: 'Солнечная система', ar: 'نظام طاقة شمسية' },
-  'opt.sysMainElectric': { he: 'מערכת חשמל ראשית', en: 'Main electrical system', ru: 'Главная электросистема', ar: 'نظام الكهرباء الرئيسي' },
-  'opt.sysGenerator': { he: 'גנרטור', en: 'Generator', ru: 'Генератор', ar: 'مولد كهربائي' },
-  'opt.sysFireSystem': { he: 'מערכת גילוי וכיבוי אש', en: 'Fire detection & suppression system', ru: 'Система пожарной сигнализации и тушения', ar: 'نظام كشف وإطفاء الحريق' },
-  'opt.sysIntercom': { he: 'אבטחה ואינטרקום', en: 'Security & intercom', ru: 'Охрана и домофон', ar: 'الأمن والاتصال الداخلي' },
-  'opt.sysHVAC': { he: 'מערכת אוורור ומיזוג', en: 'Ventilation & AC system', ru: 'Система вентиляции и кондиционирования', ar: 'نظام التهوية والتكييف' },
-  'opt.sysLighting': { he: 'מערכת תאורה', en: 'Lighting system', ru: 'Система освещения', ar: 'نظام الإضاءة' },
-  'opt.sysSewage': { he: 'מערכת ביוב וניקוז', en: 'Sewage & drainage system', ru: 'Система канализации и дренажа', ar: 'نظام الصرف الصحي والتصريف' },
-  'opt.sysPestControl': { he: 'הדברה', en: 'Pest control', ru: 'Дезинсекция', ar: 'مكافحة الآفات' },
   'projects.openSettingsBtn': { he: 'פתיחת הגדרות', en: 'Open Settings', ru: 'Открыть настройки', ar: 'فتح الإعدادات' },
-  'projects.copyContactBtn': { he: '📋 העתקה לפרויקט אחר', en: '📋 Copy to another project', ru: '📋 Копировать в другой проект', ar: '📋 نسخ إلى مشروع آخر' },
   'list.itinerary.addLabel': { he: 'הוספת נקודת עניין', en: 'Add point of interest', ru: 'Добавить достопримечательность' , ar: 'إضافة معلم سياحي' },
   'list.itinerary.title': { he: 'המסלול', en: 'The itinerary', ru: 'Маршрут' , ar: 'المسار' },
   'list.itinerary.empty': { he: 'עדיין לא נוספו נקודות עניין.', en: 'No points of interest added yet.', ru: 'Достопримечательности ещё не добавлены.' , ar: 'لم تتم إضافة معالم سياحية بعد.' },
@@ -1234,7 +1119,6 @@ const I18N = {
   'list.restaurants.empty': { he: 'עדיין לא נוספו מסעדות.', en: 'No restaurants added yet.', ru: 'Рестораны ещё не добавлены.' , ar: 'لم تتم إضافة مطاعم بعد.' },
   'trip.tabRestaurants': { he: 'מסעדות', en: 'Restaurants', ru: 'Рестораны' , ar: 'مطاعم' },
   'trip.coordsPlaceholder': { he: 'למשל: 32.0853, 34.7818', en: 'e.g. 32.0853, 34.7818', ru: 'например: 32.0853, 34.7818' , ar: 'مثال: 32.0853, 34.7818' },
-  'toast.atLeastOneTool': { he: 'חייב להישאר לפחות כלי אחד פעיל', en: 'At least one tool must stay active', ru: 'Хотя бы один инструмент должен оставаться активным' , ar: 'يجب أن تبقى أداة واحدة على الأقل نشطة' },
   'bug.emailSubject': { he: 'דיווח באג — Or', en: 'Bug report — Or', ru: 'Отчёт об ошибке — Or' , ar: 'بلاغ خلل — Or' },
   'toast.bugEmailOpening': { he: 'נפתחת הודעת מייל — לחצו "שלח" כדי לשלוח את הדיווח', en: 'Opening an email — click "send" to send the report', ru: 'Открывается письмо — нажмите «Отправить», чтобы отправить отчёт' , ar: 'يتم فتح رسالة بريد إلكتروني — اضغطوا "إرسال" لإرسال البلاغ' },
   'storage.notSavedYet': { he: 'טרם נשמר', en: 'Not saved yet', ru: 'Ещё не сохранено' , ar: 'لم يُحفظ بعد' },
@@ -1254,8 +1138,6 @@ const I18N = {
   'toast.allDataDeleted': { he: 'כל הנתונים נמחקו', en: 'All data deleted', ru: 'Все данные удалены' , ar: 'تم حذف جميع البيانات' },
   'settings.toolTabPrefix': { he: 'הגדרות: ', en: 'Settings: ', ru: 'Настройки: ' , ar: 'الإعدادات: ' },
   'tool.trip.short': { he: 'חופשה', en: 'Vacation', ru: 'Отпуск' , ar: 'إجازة' },
-  'settings.currentToolHeading': { he: 'הכלי הנוכחי', en: 'Current tool', ru: 'Текущий инструмент' , ar: 'الأداة الحالية' },
-  'settings.currentToolBody': { he: 'הכלי <strong>"{name}"</strong> שומר את הנתונים בגיליון <strong>"{sheet}"</strong>. אין לו הגדרות ייעודיות — ההגדרות הכלליות נמצאות בטאבים האחרים.', en: 'The <strong>"{name}"</strong> tool saves its data in the <strong>"{sheet}"</strong> sheet. It has no dedicated settings — general settings are in the other tabs.', ru: 'Инструмент <strong>«{name}»</strong> сохраняет данные в листе <strong>«{sheet}»</strong>. У него нет специальных настроек — общие настройки находятся на других вкладках.' , ar: 'تحفظ أداة <strong>"{name}"</strong> بياناتها في ورقة <strong>"{sheet}"</strong>. ليس لها إعدادات مخصصة — الإعدادات العامة موجودة في الألسنة الأخرى.' },
   'field.month': { he: 'חודש', en: 'Month', ru: 'Месяц' , ar: 'شهر' },
   'toast.tripDetailsSaved': { he: 'פרטי הטיול נשמרו', en: 'Trip details saved', ru: 'Данные поездки сохранены' , ar: 'تم حفظ بيانات الرحلة' },
   'trip.pickDatesBtn': { he: 'בחר תאריכים', en: 'Choose dates', ru: 'Выбрать даты' , ar: 'اختيار التواريخ' },
@@ -1314,13 +1196,7 @@ const I18N = {
   'help.tabToolPrefix': { he: 'מידע על ', en: 'About ', ru: 'О разделе ', ar: 'معلومات عن ' },
   'help.gen.whatTitle': { he: 'מה זו המערכת?', en: 'What is this system?', ru: 'Что это за система?' , ar: 'ما هذا النظام؟' },
   'help.gen.whatBody': { he: 'אתר שרץ בדפדפן שלכם ומרכז כמה כלים לניהול הבית והמשק. <strong>כל הנתונים נשמרים בדפדפן שלכם בלבד</strong> (לא בשרת) — אפשר לגבות ולשחזר בכל רגע לקובץ אקסל אחד, כלי בגיליון נפרד, או לחשבון Google Drive האישי שלכם. שום מידע לא נשלח לשרתים שלנו.', en: 'A website that runs in your browser and brings together several tools for managing your home and household. <strong>All data is saved only in your browser</strong> (not on a server) — you can back up and restore at any time to one Excel file, each tool in its own sheet, or to your own Google Drive account. No information is sent to our servers.', ru: 'Сайт, работающий в вашем браузере и объединяющий несколько инструментов для управления домом и хозяйством. <strong>Все данные сохраняются только в вашем браузере</strong> (не на сервере) — в любой момент можно сделать резервную копию и восстановить в один файл Excel (каждый инструмент на отдельном листе) или в ваш собственный аккаунт Google Drive. Никакая информация не отправляется на наши серверы.' , ar: 'موقع يعمل في متصفحكم ويجمع عدة أدوات لإدارة المنزل والمعيشة. <strong>تُحفظ جميع البيانات في متصفحكم فقط</strong> (وليس على خادم) — يمكنكم عمل نسخة احتياطية واستعادتها في أي وقت إلى ملف إكسل واحد، كل أداة في ورقة منفصلة، أو إلى حساب Google Drive الخاص بكم. لا تُرسل أي معلومات إلى خوادمنا.' },
-  'help.gen.chooseTitle': { he: 'איך בוחרים כלי?', en: 'How do I choose a tool?', ru: 'Как выбрать инструмент?' , ar: 'كيف تختارون أداة؟' },
-  'help.gen.choose1': { he: 'לוחצים על כפתור <strong>הבית</strong> (האייקון בפינה הימנית העליונה) — נפתח תפריט <strong>"כלים באתר"</strong>.', en: 'Click the <strong>home</strong> button (the icon in the top corner) — the <strong>"Tools"</strong> menu opens.', ru: 'Нажмите на кнопку <strong>«Домой»</strong> (иконка в верхнем углу) — откроется меню <strong>«Инструменты»</strong>.' , ar: 'اضغطوا على زر <strong>الرئيسية</strong> (الأيقونة في الزاوية العلوية) — ستُفتح قائمة <strong>"الأدوات"</strong>.' },
-  'help.gen.choose2': { he: 'בוחרים כלי מהרשימה: <strong>ניהול הוצאות הבית</strong>, <strong>קופה קטנה</strong>, <strong>שעות עבודה</strong> או <strong>וועד בית</strong>.', en: 'Choose a tool from the list: <strong>Home Expense Management</strong>, <strong>Petty Cash</strong>, <strong>Work Hours</strong> or <strong>Building Committee</strong>.', ru: 'Выберите инструмент из списка: <strong>Управление домашними расходами</strong>, <strong>Мелкая касса</strong>, <strong>Рабочие часы</strong> или <strong>Домовой комитет</strong>.' , ar: 'اختاروا أداة من القائمة: <strong>إدارة مصروفات المنزل</strong>، <strong>الصندوق الصغير</strong>، <strong>ساعات العمل</strong> أو <strong>لجنة البناية</strong>.' },
-  'help.gen.choose3': { he: 'המסך מתחלף לכלי שבחרתם, והכתובת בדפדפן מתעדכנת (למשל <span class="help-tag">#hours</span>) — כך אפשר לשמור סימנייה ישר לכלי מסוים.', en: 'The screen switches to the tool you chose, and the browser address updates (e.g. <span class="help-tag">#hours</span>) — so you can bookmark a specific tool directly.', ru: 'Экран переключается на выбранный инструмент, а адрес в браузере обновляется (например, <span class="help-tag">#hours</span>) — так можно сохранить закладку прямо на конкретный инструмент.' , ar: 'تتغير الشاشة إلى الأداة التي اخترتموها، ويتحدث عنوان المتصفح (مثلاً <span class="help-tag">#hours</span>) — بذلك يمكن حفظ إشارة مرجعية مباشرة لأداة معينة.' },
-  'help.gen.choose4': { he: 'התפריט נסגר אוטומטית אחרי הבחירה, וגם בלחיצה על מקש <span class="help-tag">Esc</span> או מחוץ לתפריט.', en: 'The menu closes automatically after choosing, and also when pressing <span class="help-tag">Esc</span> or clicking outside the menu.', ru: 'Меню автоматически закрывается после выбора, а также при нажатии <span class="help-tag">Esc</span> или клике вне меню.' , ar: 'تُغلق القائمة تلقائياً بعد الاختيار، وأيضاً عند الضغط على مفتاح <span class="help-tag">Esc</span> أو النقر خارج القائمة.' },
   'help.gen.buttonsTitle': { he: 'הכפתורים בתפריט העליון', en: 'The buttons in the top menu', ru: 'Кнопки в верхнем меню' , ar: 'الأزرار في القائمة العلوية' },
-  'help.gen.btn1': { he: '<strong>בית</strong> (ימין) — פותח את תפריט בחירת הכלי.', en: '<strong>Home</strong> — opens the tool-picker menu.', ru: '<strong>Домой</strong> — открывает меню выбора инструмента.' , ar: '<strong>الرئيسية</strong> — يفتح قائمة اختيار الأداة.' },
   'help.gen.btn2': { he: '<strong>הגדרות</strong> (גלגל שיניים) — <strong>משתנות לפי הכלי הפעיל</strong>, וכוללות תמיד את ניהול קובץ הנתונים: העלאת קובץ קיים, הורדה/גיבוי, או פתיחת קובץ חדש.', en: '<strong>Settings</strong> (gear icon) — <strong>change depending on the active tool</strong>, and always include data-file management: uploading an existing file, download/backup, or starting a new file.', ru: '<strong>Настройки</strong> (значок шестерёнки) — <strong>меняются в зависимости от активного инструмента</strong> и всегда включают управление файлом данных: загрузку существующего файла, скачивание/резервную копию или создание нового файла.' , ar: '<strong>الإعدادات</strong> (أيقونة الترس) — <strong>تتغير حسب الأداة النشطة</strong>، وتشمل دائماً إدارة ملف البيانات: تحميل ملف موجود، تنزيل/نسخ احتياطي، أو فتح ملف جديد.' },
   'help.gen.btn3': { he: '<strong>עיצוב</strong> (שמש/ירח) — מחליף בין מצב כהה למצב בהיר; הבחירה נשמרת.', en: '<strong>Theme</strong> (sun/moon) — toggles between dark and light mode; the choice is saved.', ru: '<strong>Тема</strong> (солнце/луна) — переключает между тёмным и светлым режимом; выбор сохраняется.' , ar: '<strong>المظهر</strong> (شمس/قمر) — يبدّل بين الوضع الداكن والفاتح؛ يُحفظ الاختيار.' },
   'help.gen.btn4': { he: '<strong>עזרה</strong> (סימן שאלה, בקצה השמאלי) — פותח את החלון הזה, שתמיד מציג מידע על הכלי הפעיל כרגע.', en: '<strong>Help</strong> (question mark, at the far end) — opens this window, which always shows info about the currently active tool.', ru: '<strong>Справка</strong> (знак вопроса, с края) — открывает это окно, которое всегда показывает информацию о текущем активном инструменте.' , ar: '<strong>المساعدة</strong> (علامة استفهام، في الطرف) — يفتح هذه النافذة، التي تعرض دائماً معلومات عن الأداة النشطة حالياً.' },
@@ -1335,24 +1211,9 @@ const I18N = {
   'help.gen.creditsIcons': { he: 'אייקונים (רישיון ISC)', en: 'icons (ISC license)', ru: 'иконки (лицензия ISC)' , ar: 'أيقونات (ترخيص ISC)' },
   'help.gen.creditsFont': { he: 'גופן (רישיון SIL OFL)', en: 'font (SIL OFL license)', ru: 'шрифт (лицензия SIL OFL)' , ar: 'خط (ترخيص SIL OFL)' },
   'help.gen.creditsFooter': { he: 'פירוט מלא של הרישיונות והקרדיטים בקובץ THIRD-PARTY-NOTICES.md.', en: 'Full license and credit details are in THIRD-PARTY-NOTICES.md.', ru: 'Полная информация о лицензиях и благодарностях — в файле THIRD-PARTY-NOTICES.md.' , ar: 'التفاصيل الكاملة للتراخيص والشكر في ملف THIRD-PARTY-NOTICES.md.' },
-  'report.trip.title': { he: 'דוח הוצאות טיול', en: 'Trip Expense Report', ru: 'Отчёт о расходах поездки' , ar: 'تقرير مصروفات الرحلة' },
-  'report.noGroup': { he: 'ללא קיבוץ', en: 'No grouping', ru: 'Без группировки' , ar: 'بدون تجميع' },
-  'report.period': { he: 'תקופה', en: 'Period', ru: 'Период' , ar: 'فترة' },
-  'report.wholePeroid': { he: 'כל התקופה', en: 'Whole period', ru: 'Весь период' , ar: 'الفترة كاملة' },
-  'report.wholeYearBtn': { he: 'כל שנת {year}', en: 'Whole {year}', ru: 'Весь {year} год' , ar: 'كل سنة {year}' },
-  'report.groupByLabel': { he: 'קיבוץ לפי', en: 'Grouped by', ru: 'Группировка по' , ar: 'مجمّع حسب' },
   'report.generatedAt': { he: 'הופק', en: 'Generated', ru: 'Сформировано' , ar: 'تم الإنشاء' },
   'report.recordsLabel': { he: 'רשומות', en: 'Records', ru: 'Записей' , ar: 'سجلات' },
-  'report.noDataMsg': { he: 'אין נתונים בתקופה שנבחרה.', en: 'No data in the selected period.', ru: 'Нет данных за выбранный период.' , ar: 'لا توجد بيانات في الفترة المختارة.' },
-  'report.groupSubtotal': { he: 'סה"כ {group}', en: 'Total {group}', ru: 'Итого {group}' , ar: 'إجمالي {group}' },
-  'report.grandTotal': { he: 'סה"כ כללי', en: 'Grand total', ru: 'Общий итог' , ar: 'الإجمالي العام' },
-  'report.recordsCount': { he: 'מספר רשומות', en: 'Number of records', ru: 'Количество записей' , ar: 'عدد السجلات' },
-  'report.totalOf': { he: 'סה"כ {label}', en: 'Total {label}', ru: 'Итого {label}' , ar: 'إجمالي {label}' },
-  'report.average': { he: 'ממוצע', en: 'Average', ru: 'Среднее' , ar: 'متوسط' },
-  'report.notNone': { he: '(ללא)', en: '(none)', ru: '(нет)' , ar: '(بدون)' },
   'toast.generateFirst': { he: 'הפיקו דוח קודם', en: 'Generate a report first', ru: 'Сначала сформируйте отчёт' , ar: 'أنشئوا تقريراً أولاً' },
-  'report.groupColHeader': { he: 'קבוצה', en: 'Group', ru: 'Группа' , ar: 'مجموعة' },
-  'report.sheetName': { he: 'דוח', en: 'Report', ru: 'Отчёт' , ar: 'تقرير' },
   'toast.installConfirmed': { he: 'אם אישרתם — Or יופיע עם אייקון ושם על המסך', en: 'If you confirmed — Or will appear with an icon and name on your screen', ru: 'Если вы подтвердили — Or появится с иконкой и названием на экране' , ar: 'إذا وافقتم — سيظهر Or بأيقونة واسم على الشاشة' },
   'field.id': { he: 'מזהה', en: 'ID', ru: 'ID' , ar: 'معرّف' },
   'field.toolOrPage': { he: 'כלי / עמוד', en: 'Tool / page', ru: 'Инструмент / страница' , ar: 'أداة / صفحة' },
@@ -1488,8 +1349,6 @@ function fmtDateTime(dateInput) {
 }
 
 
-const FREQ_I18N_KEY = { 'חודשי': 'freq.monthly', 'דו-חודשי': 'freq.bimonthly', 'רבעוני': 'freq.quarterly', 'שנתי': 'freq.yearly' };
-
 // --- Theme (dark / light) ---
 function applyTheme(theme, rerender) {
   if (theme === 'light') document.documentElement.dataset.theme = 'light';
@@ -1531,16 +1390,15 @@ applyLang(localStorage.getItem('or-lang') || 'he', false);
 // ===================== Client-side data layer (runs fully in the browser) =====================
 // Data lives in localStorage; Excel import/export via SheetJS. No server needed — works on GitHub Pages.
 // (In the future a cloud backend such as Google Drive can replace loadDB/saveDB.)
-const APP_VERSION = '1.22.1';
+const APP_VERSION = '1.23.0';
 const APP_BUILT_AT = 'dev'; // replaced by build.js with the deploy timestamp — lets a running page detect it's stale
 const STORE_KEY = 'or-store-v1';
 const BUGS_COLS = ['field.date', 'field.toolOrPage', 'field.description', 'field.browser'];
 // Enum-valued cell content that gets translated at export time and reverse-mapped back to the
 // stable Hebrew value at import time, same as header/sheet-name translation (never mutates storage).
-// Built lazily (not at module-init time) since it merges maps declared later in this script.
 let _cellEnumI18nKey = null;
 function cellEnumI18nKey() {
-  if (!_cellEnumI18nKey) _cellEnumI18nKey = Object.assign({}, CAT_I18N_KEY, DAY_TYPE_I18N_KEY, FREQ_I18N_KEY, OPT_I18N_KEY, { 'לא': 'opt.no', 'כן': 'opt.yes' });
+  if (!_cellEnumI18nKey) _cellEnumI18nKey = Object.assign({}, OPT_I18N_KEY);
   return _cellEnumI18nKey;
 }
 function cellEnumLabel(v) { const m = cellEnumI18nKey(); return m[v] ? t(m[v]) : v; }
@@ -1809,7 +1667,7 @@ async function importXlsxFromArrayBuffer(buf, opts) {
 //      "not configured" message instead of silently failing.
 // Uses the drive.file scope only — Or can only see/edit files it creates itself, never the
 // user's other Drive files.
-const GOOGLE_CLIENT_ID = '701279958491-h2k12nsfposf2s5gl8cce54hg91kp9ll.apps.googleusercontent.com';
+const GOOGLE_CLIENT_ID = '297437869958-gvh093f0s50ti02t8l7bg4dbo858g38h.apps.googleusercontent.com';
 // Needed only for "pick a file a family member shared with you" (Google
 // Picker), not for the app's own fixed backup file above. Setup, same
 // Cloud project as GOOGLE_CLIENT_ID: APIs & Services → Library → enable
@@ -1894,7 +1752,10 @@ async function driveListFiles() {
   try {
     if (!(await waitForGsi(8000))) throw new Error(t('drive.notConfigured'));
     const token = await driveEnsureToken();
-    const res = await fetch('https://www.googleapis.com/drive/v3/files?q=' + encodeURIComponent('trashed = false') + '&fields=files(id,name,modifiedTime)&orderBy=modifiedTime desc&pageSize=25', { headers: { Authorization: `Bearer ${token}` } });
+    // Excludes the per-trip documents folder and its PDFs (see driveListDocuments) -
+    // those have their own list with an "open" action, not a nonsensical "restore" one.
+    const q = "trashed = false and mimeType != 'application/pdf' and mimeType != 'application/vnd.google-apps.folder'";
+    const res = await fetch('https://www.googleapis.com/drive/v3/files?q=' + encodeURIComponent(q) + '&fields=files(id,name,modifiedTime)&orderBy=modifiedTime desc&pageSize=25', { headers: { Authorization: `Bearer ${token}` } });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
     const files = data.files || [];
@@ -2032,6 +1893,85 @@ async function driveFindOrCreateFileId(token) {
   if (data.files && data.files.length) { fileId = data.files[0].id; localStorage.setItem('or-drive-file-id', fileId); return fileId; }
   return null;
 }
+
+// ---- Per-trip Drive folder for uploaded documents (PDFs) ----
+// Separate from the fixed backup file above: a dedicated folder named after
+// the trip, holding whatever documents (boarding passes, hotel vouchers,
+// insurance...) the user chooses to upload. Name is computed once from trip
+// data and never re-derived from it later (same reasoning as DRIVE_FILE_NAME
+// never changing) - and deliberately not run through t()/currentLang, so a
+// language switch can never make this look for a different folder name and
+// create a duplicate.
+function tripFolderName() {
+  const trip = toolData.trip || {};
+  const dest = trip.destination || 'Or Trip';
+  return trip.from ? `${dest} - ${fmtDate(trip.from)}` : dest;
+}
+async function driveFolderId(token, createIfMissing) {
+  let folderId = localStorage.getItem('or-drive-folder-id');
+  if (folderId) return folderId;
+  const name = tripFolderName();
+  const q = encodeURIComponent(`name = '${name}' and mimeType = 'application/vnd.google-apps.folder' and trashed = false`);
+  const res = await fetch(`https://www.googleapis.com/drive/v3/files?q=${q}&fields=files(id,name)`, { headers: { Authorization: `Bearer ${token}` } });
+  const data = await res.json();
+  if (data.files && data.files.length) { folderId = data.files[0].id; localStorage.setItem('or-drive-folder-id', folderId); return folderId; }
+  if (!createIfMissing) return null;
+  const createRes = await fetch('https://www.googleapis.com/drive/v3/files?fields=id', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name, mimeType: 'application/vnd.google-apps.folder' })
+  });
+  if (!createRes.ok) throw new Error(`HTTP ${createRes.status}`);
+  const created = await createRes.json();
+  localStorage.setItem('or-drive-folder-id', created.id);
+  return created.id;
+}
+async function driveUploadDocument(file) {
+  const btn = document.getElementById('driveUploadDocBtn');
+  btn.disabled = true;
+  const original = btn.textContent;
+  btn.textContent = t('drive.uploading');
+  try {
+    const token = await driveEnsureToken();
+    const folderId = await driveFolderId(token, true);
+    const metadata = { name: file.name, mimeType: file.type || 'application/pdf', parents: [folderId] };
+    const form = new FormData();
+    form.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
+    form.append('file', file);
+    const res = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', { method: 'POST', headers: { Authorization: `Bearer ${token}` }, body: form });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    toast(t('drive.uploadSuccess'));
+    await driveListDocuments();
+  } catch (err) { toast(t('drive.uploadError', { msg: err.message }), true); }
+  finally { btn.disabled = false; btn.textContent = original; }
+}
+async function driveListDocuments() {
+  const listEl = document.getElementById('driveDocsList');
+  if (!listEl) return;
+  try {
+    if (!(await waitForGsi(8000))) throw new Error(t('drive.notConfigured'));
+    const token = await driveEnsureToken();
+    const folderId = await driveFolderId(token, false);
+    if (!folderId) { listEl.innerHTML = `<p class="drive-files-empty">${t('drive.docsEmpty')}</p>`; return; }
+    const q = encodeURIComponent(`'${folderId}' in parents and mimeType = 'application/pdf' and trashed = false`);
+    const res = await fetch(`https://www.googleapis.com/drive/v3/files?q=${q}&fields=files(id,name,modifiedTime)&orderBy=modifiedTime desc&pageSize=25`, { headers: { Authorization: `Bearer ${token}` } });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    const files = data.files || [];
+    if (!files.length) { listEl.innerHTML = `<p class="drive-files-empty">${t('drive.docsEmpty')}</p>`; return; }
+    listEl.innerHTML = files.map(f => `
+      <div class="drive-file-row">
+        <div class="drive-file-meta">
+          <span class="drive-file-name">${escapeHtml(f.name)}</span>
+          <span class="drive-file-time">${escapeHtml(fmtDateTime(new Date(f.modifiedTime)))}</span>
+        </div>
+        <button type="button" class="btn-ghost" data-open-file="${f.id}">${t('drive.openFileBtn')}</button>
+      </div>`).join('');
+  } catch (err) {
+    listEl.innerHTML = `<p class="drive-files-empty">${escapeHtml(t('drive.docsLoadError', { msg: err.message }))}</p>`;
+  }
+}
+
 async function driveUploadBackup(token) {
   const wb = buildWorkbook();
   const blob = new Blob([XLSX.write(wb, { type: 'array', bookType: 'xlsx' })], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
@@ -2267,6 +2207,16 @@ document.getElementById('driveFilesList').addEventListener('click', ev => {
   const btn = ev.target.closest('[data-restore-file]');
   if (btn) driveRestoreFromFile(btn.dataset.restoreFile, btn.dataset.restoreName);
 });
+document.getElementById('driveUploadDocBtn').addEventListener('click', () => document.getElementById('driveDocFileInput').click());
+document.getElementById('driveDocFileInput').addEventListener('change', async ev => {
+  const file = ev.target.files[0];
+  ev.target.value = '';
+  if (file) await driveUploadDocument(file);
+});
+document.getElementById('driveDocsList').addEventListener('click', ev => {
+  const btn = ev.target.closest('[data-open-file]');
+  if (btn) window.open(`https://drive.google.com/file/d/${btn.dataset.openFile}/view`, '_blank', 'noopener');
+});
 updateDriveUI();
 
 function toast(msg, isError) {
@@ -2287,103 +2237,26 @@ function escapeHtml(s) {
 
 const settingsDialog = document.getElementById('settingsDialog');
 document.getElementById('settingsBtn').addEventListener('click', () => {
-  updateSettingsForTool(); updateInstallHints(); renderToolsCheckboxes(); settingsDialog.showModal(); loadFileInfo();
-  if (localStorage.getItem('or-drive-connected')) driveListFiles();
+  updateSettingsForTool(); updateInstallHints(); settingsDialog.showModal(); loadFileInfo();
+  if (localStorage.getItem('or-drive-connected')) { driveListFiles(); driveListDocuments(); }
 });
 
-// --- Active tools (which tools appear in the menu) ---
-const ENABLED_TOOLS_KEY = 'or-enabled-tools-v1';
-function allMenuToolIds() { return [...document.querySelectorAll('#toolMenu .tool-item')].map(b => b.dataset.tool); }
-
-// Per-tool "has the user entered anything" check, keyed off the same record
-// arrays/fields the tool's own views read from - no separate tracking needed.
-const TOOL_DATA_CHECKS = {
-  trip: s => ['flights', 'hotels', 'restaurants', 'cars', 'itinerary', 'tripexp'].some(k => (s.records[k] || []).length > 0)
-    || !!(s.trip && s.trip.destination)
-};
-function toolsWithData() {
-  const s = loadDB();
-  return allMenuToolIds().filter(id => TOOL_DATA_CHECKS[id] && TOOL_DATA_CHECKS[id](s));
-}
-// New users with nothing filled in anywhere land on the trip tool by default
-// (the only tool) rather than a wall of empty options.
-function smartDefaultTools() {
-  const withData = toolsWithData();
-  return withData.length ? withData : ['trip'];
-}
-
-function enabledTools() {
-  let en = null;
-  try { en = JSON.parse(localStorage.getItem(ENABLED_TOOLS_KEY)); } catch (e) { /* */ }
-  const all = allMenuToolIds();
-  if (!Array.isArray(en)) en = smartDefaultTools();
-  en = en.filter(t => all.includes(t));                 // drop unknown ids
-  return en.length ? en : all.slice();                  // never empty
-}
-function saveEnabledTools(en) { localStorage.setItem(ENABLED_TOOLS_KEY, JSON.stringify(en)); }
-function firstEnabledTool() { const en = enabledTools(); return allMenuToolIds().find(t => en.includes(t)) || 'trip'; }
-function applyEnabledTools() {
-  const en = enabledTools();
-  document.querySelectorAll('#toolMenu .tool-item').forEach(b => { b.hidden = !en.includes(b.dataset.tool); });
-  const showAllBtn = document.getElementById('toolMenuShowAll');
-  if (showAllBtn) showAllBtn.hidden = en.length >= allMenuToolIds().length;
-  if (!en.includes(currentTool)) showTool(firstEnabledTool());
-}
-function renderToolsCheckboxes() {
-  const en = enabledTools();
-  document.getElementById('toolsCheckboxes').innerHTML = [...document.querySelectorAll('#toolMenu .tool-item')].map(b => {
-    const id = b.dataset.tool;
-    const title = (TOOLKIT[id] && TOOLKIT[id].title) ? t(TOOLKIT[id].title) : id;
-    return `<label class="checkbox-row"><input type="checkbox" data-tool-toggle="${id}" ${en.includes(id) ? 'checked' : ''}> ${escapeHtml(title)}</label>`;
-  }).join('');
-}
-document.getElementById('toolsCheckboxes').addEventListener('change', ev => {
-  const cb = ev.target.closest('[data-tool-toggle]');
-  if (!cb) return;
-  const id = cb.dataset.toolToggle;
-  let en = enabledTools();
-  if (cb.checked) {
-    if (!en.includes(id)) en.push(id);
-  } else {
-    if (en.length <= 1) { cb.checked = true; toast(t('toast.atLeastOneTool'), true); return; }
-    en = en.filter(t => t !== id);
-  }
-  saveEnabledTools(en);
-  applyEnabledTools();
-});
-document.getElementById('toolMenuShowAll').addEventListener('click', () => {
-  saveEnabledTools(allMenuToolIds());
-  applyEnabledTools();
-  renderToolsCheckboxes();
-});
 document.getElementById('closeSettings').addEventListener('click', () => settingsDialog.close());
-
-// Which tool-specific section belongs to each tool (shown under the "tool" tab)
-const TOOL_SECTION = { trip: 'tripSettings' };
-let settingsToolSection = 'toolSettingsNote';
 
 function showSettingsTab(tab) {
   document.querySelectorAll('#settingsTabs .tab').forEach(b => b.classList.toggle('active', b.dataset.stab === tab));
   document.querySelectorAll('#settingsDialog section[data-stab]').forEach(sec => {
-    sec.hidden = !(sec.dataset.stab === tab && (tab !== 'tool' || sec.id === settingsToolSection));
+    sec.hidden = !(sec.dataset.stab === tab && (tab !== 'tool' || sec.id === 'tripSettings'));
   });
   if (tab === 'more') updateInstallHints(); // may re-hide the install section when already installed
 }
 
-const TOOL_SHORT_NAME_KEY = { trip: 'tool.trip.short' };
 function updateSettingsForTool() {
   const name = t(TOOLKIT[currentTool].title);
   document.getElementById('settingsTitle').textContent = t('dialog.settingsTitlePrefix') + name;
-  settingsToolSection = TOOL_SECTION[currentTool] || 'toolSettingsNote';
-  // Tab label = the tool's settings (short name)
-  const shortName = TOOL_SHORT_NAME_KEY[currentTool] ? t(TOOL_SHORT_NAME_KEY[currentTool]) : name;
-  document.getElementById('settingsToolTab').textContent = t('settings.toolTabPrefix') + shortName;
+  document.getElementById('settingsToolTab').textContent = t('settings.toolTabPrefix') + t('tool.trip.short');
   loadTripInfo();
-  if (settingsToolSection === 'toolSettingsNote') {
-    document.getElementById('toolSettingsNote').innerHTML = `<h4>${t('settings.currentToolHeading')}</h4>
-      <p class="file-hint">${t('settings.currentToolBody', { name, sheet: '' })}</p>`;
-  }
-  showSettingsTab('tools'); // the first tab is always tool selection
+  showSettingsTab('data'); // the first tab is always active by default
 }
 
 document.getElementById('settingsTabs').addEventListener('click', ev => {
@@ -2413,18 +2286,8 @@ function generalHelpHTML() {
       <p>${t('help.gen.whatBody')}</p>
     </div>
     <div class="help-section">
-      ${helpH4('grid', t('help.gen.chooseTitle'))}
-      <ul>
-        <li>${t('help.gen.choose1')}</li>
-        <li>${t('help.gen.choose2')}</li>
-        <li>${t('help.gen.choose3')}</li>
-        <li>${t('help.gen.choose4')}</li>
-      </ul>
-    </div>
-    <div class="help-section">
       ${helpH4('buttons', t('help.gen.buttonsTitle'))}
       <ul>
-        <li>${t('help.gen.btn1')}</li>
         <li>${t('help.gen.btn2')}</li>
         <li>${t('help.gen.btn3')}</li>
         <li>${t('help.gen.btn4')}</li>
@@ -2539,20 +2402,10 @@ document.getElementById('checkVersionBtn').addEventListener('click', () => {
 });
 
 // --- Print the current tool's report ---
-// ===== Report Center (inspired by JasperReports: title / params / grouped detail + subtotals / summary) =====
-const REPORTS = {
-  trip: {
-    title: 'report.trip.title', fetch: () => api('/api/records/tripexp'), dateField: 'date',
-    columns: [{ f: 'date', label: 'field.date', type: 'date' }, { f: 'category', label: 'field.category' }, { f: 'description', label: 'field.description' }, { f: 'amount', label: 'field.amount', type: 'money', sum: true }],
-    groups: [{ key: 'category', label: 'field.category' }, { key: 'ym', label: 'field.month' }, { key: '', label: 'report.noGroup' }]
-  }
-};
+// Trip printing works differently from a recurring monthly ledger: the user
+// just picks which of the trip's own tabs to print as-is.
 let reportHtml = '';
 let lastReport = null;
-
-// Trip printing works differently from every other tool: a vacation isn't a
-// recurring monthly ledger, so instead of the REPORTS date-range/group-by
-// flow, the user just picks which of the trip's own tabs to print as-is.
 const TRIP_PRINT_SECTIONS = [
   { key: 'agenda', title: 'trip.tabAgenda', kind: 'agenda' },
   { key: 'flights', title: 'trip.tabFlights', kind: 'list' },
@@ -2597,140 +2450,10 @@ function generateTripSectionPreview() {
 function openTripPrintDialog() {
   const sel = document.getElementById('reportSelect');
   sel.innerHTML = TRIP_PRINT_SECTIONS.map(s => `<option value="${s.key}">${escapeHtml(t(s.title))}</option>`).join('');
-  document.getElementById('reportDateFilters').hidden = true;
-  document.getElementById('reportQuickPeriods').hidden = true;
-  document.getElementById('reportExport').hidden = true;
   document.getElementById('reportTitle').dataset.i18n = 'report.tripTitle';
   document.getElementById('reportTitle').textContent = t('report.tripTitle');
   reportHtml = ''; lastReport = null;
   document.getElementById('reportPreview').innerHTML = `<p class="file-hint">${t('report.chooseHint')}</p>`;
-  document.getElementById('reportDialog').showModal();
-}
-
-function reportGroupValue(row, key, cfg) {
-  if (!key) return '';
-  if (key === 'ym') return ymLabel(ymKey(row[cfg.dateField]));
-  const col = cfg.columns.find(c => c.f === key);
-  const v = row[key];
-  if (col && col.map) return (col.map[v] && t(col.map[v])) || v;
-  return v ? cellEnumLabel(v) : t('report.notNone');
-}
-function reportCell(row, col) {
-  const v = row[col.f];
-  if (col.type === 'date') return v ? fmtDate(v) : '';
-  if (col.type === 'money') return fmt(v || 0);
-  if (col.type === 'num') return numFmt(v || 0);
-  if (col.map) return escapeHtml((col.map[v] && t(col.map[v])) || v || '');
-  return escapeHtml(v == null ? '' : cellEnumLabel(String(v)));
-}
-function fmtSum(c, val) { return c.type === 'money' ? fmt(val) : numFmt(val); }
-
-async function generateReport() {
-  const cfg = REPORTS[document.getElementById('reportSelect').value];
-  const groupKey = document.getElementById('reportGroup').value;
-  const from = document.getElementById('reportFrom').value, to = document.getElementById('reportTo').value;
-  const building = await api('/api/building');
-  const buildingLine = building && (building.city || building.street) ?
-    [building.street, building.buildingNo, building.city].filter(Boolean).join(' ') : '';
-  let rows = await cfg.fetch();
-  if (cfg.filter) rows = rows.filter(cfg.filter);
-  if (from) rows = rows.filter(r => (r[cfg.dateField] || '') >= from);
-  if (to) rows = rows.filter(r => (r[cfg.dateField] || '') <= to);
-  rows.sort((a, b) => {
-    const ga = reportGroupValue(a, groupKey, cfg), gb = reportGroupValue(b, groupKey, cfg);
-    if (ga !== gb) return ga > gb ? 1 : -1;
-    return (a[cfg.dateField] || '') > (b[cfg.dateField] || '') ? 1 : -1;
-  });
-  lastReport = { cfg, rows, groupKey };
-  const sumCols = cfg.columns.filter(c => c.sum);
-  const grand = {}; sumCols.forEach(c => grand[c.f] = 0);
-  const period = (from || to) ? `${from ? fmtDate(from) : '…'} – ${to ? fmtDate(to) : '…'}` : t('report.wholePeroid');
-  const groupLabel = t((cfg.groups.find(g => g.key === groupKey) || {}).label) || '—';
-
-  let html = `<div class="rpt">
-    <div class="rpt-title-band"><img src="icon-512.png" alt=""><div><div class="rt-name">${escapeHtml(t(cfg.title))}</div><div class="rt-sub">${buildingLine ? escapeHtml(buildingLine) : 'Or — Control your money today'}</div></div></div>
-    <div class="rpt-params"><span>${t('report.period')}: <strong>${period}</strong></span><span>${t('report.groupByLabel')}: <strong>${escapeHtml(groupLabel)}</strong></span><span>${t('report.generatedAt')}: <strong>${fmtDateTime(new Date())}</strong></span><span>${t('report.recordsLabel')}: <strong>${rows.length}</strong></span></div>`;
-
-  if (!rows.length) {
-    html += `<div class="rpt-empty">${t('report.noDataMsg')}</div></div>`;
-  } else {
-    html += `<table class="rpt-table"><thead><tr>${cfg.columns.map(c => `<th>${t(c.label)}</th>`).join('')}</tr></thead><tbody>`;
-    let curGroup = null, groupSums = {};
-    const flushSubtotal = () => {
-      if (groupKey && curGroup != null) {
-        html += `<tr class="rpt-subtotal">${cfg.columns.map((c, i) => i === 0 ? `<td>${t('report.groupSubtotal', { group: escapeHtml(curGroup) })}</td>` : (c.sum ? `<td class="num">${fmtSum(c, groupSums[c.f])}</td>` : '<td></td>')).join('')}</tr>`;
-      }
-    };
-    rows.forEach(row => {
-      const g = reportGroupValue(row, groupKey, cfg);
-      if (groupKey && g !== curGroup) {
-        flushSubtotal();
-        curGroup = g; groupSums = {}; sumCols.forEach(c => groupSums[c.f] = 0);
-        html += `<tr class="rpt-group"><td colspan="${cfg.columns.length}">${escapeHtml(g)}</td></tr>`;
-      }
-      html += `<tr>${cfg.columns.map(c => `<td${(c.type === 'money' || c.type === 'num') ? ' class="num"' : ''}>${reportCell(row, c)}</td>`).join('')}</tr>`;
-      sumCols.forEach(c => { groupSums[c.f] = (groupSums[c.f] || 0) + (Number(row[c.f]) || 0); grand[c.f] += (Number(row[c.f]) || 0); });
-    });
-    flushSubtotal();
-    html += `<tr class="rpt-grand">${cfg.columns.map((c, i) => i === 0 ? `<td>${t('report.grandTotal')}</td>` : (c.sum ? `<td class="num">${fmtSum(c, grand[c.f])}</td>` : '<td></td>')).join('')}</tr></tbody></table>`;
-    const first = sumCols[0];
-    if (first) {
-      const avg = rows.length ? grand[first.f] / rows.length : 0;
-      html += `<div class="rpt-summary"><span>${t('report.recordsCount')}: <b>${rows.length}</b></span><span>${t('report.totalOf', { label: t(first.label) })}: <b>${fmtSum(first, grand[first.f])}</b></span><span>${t('report.average')}: <b>${fmtSum(first, avg)}</b></span></div>`;
-    }
-    html += `</div>`;
-  }
-  reportHtml = html;
-  document.getElementById('reportPreview').innerHTML = html;
-}
-
-function fillReportGroups() {
-  if (currentTool === 'trip') return;
-  const cfg = REPORTS[document.getElementById('reportSelect').value];
-  document.getElementById('reportGroup').innerHTML = cfg.groups.map(g => `<option value="${g.key}">${escapeHtml(t(g.label))}</option>`).join('');
-}
-function renderReportQuickPeriods() {
-  const y = new Date().getFullYear();
-  const wrap = document.getElementById('reportQuickPeriods');
-  const monthBtns = MONTH_NAMES[currentLang].map((name, i) => {
-    const m = i + 1;
-    const from = `${y}-${pad2(m)}-01`;
-    const to = `${y}-${pad2(m)}-${pad2(new Date(y, m, 0).getDate())}`;
-    return `<button type="button" class="qp-btn" data-from="${from}" data-to="${to}">${escapeHtml(name.slice(0, 3))}</button>`;
-  }).join('');
-  const yearBtn = `<button type="button" class="qp-btn qp-year" data-from="${y}-01-01" data-to="${y}-12-31">${escapeHtml(t('report.wholeYearBtn', { year: y }))}</button>`;
-  wrap.innerHTML = monthBtns + yearBtn;
-}
-document.getElementById('reportQuickPeriods').addEventListener('click', ev => {
-  const btn = ev.target.closest('.qp-btn');
-  if (!btn) return;
-  document.getElementById('reportFrom').value = btn.dataset.from;
-  document.getElementById('reportTo').value = btn.dataset.to;
-  document.getElementById('reportFrom').dispatchEvent(new Event('change'));
-  document.getElementById('reportTo').dispatchEvent(new Event('change'));
-  generateReport().catch(e => toast(e.message, true));
-});
-function openReportDialog() {
-  if (currentTool === 'trip') { openTripPrintDialog(); return; }
-  document.getElementById('reportDateFilters').hidden = false;
-  document.getElementById('reportQuickPeriods').hidden = false;
-  document.getElementById('reportExport').hidden = false;
-  document.getElementById('reportTitle').dataset.i18n = 'report.title';
-  document.getElementById('reportTitle').textContent = t('report.title');
-  const sel = document.getElementById('reportSelect');
-  sel.innerHTML = Object.entries(REPORTS).map(([id, r]) => `<option value="${id}">${escapeHtml(t(r.title))}</option>`).join('');
-  if (REPORTS[currentTool]) sel.value = currentTool;
-  fillReportGroups();
-  // Default the period to the current month, so a printed report always covers "this month" unless changed.
-  const now = new Date();
-  const y = now.getFullYear(), m = now.getMonth();
-  document.getElementById('reportFrom').value = `${y}-${pad2(m + 1)}-01`;
-  document.getElementById('reportTo').value = `${y}-${pad2(m + 1)}-${pad2(new Date(y, m + 1, 0).getDate())}`;
-  document.getElementById('reportFrom').dispatchEvent(new Event('change'));
-  document.getElementById('reportTo').dispatchEvent(new Event('change'));
-  reportHtml = ''; lastReport = null;
-  document.getElementById('reportPreview').innerHTML = `<p class="file-hint">${t('report.chooseHint')}</p>`;
-  renderReportQuickPeriods();
   document.getElementById('reportDialog').showModal();
 }
 function printReport() {
@@ -2743,37 +2466,9 @@ function printReport() {
   window.print();
   setTimeout(() => document.body.classList.remove('report-printing'), 1500);
 }
-function exportReportXlsx() {
-  if (!lastReport) { toast(t('toast.generateFirst'), true); return; }
-  const { cfg, rows, groupKey } = lastReport;
-  const cols = cfg.columns;
-  const header = (groupKey ? [t('report.groupColHeader')] : []).concat(cols.map(c => t(c.label)));
-  const aoa = [header];
-  const grand = {}; cols.filter(c => c.sum).forEach(c => grand[c.f] = 0);
-  rows.forEach(row => {
-    const line = (groupKey ? [reportGroupValue(row, groupKey, cfg)] : []).concat(cols.map(c => {
-      if (c.type === 'date') return row[c.f] ? fmtDate(row[c.f]) : '';
-      if (c.type === 'money' || c.type === 'num') return Number(row[c.f]) || 0;
-      if (c.map) return (c.map[row[c.f]] && t(c.map[row[c.f]])) || row[c.f] || '';
-      return row[c.f] == null ? '' : cellEnumLabel(String(row[c.f]));
-    }));
-    aoa.push(line);
-    cols.filter(c => c.sum).forEach(c => grand[c.f] += Number(row[c.f]) || 0);
-  });
-  aoa.push((groupKey ? [''] : []).concat(cols.map((c, i) => i === 0 ? t('report.grandTotal') : (c.sum ? grand[c.f] : ''))));
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(aoa), t('report.sheetName'));
-  XLSX.writeFile(wb, 'or-report.xlsx');
-}
-
-document.getElementById('printBtn').addEventListener('click', openReportDialog);
-document.getElementById('reportSelect').addEventListener('change', fillReportGroups);
-document.getElementById('reportGenerate').addEventListener('click', () => {
-  if (currentTool === 'trip') generateTripSectionPreview();
-  else generateReport().catch(e => toast(e.message, true));
-});
+document.getElementById('printBtn').addEventListener('click', openTripPrintDialog);
+document.getElementById('reportGenerate').addEventListener('click', generateTripSectionPreview);
 document.getElementById('reportPrint').addEventListener('click', printReport);
-document.getElementById('reportExport').addEventListener('click', exportReportXlsx);
 document.getElementById('closeReport').addEventListener('click', () => document.getElementById('reportDialog').close());
 document.getElementById('reportDialog').addEventListener('click', ev => { if (ev.target === document.getElementById('reportDialog')) ev.currentTarget.close(); });
 
@@ -2941,9 +2636,7 @@ document.getElementById('saveTripBtn').addEventListener('click', async () => {
   } catch (err) { toast(err.message, true); }
 });
 
-const DAY_TYPE_I18N_KEY = { 'רגיל': 'daytype.regular', 'ערב חג': 'daytype.eve', 'חג': 'daytype.holiday', 'שבתון': 'daytype.rest', 'חופש': 'daytype.vacation', 'מחלה': 'daytype.sick' };
-
-// ===================== Multi-tool navigation =====================
+// ===================== Tool view rendering =====================
 const TOOLKIT = {
   // ---- Trip / vacation hub (inspired by Wanderlog & TripIt) ----
   trip: { title: 'tool.trip.name', kind: 'trip' },
@@ -3037,11 +2730,6 @@ const TOOLKIT = {
   },
 };
 
-// Icon (inner SVG) per top-level tool — shown in the header, swapped on tool switch
-const TOOL_ICONS = {
-  trip: '<path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/>'
-};
-
 let currentTool = 'trip';
 const toolData = {};
 const numFmt = n => Number(n).toLocaleString('he-IL', { maximumFractionDigits: 2 });
@@ -3053,31 +2741,19 @@ async function refreshCurrent() {
 }
 
 // --- Menu ---
-const homeBtn = document.getElementById('homeBtn');
-const toolMenu = document.getElementById('toolMenu');
 const langToggle = document.getElementById('langToggle');
 const langMenu = document.getElementById('langMenu');
-function closeMenu() { toolMenu.hidden = true; homeBtn.setAttribute('aria-expanded', 'false'); }
 function closeLangMenu() { langMenu.hidden = true; langToggle.setAttribute('aria-expanded', 'false'); }
-homeBtn.addEventListener('click', ev => {
-  ev.stopPropagation();
-  closeLangMenu();
-  if (toolMenu.hidden) { toolMenu.hidden = false; homeBtn.setAttribute('aria-expanded', 'true'); }
-  else closeMenu();
-});
 langToggle.addEventListener('click', ev => {
   ev.stopPropagation();
-  closeMenu();
   if (langMenu.hidden) { langMenu.hidden = false; langToggle.setAttribute('aria-expanded', 'true'); }
   else closeLangMenu();
 });
-document.querySelectorAll('.tool-item').forEach(b => b.addEventListener('click', () => showTool(b.dataset.tool)));
 document.querySelectorAll('.lang-item').forEach(b => b.addEventListener('click', () => { applyLang(b.dataset.lang, true); closeLangMenu(); }));
 document.addEventListener('click', ev => {
-  if (!toolMenu.hidden && !ev.target.closest('.brand')) closeMenu();
   if (!langMenu.hidden && !ev.target.closest('.lang-wrap')) closeLangMenu();
 });
-document.addEventListener('keydown', ev => { if (ev.key === 'Escape') { closeMenu(); closeLangMenu(); } });
+document.addEventListener('keydown', ev => { if (ev.key === 'Escape') closeLangMenu(); });
 
 function showTool(id) {
   if (!TOOLKIT[id]) id = 'trip';
@@ -3085,9 +2761,6 @@ function showTool(id) {
   ensureView(id);
   document.querySelectorAll('.view').forEach(v => { v.hidden = v.id !== 'view-' + id; });
   document.getElementById('appTitle').textContent = t(TOOLKIT[id].title);
-  if (TOOL_ICONS[id]) document.querySelector('#homeBtn svg').innerHTML = TOOL_ICONS[id];
-  document.querySelectorAll('.tool-item').forEach(b => b.classList.toggle('active', b.dataset.tool === id));
-  closeMenu();
   return loadTool(id);
 }
 
@@ -3370,10 +3043,6 @@ function renderList(id, cfg) {
       else if (c.badge && v) return `<td class="col-${c.f}"><span class="type-badge ${statusClass(v)}">${escapeHtml(optLabel(v))}</span></td>`;
       return `<td class="col-${c.f}">${escapeHtml(v) || '—'}</td>`;
     }).join('');
-    // Contacts can be copied into another project - deliberately a copy
-    // (new independent record), not a move, so deleting the source project
-    // later doesn't take the contact's info down with it.
-    const copyBtn = id === 'projcontacts' ? `<button class="btn-edit" data-copy="${r.id}">${t('projects.copyContactBtn')}</button>` : '';
     // Links are a research scratchpad, not a permanent record - once the
     // user has picked a winner among several candidates they researched,
     // this genuinely moves it (not copies) into the real booking tab, name
@@ -3384,7 +3053,7 @@ function renderList(id, cfg) {
         <option value="restaurants">${t('trip.tabRestaurants')}</option>
         <option value="itinerary">${t('trip.tabItinerary')}</option>
       </select>` : '';
-    return `<tr>${cells}<td class="actions-cell">${copyBtn}${convertSel}<button class="btn-edit" data-edit="${r.id}">${t('expenses.editBtn')}</button><button class="btn-danger" data-del="${r.id}">${t('expenses.deleteBtn')}</button></td></tr>`;
+    return `<tr>${cells}<td class="actions-cell">${convertSel}<button class="btn-edit" data-edit="${r.id}">${t('expenses.editBtn')}</button><button class="btn-danger" data-del="${r.id}">${t('expenses.deleteBtn')}</button></td></tr>`;
   }).join('');
 }
 
@@ -3873,15 +3542,12 @@ setTimeout(hideSplash, 1300);
 
 try { if (repairImportedDates()) toast(t('toast.datesRepaired')); } catch (e) { console.error('repairImportedDates failed', e); }
 const initialTool = 'trip';
-window.addEventListener('hashchange', () => showTool('trip'));
 try {
   showTool(initialTool);
 } catch (e) {
   console.error('boot showTool failed', e);
   setTimeout(() => { throw e; }); // surface in the global error banner
-  if (initialTool !== 'trip') showTool('trip');
 }
-applyEnabledTools();
 </script>
 </body>
 </html>

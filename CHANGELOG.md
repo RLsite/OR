@@ -2,6 +2,13 @@
 
 All notable changes to Or are logged here, newest first. Version shown matches the number in the app's Help dialog (בדיקת עדכונים).
 
+## 1.29.1 — 2026-09-02
+
+- **Fixed**: a Google sign-in popup could appear on every page load/refresh for anyone with Drive connected - the trip's Documents tab was silently asking Drive for the file list as a side effect of the page just loading, not only when that tab was actually opened. It now only asks when you actually open the Documents tab (or connect from within it).
+- **Fixed**: the "Vacation with Or" chat window didn't close when clicking ✕ - its own layout style was overriding the browser's normal hide behavior.
+- **Fixed**: the daily agenda's drag handle was smaller than a comfortable tap target on a phone, which could make a drag not register at all despite looking like something moved. Enlarged it to a proper touch-sized target.
+- **Changed**: renamed the AI chat from "עוזר הטיול" to "חופשה עם אור".
+
 ## 1.29.0 — 2026-09-02
 
 - **Added**: an AI trip assistant (chat bubble, bottom corner) that can answer questions about the trip and add, update, or delete flights, hotels, restaurants, car rentals, itinerary points, expenses, and links on request. Needs `GEMINI_API_KEY` set on the server to actually respond — shows a clear message if it isn't set yet. Deleting is always confirmed before it happens.

@@ -1,12 +1,12 @@
 name = "or"
+main = "worker.js"
 compatibility_date = "2026-07-13"
 
-# Static site - this tells Cloudflare to serve the files in this directory
-# directly (index.html at the root). All actual app data still lives in the
-# browser (localStorage) or the user's own Google Drive - nothing here is a
-# backend for the app's data. The one exception is functions/api/ - small,
-# stateless Cloudflare Pages Functions (currently just link-preview.js) that
-# proxy a single server-side fetch the browser itself can't make; Pages
-# serves those automatically alongside the static assets, no config needed.
+# Static site, served via the [assets] binding below - index.html at the root is
+# the whole app; all its actual data lives in the browser (localStorage) or the
+# user's own Google Drive, never here. worker.js is a thin router: it only
+# handles the one route that needs real server-side logic (currently just
+# /api/link-preview) and hands everything else straight to the static assets.
 [assets]
 directory = "./"
+binding = "ASSETS"

@@ -1,9 +1,13 @@
-// Cloudflare Pages Function: GET /api/link-preview?url=<encoded>
-// Fetches the target page server-side (the browser can't - most sites block
-// cross-origin reads of their HTML) and extracts basic Open Graph/meta tags
-// so the trip's "Links" tab can auto-fill a name, description and image for
-// a pasted URL. Public, unauthenticated, stateless - no secrets involved.
-// Called from index.html's fetchLinkPreviewInto().
+// Cloudflare Worker entry point. This project is a static site (index.html etc,
+// served via the [assets] binding configured in wrangler.toml) - this script's
+// only job is to intercept the one route that needs real server-side logic and
+// fall through to the static assets for everything else.
+//
+// (Earlier attempt: a Cloudflare Pages "functions/api/*.js" file. That's a
+// Pages-only convention and is never invoked under this project's actual
+// deployment model - a Worker with a static-assets binding, configured via
+// wrangler.toml's [assets] block - so it silently 404'd. This is the version
+// that actually runs.)
 
 const MAX_HTML_BYTES = 300000; // the tags we need are always in <head>; no reason to buffer a whole page
 
@@ -29,8 +33,13 @@ function jsonResponse(body, status) {
   return new Response(JSON.stringify(body), { status: status || 200, headers: { 'Content-Type': 'application/json; charset=utf-8' } });
 }
 
-export async function onRequestGet(context) {
-  const urlParam = new URL(context.request.url).searchParams.get('url');
+// GET /api/link-preview?url=<encoded> - fetches the target page server-side (the
+// browser can't - most sites block cross-origin reads of their HTML) and extracts
+// basic Open Graph/meta tags so the trip's "Links" tab can auto-fill a name,
+// description and image for a pasted URL. Public, stateless - no secrets involved.
+async function handleLinkPreview(request) {
+  if (request.method !== 'GET') return jsonResponse({ error: 'method not allowed' }, 405);
+  const urlParam = new URL(request.url).searchParams.get('url');
   if (!urlParam) return jsonResponse({ error: 'missing url' }, 400);
 
   let target;
@@ -75,3 +84,11 @@ export async function onRequestGet(context) {
   if (!title && !description && !image) return jsonResponse({ error: 'not found' });
   return jsonResponse({ title: title || '', description: description || '', image: image || '' });
 }
+
+export default {
+  async fetch(request, env, ctx) {
+    const url = new URL(request.url);
+    if (url.pathname === '/api/link-preview') return handleLinkPreview(request);
+    return env.ASSETS.fetch(request);
+  },
+};

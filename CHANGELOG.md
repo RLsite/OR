@@ -8,7 +8,11 @@ All notable changes to Or are logged here, newest first. Version shown matches t
 - **Fixed**: the daily agenda ("סדר יום") could list a hotel check-in or car pickup *before* the flight that lands you there on the same day — items without a specific time now always fall after timed ones, and among themselves follow flight → car → hotel, matching how an arrival day actually unfolds.
 - **Added**: the daily agenda can now be manually reordered by dragging items (via the handle on each row) — useful once the automatic time-based order isn't quite right for a given day. The custom order is remembered per day.
 - **Added**: a copy button next to each saved link in the Links tab, and long links are now shortened (with the full address still one click away) instead of stretching the table.
-- **Fixed**: pasting a link in the Links tab was always failing to auto-fill its name/description/image — the feature was wired up on the app's side but the small server-side piece it depended on (to fetch the page's info) had never actually been built. It's in place now.
+- **Fixed**: pasting a link in the Links tab was always failing to auto-fill its name/description/image — the feature was wired up on the app's side but the small server-side piece it depended on (to fetch the page's info) had never actually been built.
+
+## 1.28.1 — 2026-09-02
+
+- **Fixed**: the previous version's link-preview fix didn't actually go live — it shipped as a Cloudflare Pages Function, but this project deploys as a Cloudflare Worker (a different Cloudflare product with a different way of adding server-side code), so the route silently 404'd in production. Rebuilt as `worker.js` to match how this project is actually hosted; confirmed working against the live site.
 
 ## 1.27.0 — 2026-09-02
 

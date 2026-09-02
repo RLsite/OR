@@ -171,12 +171,16 @@
   .icon-btn:hover { border-color: var(--color-secondary); color: var(--color-secondary); }
   [data-theme="light"] .icon-moon { display: none; }
   :root:not([data-theme="light"]) .icon-sun { display: none; }
-  .lang-code { font-size: 12px; font-weight: 700; letter-spacing: 0.02em; }
+  #backupClock { position: relative; }
+  .drive-status-dot {
+    position: absolute; bottom: 4px; inset-inline-end: 4px;
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--color-text-dim); border: 2px solid var(--color-card);
+  }
+  .drive-status-dot.dot-connected { background: #22C55E; }
 
-  /* Brand + tool menu */
+  /* Brand + header menu */
   .brand { display: flex; align-items: center; gap: var(--space-2); position: relative; }
-  .help-btn svg { color: var(--color-accent); }
-  .help-btn:hover { border-color: var(--color-accent); color: var(--color-accent); }
   #helpDialog { max-width: 640px; width: 92%; }
   #helpTabs { margin-bottom: 12px; }
   /* #helpDialog is a flex column (title/tabs fixed, body fills remaining space)
@@ -200,22 +204,24 @@
   .help-body strong { color: var(--color-fg); font-weight: 500; }
   .help-body .help-tag { display: inline-block; background: var(--color-muted); border: 1px solid var(--color-border); border-radius: 6px; padding: 1px 8px; font-size: 13px; }
 
-  .lang-wrap { position: relative; display: inline-flex; align-items: center; }
-  .lang-menu {
+  .menu-wrap { position: relative; display: inline-flex; align-items: center; }
+  .header-menu {
     position: absolute; top: calc(100% + 8px); inset-inline-end: 0; z-index: 1000;
     background: var(--color-card); border: 1px solid var(--color-border);
     border-radius: var(--radius); padding: var(--space-1);
-    min-width: 160px; box-shadow: 0 12px 40px rgba(0,0,0,0.45);
+    min-width: 220px; box-shadow: 0 12px 40px rgba(0,0,0,0.45);
     display: flex; flex-direction: column; gap: 2px;
   }
-  .lang-menu[hidden] { display: none; }
-  .lang-item {
-    display: flex; align-items: center;
+  .header-menu[hidden] { display: none; }
+  .menu-item {
+    display: flex; align-items: center; gap: var(--space-2);
     background: transparent; color: var(--color-fg); text-align: start;
-    padding: 10px 12px; border-radius: 8px; min-height: 40px; font-size: 15px;
+    padding: 10px 12px; border-radius: 8px; min-height: 44px; font-size: 15px;
   }
-  .lang-item:hover { background: var(--color-muted); }
-  .lang-item.active { background: rgba(59,130,246,0.15); font-weight: 600; }
+  .menu-item svg { color: var(--color-secondary); flex-shrink: 0; }
+  .menu-item:hover { background: var(--color-muted); }
+  .menu-item.active { background: rgba(59,130,246,0.15); font-weight: 600; }
+  .menu-sep { height: 1px; background: var(--color-border); margin: 4px 6px; }
 
   /* Views */
   .view[hidden] { display: none; }
@@ -580,36 +586,44 @@
     </a>
 
     <div class="header-actions">
-      <button type="button" class="icon-btn" id="backupClock" data-i18n-aria="header.backupClockTitle" aria-label="זמן מאז הגיבוי האחרון — פתיחת הגדרות גיבוי">
+      <button type="button" class="icon-btn" id="backupClock" data-i18n-aria="header.backupClockTitle" aria-label="גיבוי עכשיו ל-Google Drive">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+        <span class="drive-status-dot" id="driveStatusDot" hidden aria-hidden="true"></span>
       </button>
-      <button type="button" class="icon-btn" id="printBtn" data-i18n-aria="header.reportCenter" aria-label="מרכז הדוחות">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
-      </button>
-      <button type="button" class="icon-btn" id="settingsBtn" data-i18n-aria="header.settings" aria-label="הגדרות — פרטי החשבונות">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-      </button>
-      <button type="button" class="icon-btn" id="themeToggle" data-i18n-aria="header.themeToggle" aria-label="החלפת עיצוב כהה / בהיר">
-        <svg class="icon-sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
-        <svg class="icon-moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-      </button>
-      <div class="lang-wrap">
-        <button type="button" class="icon-btn" id="langToggle" data-i18n-aria="lang.toggleAria" aria-label="שינוי שפה / Change language / Изменить язык" aria-haspopup="true" aria-expanded="false">
-          <span class="lang-code" id="langCode">עב</span>
+      <div class="menu-wrap">
+        <button type="button" class="icon-btn" id="menuToggle" data-i18n-aria="menu.toggleAria" aria-label="תפריט" aria-haspopup="true" aria-expanded="false">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
         </button>
-        <nav class="lang-menu" id="langMenu" hidden aria-label="שפה / Language / Язык / اللغة">
-          <button type="button" class="lang-item" data-lang="he">עברית</button>
-          <button type="button" class="lang-item" data-lang="en">English</button>
-          <button type="button" class="lang-item" data-lang="ru">Русский</button>
-          <button type="button" class="lang-item" data-lang="ar">العربية</button>
+        <nav class="header-menu" id="headerMenu" hidden data-i18n-aria="menu.toggleAria" aria-label="תפריט">
+          <button type="button" class="menu-item" id="printBtn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+            <span data-i18n="menu.reports">מרכז הדוחות</span>
+          </button>
+          <button type="button" class="menu-item" id="settingsBtn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            <span data-i18n="menu.settings">הגדרות</span>
+          </button>
+          <button type="button" class="menu-item" id="themeToggle">
+            <svg class="icon-sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+            <svg class="icon-moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+            <span data-i18n="menu.theme">עיצוב כהה / בהיר</span>
+          </button>
+          <div class="menu-sep" role="separator"></div>
+          <button type="button" class="menu-item lang-item" data-lang="he">עברית</button>
+          <button type="button" class="menu-item lang-item" data-lang="en">English</button>
+          <button type="button" class="menu-item lang-item" data-lang="ru">Русский</button>
+          <button type="button" class="menu-item lang-item" data-lang="ar">العربية</button>
+          <div class="menu-sep" role="separator"></div>
+          <a href="https://rlapp.net" target="_blank" rel="noopener" class="menu-item">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+            <span data-i18n="menu.rlapp">RLAPP.net — כל השירותים שלנו</span>
+          </a>
+          <button type="button" class="menu-item" id="helpBtn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            <span data-i18n="menu.help">עזרה</span>
+          </button>
         </nav>
       </div>
-      <a href="https://rlapp.net" target="_blank" rel="noopener" class="icon-btn rlapp-icon-btn" aria-label="RLAPP.net — כל השירותים שלנו" title="RLAPP.net — כל השירותים שלנו">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
-      </a>
-      <button type="button" class="icon-btn help-btn" id="helpBtn" data-i18n-aria="header.help" aria-label="עזרה ומידע על הכלי הנוכחי">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-      </button>
     </div>
   </header>
 
@@ -879,6 +893,18 @@
     try { Object.defineProperty(window, 'localStorage', { configurable: true, value: shim }); } catch (e2) { /* can't redefine — nothing more we can do */ }
   }
 })();
+// Cache-busting reloads (see checkForUpdate/checkVersionBtn) navigate to
+// "?_=<timestamp>" to force past Cloudflare's edge cache when a plain reload
+// isn't enough. Once the fresh page has actually loaded, that query string
+// has done its job - strip it from the visible address bar (via replaceState,
+// no navigation/reload triggered) so bookmarking or sharing the URL never
+// carries it forward. Only matches exactly our own pattern, never a
+// real/foreign query string someone arrived with.
+(function () {
+  if (/^\?_=\d+$/.test(location.search)) {
+    try { history.replaceState(null, '', location.pathname + location.hash); } catch (e) { /* non-fatal */ }
+  }
+})();
 const OPT_I18N_KEY = {
   'אטרקציה': 'opt.catAttraction', 'אטרקציות': 'opt.catAttractions', 'מסעדה': 'opt.catRestaurant', 'מלון': 'opt.catHotel',
   'תחבורה': 'opt.catTransport', 'קניות': 'opt.catShopping', 'אחר': 'opt.catOther',
@@ -913,7 +939,12 @@ const fmt = n => '₪' + Number(n).toLocaleString('he-IL', { minimumFractionDigi
 let currentLang = 'he';
 const LANG_ORDER = ['he', 'en', 'ru', 'ar'];
 const I18N = {
-  'lang.toggleAria': { he: 'שינוי שפה / Change language / Изменить язык', en: 'שינוי שפה / Change language / Изменить язык', ru: 'שינוי שפה / Change language / Изменить язык' , ar: 'שינוי שפה / Change language / Изменить язык / تغيير اللغة' },
+  'menu.toggleAria': { he: 'תפריט', en: 'Menu', ru: 'Меню', ar: 'القائمة' },
+  'menu.reports': { he: 'מרכז הדוחות', en: 'Report Center', ru: 'Центр отчётов', ar: 'مركز التقارير' },
+  'menu.settings': { he: 'הגדרות', en: 'Settings', ru: 'Настройки', ar: 'الإعدادات' },
+  'menu.theme': { he: 'עיצוב כהה / בהיר', en: 'Dark / light theme', ru: 'Тёмная / светлая тема', ar: 'المظهر الداكن / الفاتح' },
+  'menu.rlapp': { he: 'RLAPP.net — כל השירותים שלנו', en: 'RLAPP.net — all our tools', ru: 'RLAPP.net — все наши инструменты', ar: 'RLAPP.net — كل خدماتنا' },
+  'menu.help': { he: 'עזרה', en: 'Help', ru: 'Справка', ar: 'مساعدة' },
   'common.cancel': { he: 'ביטול', en: 'Cancel', ru: 'Отмена' , ar: 'إلغاء' },
   'common.actions': { he: 'פעולות', en: 'Actions', ru: 'Действия' , ar: 'إجراءات' },
   'common.all': { he: 'הכל', en: 'All', ru: 'Все' , ar: 'الكل' },
@@ -930,7 +961,7 @@ const I18N = {
   'header.themeToggle': { he: 'החלפת עיצוב כהה / בהיר', en: 'Toggle dark / light theme', ru: 'Переключить тёмную / светлую тему' , ar: 'تبديل المظهر الداكن / الفاتح' },
   'header.help': { he: 'עזרה ומידע על הכלי הנוכחי', en: 'Help & info about the current tool', ru: 'Справка о текущем инструменте' , ar: 'مساعدة ومعلومات عن الأداة الحالية' },
   'header.backupClockTitle': { he: 'זמן מאז הגיבוי האחרון', en: 'Time since last backup', ru: 'Время с последней резервной копии' , ar: 'الوقت منذ آخر نسخة احتياطية' },
-  'header.backupClockNever': { he: 'טרם בוצע גיבוי — לחצו לפתיחת הגדרות', en: 'No backup yet - click to open settings', ru: 'Резервной копии ещё нет — нажмите, чтобы открыть настройки' , ar: 'لم يتم إجراء نسخة احتياطية بعد — انقروا لفتح الإعدادات' },
+  'header.backupClockNever': { he: 'טרם בוצע גיבוי — לחצו לגיבוי מיידי ל-Drive', en: 'No backup yet - click to back up to Drive now', ru: 'Резервной копии ещё нет — нажмите для резервного копирования в Drive', ar: 'لم يتم إجراء نسخة احتياطية بعد — انقروا للنسخ الاحتياطي إلى Drive الآن' },
   'backup.reminderTitle': { he: 'עדיין לא בוצע גיבוי', en: 'Backup not done yet', ru: 'Резервная копия ещё не создана' , ar: 'لم يتم إجراء نسخة احتياطية بعد' },
   'backup.reminderHint': { he: 'עבר הזמן שבחרתם בלי גיבוי עדכני. מומלץ לגבות את הנתונים לאקסל או ל-Google Drive מההגדרות.', en: 'The time you chose has passed without a fresh backup. Consider backing up your data to Excel or Google Drive from Settings.', ru: 'Прошло выбранное вами время без свежей резервной копии. Рекомендуем создать резервную копию в Excel или Google Drive в настройках.' , ar: 'مرّ الوقت الذي اخترتموه دون نسخة احتياطية حديثة. يُنصح بعمل نسخة احتياطية للبيانات إلى إكسل أو Google Drive من الإعدادات.' },
   'backup.reminderFrequencyHint': { he: 'אפשר לשנות את תדירות התזכורת הזו בכל עת דרך חלון ההגדרות.', en: 'You can change this reminder\'s frequency any time from the settings window.', ru: 'Вы можете изменить частоту этого напоминания в любое время в окне настроек.' , ar: 'يمكنكم تغيير وتيرة هذا التذكير في أي وقت من نافذة الإعدادات.' },
@@ -1368,7 +1399,6 @@ function applyLang(lang, rerender) {
   document.documentElement.lang = currentLang;
   document.documentElement.dir = RTL_LANGS.includes(currentLang) ? 'rtl' : 'ltr';
   document.body.classList.toggle('lang-ar', currentLang === 'ar');
-  document.getElementById('langCode').textContent = { he: 'עב', en: 'EN', ru: 'RU', ar: 'AR' }[currentLang];
   document.querySelectorAll('.lang-item').forEach(b => b.classList.toggle('active', b.dataset.lang === currentLang));
   applyI18nDom();
   if (rerender) {
@@ -1390,7 +1420,7 @@ applyLang(localStorage.getItem('or-lang') || 'he', false);
 // ===================== Client-side data layer (runs fully in the browser) =====================
 // Data lives in localStorage; Excel import/export via SheetJS. No server needed — works on GitHub Pages.
 // (In the future a cloud backend such as Google Drive can replace loadDB/saveDB.)
-const APP_VERSION = '1.23.0';
+const APP_VERSION = '1.24.0';
 const APP_BUILT_AT = 'dev'; // replaced by build.js with the deploy timestamp — lets a running page detect it's stale
 const STORE_KEY = 'or-store-v1';
 const BUGS_COLS = ['field.date', 'field.toolOrPage', 'field.description', 'field.browser'];
@@ -1714,6 +1744,8 @@ async function driveFetchUserEmail(token) {
 }
 function updateDriveUI() {
   const connected = !!localStorage.getItem('or-drive-connected');
+  const dot = document.getElementById('driveStatusDot');
+  if (dot) { dot.hidden = !connected; dot.classList.toggle('dot-connected', connected); }
   document.getElementById('driveConnectBtn').hidden = connected;
   document.getElementById('driveBackupBtn').hidden = !connected;
   document.getElementById('driveRestoreBtn').hidden = !connected;
@@ -2110,7 +2142,23 @@ document.getElementById('openSettingsFromBackupReminder').addEventListener('clic
   document.getElementById('backupReminderDialog').close();
   openSettingsOnBackupTab();
 });
-document.getElementById('backupClock').addEventListener('click', openSettingsOnBackupTab);
+// Clicking the header save/backup icon backs up immediately: already connected ->
+// upload right now; not connected -> run the Drive connect flow, then upload right
+// after, so one click both connects AND performs the first backup (no Settings
+// detour - see how Alon's own equivalent icon behaves).
+async function backupClockClick() {
+  try {
+    if (!isDriveConnected()) {
+      await driveConnect();
+      if (!isDriveConnected()) return; // user closed the consent popup, or it failed (driveConnect already showed a toast)
+    }
+    const token = await driveEnsureToken();
+    await driveUploadBackup(token);
+    toast(t('drive.backupSuccess'));
+    updateDriveUI();
+  } catch (err) { toast(t('drive.backupError', { msg: err.message }), true); }
+}
+document.getElementById('backupClock').addEventListener('click', backupClockClick);
 // Backup/Restore both go through this instead of acting immediately - shows
 // both copies' timestamps side by side and lets the user pick a direction,
 // rather than silently overwriting whichever one they clicked. The confirm
@@ -2741,19 +2789,20 @@ async function refreshCurrent() {
 }
 
 // --- Menu ---
-const langToggle = document.getElementById('langToggle');
-const langMenu = document.getElementById('langMenu');
-function closeLangMenu() { langMenu.hidden = true; langToggle.setAttribute('aria-expanded', 'false'); }
-langToggle.addEventListener('click', ev => {
+const menuToggle = document.getElementById('menuToggle');
+const headerMenu = document.getElementById('headerMenu');
+function closeHeaderMenu() { headerMenu.hidden = true; menuToggle.setAttribute('aria-expanded', 'false'); }
+menuToggle.addEventListener('click', ev => {
   ev.stopPropagation();
-  if (langMenu.hidden) { langMenu.hidden = false; langToggle.setAttribute('aria-expanded', 'true'); }
-  else closeLangMenu();
+  if (headerMenu.hidden) { headerMenu.hidden = false; menuToggle.setAttribute('aria-expanded', 'true'); }
+  else closeHeaderMenu();
 });
-document.querySelectorAll('.lang-item').forEach(b => b.addEventListener('click', () => { applyLang(b.dataset.lang, true); closeLangMenu(); }));
+document.querySelectorAll('.lang-item').forEach(b => b.addEventListener('click', () => applyLang(b.dataset.lang, true)));
+headerMenu.addEventListener('click', ev => { if (ev.target.closest('.menu-item')) closeHeaderMenu(); });
 document.addEventListener('click', ev => {
-  if (!langMenu.hidden && !ev.target.closest('.lang-wrap')) closeLangMenu();
+  if (!headerMenu.hidden && !ev.target.closest('.menu-wrap')) closeHeaderMenu();
 });
-document.addEventListener('keydown', ev => { if (ev.key === 'Escape') closeLangMenu(); });
+document.addEventListener('keydown', ev => { if (ev.key === 'Escape') closeHeaderMenu(); });
 
 function showTool(id) {
   if (!TOOLKIT[id]) id = 'trip';

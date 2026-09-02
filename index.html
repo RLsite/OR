@@ -97,6 +97,10 @@
      see updateBackupClock()) instead of a separate always-visible readout. */
   #backupClock.is-stale { color: var(--color-destructive); border-color: var(--color-destructive); }
   .link-thumb { width: 48px; height: 48px; object-fit: cover; border-radius: 6px; display: block; }
+  .link-cell { display: flex; align-items: center; gap: 6px; max-width: 220px; }
+  .link-cell-url { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; min-width: 0; }
+  .link-copy-btn { flex-shrink: 0; background: none; border: none; min-height: auto; padding: 2px 4px; color: var(--color-text-dim); cursor: pointer; font-size: 16px; }
+  .link-copy-btn:hover { color: var(--color-secondary); }
 
   /* Summary cards */
   .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: var(--space-2); margin-bottom: var(--space-4); }
@@ -141,15 +145,27 @@
      control renders the value in guaranteed dd.mm.yyyy / 24h format on
      top of it. See upgradeDateTimeInput(). */
   .date-input-wrap { position: relative; display: block; width: 100%; }
-  .date-input-wrap > input { width: 100%; }
-  .date-input-wrap > input:not(:focus) { color: transparent; }
+  .date-input-wrap > input { width: 100%; color: transparent; }
+  /* color:transparent above hides the value/placeholder text itself, but Chromium
+     draws the focused segment's own highlight (e.g. "mm" while it's the active
+     field) as a separate layer that ignores the input's text color entirely - it
+     still showed through, in the browser's own locale, even with the above rule
+     in place. These non-standard pseudo-elements are Chromium/WebKit's internal
+     parts of the date widget; targeting them directly is the only way to also
+     suppress that highlight. No-op (harmless) on browsers that don't support them. */
+  .date-input-wrap input[type=date]::-webkit-datetime-edit-fields-wrapper,
+  .date-input-wrap input[type=date]::-webkit-datetime-edit-text,
+  .date-input-wrap input[type=date]::-webkit-datetime-edit-month-field,
+  .date-input-wrap input[type=date]::-webkit-datetime-edit-day-field,
+  .date-input-wrap input[type=date]::-webkit-datetime-edit-year-field {
+    color: transparent; background-color: transparent;
+  }
   .date-input-overlay {
     position: absolute; inset-inline-start: 12px; inset-inline-end: 30px; top: 0; bottom: 0;
     display: flex; align-items: center; pointer-events: none;
     font-family: inherit; font-size: 15px; color: var(--color-fg);
     font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden;
   }
-  .date-input-wrap > input:focus ~ .date-input-overlay { visibility: hidden; }
   .date-input-overlay.is-placeholder { color: var(--color-text-dim); }
   input:focus, select:focus, textarea:focus, button:focus { outline: 2px solid var(--color-secondary); outline-offset: 1px; }
   button {
@@ -258,6 +274,9 @@
   .agenda-title { font-size: 15px; font-weight: 500; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
   .agenda-sub { font-size: 13px; color: var(--color-text-dim); margin-top: 2px; }
   .agenda-cost { font-variant-numeric: tabular-nums; font-weight: 600; color: var(--color-fg); font-size: 14px; flex-shrink: 0; }
+  .agenda-drag { flex-shrink: 0; align-self: center; cursor: grab; color: var(--color-text-dim); font-size: 18px; line-height: 1; padding: 6px; margin: -6px; touch-action: none; user-select: none; }
+  .agenda-item.agenda-item-dragging { opacity: 0.5; }
+  .agenda-item-placeholder { border: 2px dashed var(--color-secondary); border-radius: 8px; margin: 4px 0 4px 14px; height: 40px; }
 
   /* Day-filter notice */
   .day-notice { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; background: rgba(5,150,105,0.12); border: 1px solid rgba(5,150,105,0.4); border-radius: 10px; padding: 8px 14px; margin-bottom: 12px; font-size: 14px; }
@@ -1092,6 +1111,9 @@ const I18N = {
   'toast.recordAdded': { he: 'הרשומה נוספה ונשמרה', en: 'Record added and saved', ru: 'Запись добавлена и сохранена' , ar: 'تمت إضافة السجل وحفظه' },
   'confirm.deleteRecord': { he: 'למחוק את הרשומה? הפעולה תעדכן את קובץ האקסל.', en: 'Delete this record? This will update the Excel file.', ru: 'Удалить запись? Это обновит файл Excel.' , ar: 'هل تريد حذف السجل؟ سيؤدي هذا إلى تحديث ملف الإكسل.' },
   'toast.recordDeleted': { he: 'הרשומה נמחקה', en: 'Record deleted', ru: 'Запись удалена' , ar: 'تم حذف السجل' },
+  'list.copyLink': { he: 'העתקת הקישור', en: 'Copy link', ru: 'Скопировать ссылку' , ar: 'نسخ الرابط' },
+  'toast.linkCopied': { he: 'הקישור הועתק', en: 'Link copied', ru: 'Ссылка скопирована' , ar: 'تم نسخ الرابط' },
+  'toast.linkCopyFailed': { he: 'העתקת הקישור נכשלה', en: 'Copying the link failed', ru: 'Не удалось скопировать ссылку' , ar: 'فشل نسخ الرابط' },
   'nav.mapsTitle': { he: 'פתיחה בגוגל מפות', en: 'Open in Google Maps', ru: 'Открыть в Google Картах' , ar: 'فتح في خرائط جوجل' },
   'nav.wazeTitle': { he: 'ניווט ב-Waze', en: 'Navigate with Waze', ru: 'Навигация в Waze' , ar: 'ملاحة عبر Waze' },
   'nav.mapsLabel': { he: 'מפות', en: 'Maps', ru: 'Карты' , ar: 'خرائط' },
@@ -1219,6 +1241,7 @@ const I18N = {
   'trip.agenda.carPickupPrefix': { he: 'איסוף רכב — ', en: 'Car pickup — ', ru: 'Забор автомобиля — ' , ar: 'استلام السيارة — ' },
   'trip.agenda.carReturnPrefix': { he: 'החזרת רכב — ', en: 'Car return — ', ru: 'Возврат автомобиля — ' , ar: 'إرجاع السيارة — ' },
   'trip.agenda.landingPrefix': { he: 'נחיתה ', en: 'Landing ', ru: 'Посадка ' , ar: 'هبوط ' },
+  'trip.agenda.dragHint': { he: 'גררו כדי לשנות סדר', en: 'Drag to reorder', ru: 'Перетащите, чтобы изменить порядок' , ar: 'اسحب لإعادة الترتيب' },
   'trip.agenda.noActivitiesToday': { he: 'אין פעילויות ביום זה. הוסיפו טיסות, מלונות או נקודות עניין.', en: 'No activities on this day. Add flights, hotels, or points of interest.', ru: 'В этот день нет мероприятий. Добавьте рейсы, отели или достопримечательности.' , ar: 'لا توجد أنشطة في هذا اليوم. أضيفوا رحلات طيران، فنادق أو معالم سياحية.' },
   'trip.agenda.noActivitiesYet': { he: 'אין פעילויות עדיין. הוסיפו טיסות, מלונות או נקודות עניין.', en: 'No activities yet. Add flights, hotels, or points of interest.', ru: 'Пока нет мероприятий. Добавьте рейсы, отели или достопримечательности.' , ar: 'لا توجد أنشطة بعد. أضيفوا رحلات طيران، فنادق أو معالم سياحية.' },
   'trip.dayNotice.showing': { he: 'מציג את המידע של <strong>{day}</strong> בכל הטאבים · ', en: 'Showing information for <strong>{day}</strong> across all tabs · ', ru: 'Показаны данные за <strong>{day}</strong> на всех вкладках · ' , ar: 'يتم عرض معلومات <strong>{day}</strong> في كل الألسنة · ' },
@@ -1425,7 +1448,7 @@ applyLang(localStorage.getItem('or-lang') || 'he', false);
 // ===================== Client-side data layer (runs fully in the browser) =====================
 // Data lives in localStorage; Excel import/export via SheetJS. No server needed — works on GitHub Pages.
 // (In the future a cloud backend such as Google Drive can replace loadDB/saveDB.)
-const APP_VERSION = '1.27.0';
+const APP_VERSION = '1.28.0';
 const APP_BUILT_AT = 'dev'; // replaced by build.js with the deploy timestamp — lets a running page detect it's stale
 const STORE_KEY = 'or-store-v1';
 const BUGS_COLS = ['field.date', 'field.toolOrPage', 'field.description', 'field.browser'];
@@ -1456,10 +1479,13 @@ function loadDB() {
   s.records = s.records || {};
   s.bugs = s.bugs || [];
   s.trip = s.trip || { destination: '', from: '', to: '', travelers: '', budget: '', insCompany: '', insPolicy: '', insPhone: '', notes: '' };
+  s.agendaOrder = s.agendaOrder || {};
   s.savedAt = s.savedAt || null;
   return s;
 }
 function saveDB(s) { s.savedAt = new Date().toISOString(); localStorage.setItem(STORE_KEY, JSON.stringify(s)); }
+// Manual drag-reorder of a single day's agenda items (keyed by stable "type:id" strings, see renderAgenda) - independent of the trip/record stores above since it's a display preference, not trip data.
+function saveAgendaOrder(date, keys) { const s = loadDB(); s.agendaOrder = s.agendaOrder || {}; s.agendaOrder[date] = keys; saveDB(s); }
 function nextId(arr) { return arr.reduce((m, r) => Math.max(m, Number(r.id) || 0), 0) + 1; }
 
 // Drop-in replacement for the old fetch-based api(): routes to the local store instead of the network
@@ -2923,6 +2949,8 @@ function wireToolView(id, cfg) {
   tbody.addEventListener('click', async ev => {
     const delId = ev.target.dataset?.del;
     const editId = ev.target.dataset?.edit;
+    const copyUrl = ev.target.dataset?.copyUrl;
+    if (copyUrl) { const ok = await copyToClipboard(copyUrl); toast(t(ok ? 'toast.linkCopied' : 'toast.linkCopyFailed'), !ok); }
     if (delId) {
       if (!confirm(t('confirm.deleteRecord'))) return;
       try { await api(`/api/records/${id}/${delId}`, { method: 'DELETE' }); toast(t('toast.recordDeleted')); await loadTool(id); }
@@ -3120,6 +3148,16 @@ function telLink(phone) {
   const href = p.replace(/[^\d+]/g, '');
   return `<a href="tel:${href}" class="tel-link" dir="ltr">${escapeHtml(p)}</a>`;
 }
+async function copyToClipboard(text) {
+  try { await navigator.clipboard.writeText(text); return true; } catch (e) { /* fall through to legacy path below */ }
+  try {
+    const ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.focus(); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta);
+    return true;
+  } catch (e) { return false; }
+}
 
 function statusClass(v) {
   return 'st-normal';
@@ -3136,7 +3174,7 @@ function renderList(id, cfg) {
       let v = r[c.f];
       if (c.nav && v) return `<td class="col-${c.f}">${escapeHtml(v)} ${navLinks(v, r.coords)}</td>`;
       if (c.type === 'tel') return `<td class="col-${c.f}">${telLink(v)}</td>`;
-      if (c.type === 'url' && v) return `<td class="col-${c.f}" dir="ltr"><a href="${escapeHtml(v)}" target="_blank" rel="noopener">${escapeHtml(v)}</a></td>`;
+      if (c.type === 'url' && v) return `<td class="col-${c.f}" dir="ltr"><div class="link-cell"><a href="${escapeHtml(v)}" target="_blank" rel="noopener" class="link-cell-url" title="${escapeHtml(v)}">${escapeHtml(v)}</a><button type="button" class="link-copy-btn" data-copy-url="${escapeHtml(v)}" title="${t('list.copyLink')}" aria-label="${t('list.copyLink')}">⧉</button></div></td>`;
       if (c.type === 'image') return `<td class="col-${c.f}">${v ? `<img src="${escapeHtml(v)}" alt="" class="link-thumb" loading="lazy">` : '—'}</td>`;
       if (c.isDate && v) v = fmtDate(v);
       else if (c.money) v = v ? fmt(v) : '—';
@@ -3355,6 +3393,10 @@ function wireDragToScroll(el) {
 
 function wireTripView() {
   wireDragToScroll(document.getElementById('tripDayStrip'));
+  document.getElementById('trip-agenda').addEventListener('pointerdown', agendaDragStart);
+  document.addEventListener('pointermove', agendaDragMove);
+  document.addEventListener('pointerup', agendaDragEnd);
+  document.addEventListener('pointercancel', agendaDragEnd);
   wireToolView('itinerary', TOOLKIT.itinerary);
   wireToolView('flights', TOOLKIT.flights);
   wireToolView('hotels', TOOLKIT.hotels);
@@ -3526,6 +3568,10 @@ async function loadTrip() {
   renderTrip();
 }
 
+// Kind priority used only to order same-day events that have no clock time
+// (hotel/car/restaurant never carry a time-of-day) — flight always first,
+// then car, then hotel, matching how an arrival day actually unfolds.
+const AGENDA_TYPE_PRIORITY = { flight: 0, car: 1, hotel: 2, restaurant: 3, poi: 4 };
 // Daily agenda: flights + hotel check-in/out + POIs merged into one hour-by-hour timeline
 function renderAgenda() {
   const box = document.getElementById('trip-agenda');
@@ -3533,24 +3579,47 @@ function renderAgenda() {
   let ev = [];
   (toolData.flights || []).forEach(f => {
     if (!f.date) return;
-    ev.push({ date: f.date, time: f.dep || '', kind: t('trip.agenda.flightKind'), title: f.flight || t('trip.agenda.flightKind'), sub: [(f.from && f.to) ? f.from + ' ← ' + f.to : (f.from || f.to || ''), f.arr ? t('trip.agenda.landingPrefix') + f.arr : ''].filter(Boolean).join(' · '), cost: f.cost });
+    ev.push({ date: f.date, time: f.dep || '', type: 'flight', key: 'flight:' + f.id, kind: t('trip.agenda.flightKind'), title: f.flight || t('trip.agenda.flightKind'), sub: [(f.from && f.to) ? f.from + ' ← ' + f.to : (f.from || f.to || ''), f.arr ? t('trip.agenda.landingPrefix') + f.arr : ''].filter(Boolean).join(' · '), cost: f.cost });
   });
   (toolData.hotels || []).forEach(h => {
-    if (h.checkin) ev.push({ date: h.checkin, time: '', kind: t('opt.catHotel'), title: t('trip.agenda.checkinPrefix') + (h.name || ''), address: h.address, coords: h.coords });
-    if (h.checkout) ev.push({ date: h.checkout, time: '', kind: t('opt.catHotel'), title: t('trip.agenda.checkoutPrefix') + (h.name || ''), address: h.address, coords: h.coords });
+    if (h.checkin) ev.push({ date: h.checkin, time: '', type: 'hotel', key: 'hotel:' + h.id + ':in', kind: t('opt.catHotel'), title: t('trip.agenda.checkinPrefix') + (h.name || ''), address: h.address, coords: h.coords });
+    if (h.checkout) ev.push({ date: h.checkout, time: '', type: 'hotel', key: 'hotel:' + h.id + ':out', kind: t('opt.catHotel'), title: t('trip.agenda.checkoutPrefix') + (h.name || ''), address: h.address, coords: h.coords });
   });
   (toolData.restaurants || []).forEach(r => {
-    if (r.date) ev.push({ date: r.date, time: '', kind: t('opt.catRestaurant'), title: r.name || '', address: r.address, coords: r.coords, cost: r.cost });
+    if (r.date) ev.push({ date: r.date, time: '', type: 'restaurant', key: 'restaurant:' + r.id, kind: t('opt.catRestaurant'), title: r.name || '', address: r.address, coords: r.coords, cost: r.cost });
   });
   (toolData.cars || []).forEach(c => {
-    if (c.pickupDate) ev.push({ date: c.pickupDate, time: '', kind: t('trip.agenda.carKind'), title: t('trip.agenda.carPickupPrefix') + (c.company || ''), sub: c.cartype, address: c.pickupLoc, cost: c.cost });
-    if (c.returnDate) ev.push({ date: c.returnDate, time: '', kind: t('trip.agenda.carKind'), title: t('trip.agenda.carReturnPrefix') + (c.company || ''), address: c.returnLoc });
+    if (c.pickupDate) ev.push({ date: c.pickupDate, time: '', type: 'car', key: 'car:' + c.id + ':pickup', kind: t('trip.agenda.carKind'), title: t('trip.agenda.carPickupPrefix') + (c.company || ''), sub: c.cartype, address: c.pickupLoc, cost: c.cost });
+    if (c.returnDate) ev.push({ date: c.returnDate, time: '', type: 'car', key: 'car:' + c.id + ':return', kind: t('trip.agenda.carKind'), title: t('trip.agenda.carReturnPrefix') + (c.company || ''), address: c.returnLoc });
   });
   (toolData.itinerary || []).forEach(p => {
-    ev.push({ date: p.date, time: p.time || '', kind: p.category ? optLabel(p.category) : t('trip.agenda.activityKind'), title: p.name || '', sub: p.notes, address: p.address, coords: p.coords, cost: p.cost });
+    ev.push({ date: p.date, time: p.time || '', type: 'poi', key: 'poi:' + p.id, kind: p.category ? optLabel(p.category) : t('trip.agenda.activityKind'), title: p.name || '', sub: p.notes, address: p.address, coords: p.coords, cost: p.cost });
   });
   if (tripDay) ev = ev.filter(e => e.date === tripDay);
-  ev.sort((a, b) => a.date === b.date ? String(a.time).localeCompare(String(b.time)) : (a.date > b.date ? 1 : -1));
+  ev.sort((a, b) => {
+    if (a.date !== b.date) return a.date > b.date ? 1 : -1;
+    const aHas = !!a.time, bHas = !!b.time;
+    if (aHas && bHas) return a.time.localeCompare(b.time);
+    if (aHas !== bHas) return aHas ? -1 : 1;
+    return (AGENDA_TYPE_PRIORITY[a.type] ?? 9) - (AGENDA_TYPE_PRIORITY[b.type] ?? 9);
+  });
+  // Manual drag-reorder is applied per day, on top of the default time/kind sort above -
+  // any item the user hasn't dragged keeps its default-sorted place relative to the others.
+  const savedOrder = loadDB().agendaOrder || {};
+  const byDate = {};
+  ev.forEach(e => { (byDate[e.date] = byDate[e.date] || []).push(e); });
+  ev = Object.keys(byDate).sort().reduce((all, date) => {
+    let dayEvents = byDate[date];
+    const order = savedOrder[date];
+    if (order && order.length) {
+      const byKey = new Map(dayEvents.map(e => [e.key, e]));
+      const reordered = [];
+      order.forEach(k => { if (byKey.has(k)) { reordered.push(byKey.get(k)); byKey.delete(k); } });
+      byKey.forEach(e => reordered.push(e));
+      dayEvents = reordered;
+    }
+    return all.concat(dayEvents);
+  }, []);
   if (!ev.length) {
     box.innerHTML = `<div class="empty">${tripDay ? t('trip.agenda.noActivitiesToday') : t('trip.agenda.noActivitiesYet')}</div>`;
     return;
@@ -3564,7 +3633,7 @@ function renderAgenda() {
       const n = dayNo(e.date);
       html += `<div class="agenda-day">${n && n > 0 ? t('trip.dayNPrefix', { n }) : ''}${fmtDate(e.date, { weekday: 'long' })}</div>`;
     }
-    html += `<div class="agenda-item">
+    html += `<div class="agenda-item" data-key="${escapeHtml(e.key)}" data-date="${escapeHtml(e.date)}">
       <span class="agenda-time">${escapeHtml(e.time) || '—'}</span>
       <span class="agenda-dot"></span>
       <div class="agenda-body">
@@ -3573,9 +3642,58 @@ function renderAgenda() {
         ${e.address ? `<div class="agenda-sub">${escapeHtml(e.address)} ${navLinks(e.address, e.coords)}</div>` : ''}
       </div>
       ${e.cost ? `<span class="agenda-cost">${fmt(e.cost)}</span>` : ''}
+      <span class="agenda-drag" title="${t('trip.agenda.dragHint')}" aria-label="${t('trip.agenda.dragHint')}">⠿</span>
     </div>`;
   });
   box.innerHTML = html;
+}
+
+// Manual drag-reorder of agenda items, scoped to a single day (crossing into another
+// day would mean changing the item's actual date, which is a separate edit, not a
+// reorder). Uses Pointer Events rather than native HTML5 drag-and-drop so it works
+// with touch, not just a mouse.
+let agendaDrag = null;
+function agendaDragStart(ev) {
+  const handle = ev.target.closest('.agenda-drag');
+  const item = handle && handle.closest('.agenda-item');
+  if (!item) return;
+  ev.preventDefault();
+  const rect = item.getBoundingClientRect();
+  const placeholder = document.createElement('div');
+  placeholder.className = 'agenda-item-placeholder';
+  placeholder.style.height = rect.height + 'px';
+  item.after(placeholder);
+  agendaDrag = { item, date: item.dataset.date, offsetY: ev.clientY - rect.top, placeholder };
+  item.classList.add('agenda-item-dragging');
+  item.style.position = 'fixed';
+  item.style.zIndex = '50';
+  item.style.width = rect.width + 'px';
+  item.style.top = rect.top + 'px';
+  item.style.left = rect.left + 'px';
+  try { handle.setPointerCapture(ev.pointerId); } catch (e) { /* unsupported - drag still works via document listeners */ }
+}
+function agendaDragMove(ev) {
+  if (!agendaDrag) return;
+  ev.preventDefault();
+  const { item, placeholder, date } = agendaDrag;
+  item.style.top = (ev.clientY - agendaDrag.offsetY) + 'px';
+  const siblings = [...document.querySelectorAll('.agenda-item')].filter(el => el !== item && el.dataset.date === date);
+  let placed = false;
+  for (const sib of siblings) {
+    const r = sib.getBoundingClientRect();
+    if (ev.clientY < r.top + r.height / 2) { sib.before(placeholder); placed = true; break; }
+  }
+  if (!placed && siblings.length) siblings[siblings.length - 1].after(placeholder);
+}
+function agendaDragEnd() {
+  if (!agendaDrag) return;
+  const { item, placeholder, date } = agendaDrag;
+  placeholder.replaceWith(item);
+  item.classList.remove('agenda-item-dragging');
+  item.style.position = ''; item.style.zIndex = ''; item.style.width = ''; item.style.top = ''; item.style.left = '';
+  const keys = [...document.querySelectorAll('.agenda-item')].filter(el => el.dataset.date === date).map(el => el.dataset.key);
+  saveAgendaOrder(date, keys);
+  agendaDrag = null;
 }
 
 // Re-render everything that responds to the selected day

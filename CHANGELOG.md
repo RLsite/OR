@@ -2,6 +2,14 @@
 
 All notable changes to Or are logged here, newest first. Version shown matches the number in the app's Help dialog (בדיקת עדכונים).
 
+## 1.28.0 — 2026-09-02
+
+- **Fixed**: a date field's own browser-native text could still show through (in the device's regional format, e.g. `mm/dd/yyyy`) while the field was focused, instead of the app's own `dd.mm.yyyy` overlay — most visible right after opening an "add" dialog and clicking straight into a date field.
+- **Fixed**: the daily agenda ("סדר יום") could list a hotel check-in or car pickup *before* the flight that lands you there on the same day — items without a specific time now always fall after timed ones, and among themselves follow flight → car → hotel, matching how an arrival day actually unfolds.
+- **Added**: the daily agenda can now be manually reordered by dragging items (via the handle on each row) — useful once the automatic time-based order isn't quite right for a given day. The custom order is remembered per day.
+- **Added**: a copy button next to each saved link in the Links tab, and long links are now shortened (with the full address still one click away) instead of stretching the table.
+- **Fixed**: pasting a link in the Links tab was always failing to auto-fill its name/description/image — the feature was wired up on the app's side but the small server-side piece it depended on (to fetch the page's info) had never actually been built. It's in place now.
+
 ## 1.27.0 — 2026-09-02
 
 - **Changed**: time fields (flight departure/arrival, etc.) no longer use the browser's native time picker, which could show AM/PM depending on the device's own regional settings — replaced with a plain masked field that's always 24-hour HH:MM, with no way for it to show anything else.

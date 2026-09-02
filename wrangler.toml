@@ -1,8 +1,12 @@
 name = "or"
 compatibility_date = "2026-07-13"
 
-# Pure static site - no server-side Worker code needed. This tells Cloudflare
-# to serve the files in this directory directly (index.html at the root),
-# instead of trying to run a Worker script that doesn't exist.
+# Static site - this tells Cloudflare to serve the files in this directory
+# directly (index.html at the root). All actual app data still lives in the
+# browser (localStorage) or the user's own Google Drive - nothing here is a
+# backend for the app's data. The one exception is functions/api/ - small,
+# stateless Cloudflare Pages Functions (currently just link-preview.js) that
+# proxy a single server-side fetch the browser itself can't make; Pages
+# serves those automatically alongside the static assets, no config needed.
 [assets]
 directory = "./"

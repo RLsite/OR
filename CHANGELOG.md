@@ -2,6 +2,12 @@
 
 All notable changes to Or are logged here, newest first. Version shown matches the number in the app's Help dialog (בדיקת עדכונים).
 
+## 1.27.0 — 2026-09-02
+
+- **Changed**: time fields (flight departure/arrival, etc.) no longer use the browser's native time picker, which could show AM/PM depending on the device's own regional settings — replaced with a plain masked field that's always 24-hour HH:MM, with no way for it to show anything else.
+- **Added**: a delete button for each saved document in the Documents tab.
+- **Fixed**: uploading a PDF with the same name as an already-saved document is now blocked (with a toast naming the skipped file) instead of creating a second same-named copy; the saved-documents list also de-duplicates by name as a safety net for any duplicates already sitting in Drive from before this fix.
+
 ## 1.26.0 — 2026-09-02
 
 - **Changed**: dates throughout the app now display as `dd.mm.yyyy` (was `dd/mm/yy`) — this is the shared, non-locale-dependent format used everywhere (tables, agenda, reports, date inputs).

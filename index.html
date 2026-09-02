@@ -1031,6 +1031,7 @@ const I18N = {
   'drive.uploadingCount': { he: 'מעלה ({done}/{total})...', en: 'Uploading ({done}/{total})...', ru: 'Загрузка ({done}/{total})...', ar: 'جارٍ الرفع ({done}/{total})...' },
   'drive.uploadSuccess': { he: 'הקובץ הועלה בהצלחה ל-Drive', en: 'File uploaded to Drive successfully', ru: 'Файл успешно загружен в Drive', ar: 'تم رفع الملف إلى Drive بنجاح' },
   'drive.uploadSuccessCount': { he: '{n} מסמכים הועלו בהצלחה ל-Drive', en: '{n} documents uploaded to Drive successfully', ru: '{n} документов успешно загружено в Drive', ar: 'تم رفع {n} مستندات إلى Drive بنجاح' },
+  'drive.uploadSkippedDuplicate': { he: 'דולג — כבר קיים מסמך בשם: {names}', en: 'Skipped — a document with this name already exists: {names}', ru: 'Пропущено — документ с таким именем уже существует: {names}', ar: 'تم التخطي — يوجد مستند بهذا الاسم بالفعل: {names}' },
   'drive.docDescLabel': { he: 'תיאור (רשות)', en: 'Description (optional)', ru: 'Описание (необязательно)', ar: 'وصف (اختياري)' },
   'drive.docDescPh': { he: 'למשל: כרטיסי טיסה הלוך', en: 'e.g. outbound boarding passes', ru: 'например: посадочные талоны туда', ar: 'مثال: بطاقات صعود الذهاب' },
   'drive.uploadError': { he: 'שגיאה בהעלאת הקובץ: {msg}', en: 'Error uploading the file: {msg}', ru: 'Ошибка загрузки файла: {msg}', ar: 'خطأ في رفع الملف: {msg}' },
@@ -1424,7 +1425,7 @@ applyLang(localStorage.getItem('or-lang') || 'he', false);
 // ===================== Client-side data layer (runs fully in the browser) =====================
 // Data lives in localStorage; Excel import/export via SheetJS. No server needed — works on GitHub Pages.
 // (In the future a cloud backend such as Google Drive can replace loadDB/saveDB.)
-const APP_VERSION = '1.26.0';
+const APP_VERSION = '1.27.0';
 const APP_BUILT_AT = 'dev'; // replaced by build.js with the deploy timestamp — lets a running page detect it's stale
 const STORE_KEY = 'or-store-v1';
 const BUGS_COLS = ['field.date', 'field.toolOrPage', 'field.description', 'field.browser'];
@@ -1971,10 +1972,18 @@ async function driveUploadDocuments(files, description) {
   btn.disabled = true;
   const original = btn.textContent;
   let uploaded = 0;
+  const skipped = [];
   try {
     const token = await driveEnsureToken();
     const folderId = await driveFolderId(token, true);
+    // A file name already used in the folder (including another file in
+    // this same multi-select batch) is skipped rather than uploaded as a
+    // second copy - Drive itself has no problem with duplicate names, but
+    // the app's own list has nothing to tell two same-named files apart by.
+    const existingRes = await fetch(`https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(`'${folderId}' in parents and trashed = false`)}&fields=files(name)&pageSize=1000`, { headers: { Authorization: `Bearer ${token}` } });
+    const existingNames = new Set(existingRes.ok ? (await existingRes.json()).files?.map(f => f.name) || [] : []);
     for (const file of files) {
+      if (existingNames.has(file.name)) { skipped.push(file.name); continue; }
       btn.textContent = files.length > 1 ? t('drive.uploadingCount', { done: uploaded, total: files.length }) : t('drive.uploading');
       const metadata = { name: file.name, mimeType: file.type || 'application/pdf', parents: [folderId] };
       if (description) metadata.description = description;
@@ -1983,10 +1992,16 @@ async function driveUploadDocuments(files, description) {
       form.append('file', file);
       const res = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', { method: 'POST', headers: { Authorization: `Bearer ${token}` }, body: form });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      existingNames.add(file.name);
       uploaded++;
     }
-    toast(uploaded > 1 ? t('drive.uploadSuccessCount', { n: uploaded }) : t('drive.uploadSuccess'));
-    await driveListDocuments();
+    let msg = uploaded > 0 ? (uploaded > 1 ? t('drive.uploadSuccessCount', { n: uploaded }) : t('drive.uploadSuccess')) : '';
+    if (skipped.length) {
+      const skipMsg = t('drive.uploadSkippedDuplicate', { names: skipped.join(', ') });
+      msg = msg ? `${msg}. ${skipMsg}` : skipMsg;
+    }
+    if (msg) toast(msg, uploaded === 0);
+    if (uploaded > 0) await driveListDocuments();
   } catch (err) { toast(t('drive.uploadError', { msg: err.message }), true); }
   finally { btn.disabled = false; btn.textContent = original; }
 }
@@ -2002,7 +2017,13 @@ async function driveListDocuments() {
     const res = await fetch(`https://www.googleapis.com/drive/v3/files?q=${q}&fields=files(id,name,modifiedTime,description)&orderBy=modifiedTime desc&pageSize=25`, { headers: { Authorization: `Bearer ${token}` } });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
-    const files = data.files || [];
+    let files = data.files || [];
+    // Drive allows several files with the identical name in one folder
+    // (unlike a filesystem) - de-dupe by name as a safety net for anything
+    // that predates driveUploadDocuments()'s own duplicate-name check,
+    // keeping the most recently modified copy (already sorted desc above).
+    const seenNames = new Set();
+    files = files.filter(f => { if (seenNames.has(f.name)) return false; seenNames.add(f.name); return true; });
     if (!files.length) { listEl.innerHTML = `<p class="drive-files-empty">${t('drive.docsEmpty')}</p>`; return; }
     listEl.innerHTML = files.map(f => `
       <div class="drive-file-row">
@@ -2012,10 +2033,16 @@ async function driveListDocuments() {
           <span class="drive-file-time">${escapeHtml(fmtDateTime(new Date(f.modifiedTime)))}</span>
         </div>
         <button type="button" class="btn-ghost" data-open-file="${f.id}">${t('drive.openFileBtn')}</button>
+        <button type="button" class="btn-danger" data-del-file="${f.id}" data-del-name="${escapeHtml(f.name)}">${t('expenses.deleteBtn')}</button>
       </div>`).join('');
   } catch (err) {
     listEl.innerHTML = `<p class="drive-files-empty">${escapeHtml(t('drive.docsLoadError', { msg: err.message }))}</p>`;
   }
+}
+async function driveDeleteDocument(fileId) {
+  const token = await driveEnsureToken();
+  const res = await fetch(`https://www.googleapis.com/drive/v3/files/${fileId}`, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } });
+  if (!res.ok && res.status !== 404) throw new Error(`HTTP ${res.status}`); // 404 = already gone, treat as success
 }
 
 async function driveUploadBackup(token) {
@@ -2906,7 +2933,7 @@ function wireToolView(id, cfg) {
       if (!r) return;
       form.querySelectorAll('[data-f]').forEach(el => {
         if (r[el.dataset.f] !== undefined && r[el.dataset.f] !== '') el.value = r[el.dataset.f];
-        if (el.type === 'date' || el.type === 'time') el.dispatchEvent(new Event('change')); // sync the date-overlay text
+        if (el.type === 'date') el.dispatchEvent(new Event('change')); // sync the date-overlay text
       });
       form.dataset.editing = editId;
       submitBtn.textContent = t('common.update');
@@ -2940,13 +2967,22 @@ function fieldHTML(c) {
   if (c.type === 'select') {
     return `<label>${t(c.label)}<select data-f="${c.f}">${c.options.map(o => `<option value="${o}">${optLabel(o)}</option>`).join('')}</select></label>`;
   }
+  if (c.type === 'time') {
+    // A native <input type="time"> would work data-wise (its .value is always
+    // 24h "HH:MM" regardless), but its interactive picker widget renders
+    // AM/PM based on the OS's own regional format - a browser-level choice no
+    // page attribute can override, the same root problem the date overlay
+    // below exists to work around. A masked plain-text field sidesteps it
+    // entirely. See maskTimeInput().
+    return `<label>${t(c.label)}<input type="text" inputmode="numeric" maxlength="5" placeholder="--:--" dir="ltr" data-f="${c.f}" data-time-mask="1"></label>`;
+  }
   const step = c.type === 'number' ? ' step="0.01" min="0"' : '';
   const ph = c.ph ? ` placeholder="${t(c.ph)}"` : '';
   const lettersOnly = c.lettersOnly ? ' data-letters-only="1"' : '';
   // Baked in directly (not left to the applyDateInputLocale() JS pass) so
-  // there's no window where a freshly-rendered date/time field could ever
-  // show the visitor's own locale format instead of dd.mm.yyyy / 24h.
-  const dtLang = (c.type === 'date' || c.type === 'time' || c.type === 'month') ? ' lang="he-IL"' : '';
+  // there's no window where a freshly-rendered date field could ever
+  // show the visitor's own locale format instead of dd.mm.yyyy.
+  const dtLang = (c.type === 'date' || c.type === 'month') ? ' lang="he-IL"' : '';
   return `<label>${t(c.label)}<input type="${c.type}" data-f="${c.f}"${step}${dir}${req}${ph}${lettersOnly}${dtLang}></label>`;
 }
 // Strips digits as the user types, for name fields that should never contain a
@@ -3336,9 +3372,15 @@ function wireTripView() {
     if (files.length) await driveUploadDocuments(files, description);
     descInput.value = '';
   });
-  document.getElementById('driveDocsList').addEventListener('click', ev => {
-    const btn = ev.target.closest('[data-open-file]');
-    if (btn) window.open(`https://drive.google.com/file/d/${btn.dataset.openFile}/view`, '_blank', 'noopener');
+  document.getElementById('driveDocsList').addEventListener('click', async ev => {
+    const openBtn = ev.target.closest('[data-open-file]');
+    if (openBtn) { window.open(`https://drive.google.com/file/d/${openBtn.dataset.openFile}/view`, '_blank', 'noopener'); return; }
+    const delBtn = ev.target.closest('[data-del-file]');
+    if (delBtn) {
+      if (!confirm(t('confirm.deleteRecord'))) return;
+      try { await driveDeleteDocument(delBtn.dataset.delFile); toast(t('toast.recordDeleted')); await driveListDocuments(); }
+      catch (err) { toast(t('drive.uploadError', { msg: err.message }), true); }
+    }
   });
   const tabs = document.getElementById('trip-tabs');
   tabs.addEventListener('click', ev => {
@@ -3618,8 +3660,7 @@ function upgradeDateTimeInput(input) {
   overlay.className = 'date-input-overlay';
   wrap.appendChild(overlay);
   const isDate = input.type === 'date';
-  const isMonth = input.type === 'month';
-  const placeholder = isDate ? 'dd.mm.yyyy' : isMonth ? 'mm/yyyy' : '--:--';
+  const placeholder = isDate ? 'dd.mm.yyyy' : 'mm/yyyy';
   const formatMonth = v => {
     const [y, m] = v.split('-');
     const name = MONTH_NAMES[currentLang][Number(m) - 1];
@@ -3627,8 +3668,7 @@ function upgradeDateTimeInput(input) {
   };
   const update = () => {
     if (input.value) {
-      // time input's own value is already zero-padded 24h "HH:MM"
-      overlay.textContent = isDate ? fmtDate(input.value) : isMonth ? formatMonth(input.value) : input.value;
+      overlay.textContent = isDate ? fmtDate(input.value) : formatMonth(input.value);
       overlay.classList.remove('is-placeholder');
     } else {
       overlay.textContent = placeholder;
@@ -3640,13 +3680,40 @@ function upgradeDateTimeInput(input) {
   update();
 }
 function upgradeAllDateTimeInputs(root) {
-  (root || document).querySelectorAll('input[type="date"]:not([data-dt-upgraded]), input[type="time"]:not([data-dt-upgraded]), input[type="month"]:not([data-dt-upgraded])').forEach(upgradeDateTimeInput);
+  (root || document).querySelectorAll('input[type="date"]:not([data-dt-upgraded]), input[type="month"]:not([data-dt-upgraded])').forEach(upgradeDateTimeInput);
+}
+// Auto-formats a plain-text time field into "HH:MM" as the user types
+// (digits only, colon inserted after the hour) and clamps out-of-range
+// values on blur - see fieldHTML()'s 'time' branch for why this replaces
+// <input type="time"> instead of just styling it.
+function maskTimeInput(input) {
+  if (input.dataset.timeMasked) return;
+  input.dataset.timeMasked = '1';
+  const digitsOf = v => v.replace(/\D/g, '').slice(0, 4);
+  input.addEventListener('input', () => {
+    const digits = digitsOf(input.value);
+    input.value = digits.length > 2 ? `${digits.slice(0, 2)}:${digits.slice(2)}` : digits;
+  });
+  input.addEventListener('blur', () => {
+    const digits = digitsOf(input.value);
+    if (!digits) { input.value = ''; return; }
+    const hh = String(Math.min(23, Number(digits.slice(0, 2)) || 0)).padStart(2, '0');
+    const mm = String(Math.min(59, Number(digits.slice(2) || '0'))).padStart(2, '0');
+    input.value = `${hh}:${mm}`;
+    input.dispatchEvent(new Event('change'));
+  });
+}
+function upgradeAllTimeInputs(root) {
+  (root || document).querySelectorAll('input[data-time-mask]').forEach(maskTimeInput);
 }
 upgradeAllDateTimeInputs();
+upgradeAllTimeInputs();
 new MutationObserver(muts => {
   muts.forEach(m => m.addedNodes.forEach(node => {
     if (node.nodeType !== 1) return;
-    if (node.matches && node.matches('input[type="date"], input[type="time"], input[type="month"]')) upgradeDateTimeInput(node);
+    if (node.matches && node.matches('[data-time-mask]')) maskTimeInput(node);
+    else if (node.querySelectorAll) upgradeAllTimeInputs(node);
+    if (node.matches && node.matches('input[type="date"], input[type="month"]')) upgradeDateTimeInput(node);
     else if (node.querySelectorAll) upgradeAllDateTimeInputs(node);
   }));
 }).observe(document.body, { childList: true, subtree: true });

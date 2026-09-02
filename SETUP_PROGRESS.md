@@ -24,12 +24,13 @@ Living status file. Updated at every meaningful step (code change, Google Consol
   - **Do not click "I have fixed the issues" in that Google dialog until after deployment** and confirming both URLs actually work live.
 - **Publishing status (Testing vs. In production)**: not yet confirmed by the user for the new project. Still needs checking once the branding verification above is cleared.
 
-## Deployment status: NOT DEPLOYED
+## Deployment status: PUSHED, NOT YET LIVE ON PRODUCTION
 
-- All the above code changes exist only in this local worktree / git branch. `git status` still shows them as uncommitted.
-- Production (`https://or.rlapp.net`) was checked directly and confirmed still running the **old** code (old Client ID, no privacy/terms pages, no footer, none of the multi-tool cleanup or PDF feature).
-- Nothing has been pushed to GitHub (`origin` = `https://github.com/RLsite/Or.git`). Per this session's working agreement, push/deploy only happens with explicit user go-ahead each time — not assumed.
-- **Next step once ready**: commit + push this branch, then merge/deploy to production per the user's normal flow, then re-verify privacy.html/terms.html resolve live before returning to the Google branding-verification dialog.
+- Committed (3 commits: index.html changes / privacy+terms pages / CLAUDE.md+this file) and pushed to `origin/claude/read-file-scan-directory-198b34` on 2026-09-02, with explicit user approval.
+- This pushes the **branch only** — Cloudflare Pages will likely build a preview from it, but production (`or.rlapp.net`, deployed from `main`) is still on the old code until this branch is merged to `main`.
+- Confirmed live on production as of this session: still the old tool-switcher button/menu (screenshot from the user matched the pre-cleanup UI exactly, airplane icon = `TOOL_ICONS.trip` swapped into the old home button - a giveaway it's the old code, not a regression).
+- Note: GitHub reported the repo moved to `https://github.com/RLsite/OR.git` (capitalization change) - push succeeded via redirect, not an issue, but worth using the new URL going forward.
+- **Next step**: merge this branch to `main` (PR or direct merge) to actually go live on `or.rlapp.net`, then re-verify privacy.html/terms.html resolve live before returning to the Google branding-verification dialog.
 
 ## Open items / not yet done
 

@@ -703,14 +703,7 @@
       <p class="file-hint" data-i18n="drive.uploadLocalHint" style="margin-top:var(--space-1)">מעלה קובץ אקסל שבחרתם מהמחשב כקובץ חדש ב-Drive שלכם (בנוסף לקובץ הגיבוי הקבוע).</p>
       <h4 style="margin-top:var(--space-4)" data-i18n="drive.filesHeading">קבצים ב-Drive</h4>
       <div id="driveFilesList" class="drive-files-list"></div>
-
-      <div class="file-actions" style="margin-top:var(--space-4)">
-        <button type="button" class="btn-edit" id="driveUploadDocBtn" data-i18n="drive.uploadDocBtn">העלאת מסמך (PDF)</button>
-        <input type="file" id="driveDocFileInput" accept=".pdf,application/pdf" hidden>
-      </div>
-      <p class="file-hint" data-i18n="drive.uploadDocHint" style="margin-top:var(--space-1)">מעלה קובץ PDF שבחרתם מהמחשב (כרטיס טיסה, שובר מלון, אישור ביטוח וכו') לתוך תיקייה ב-Drive שנקראת על שם הטיול והתאריך.</p>
-      <h4 style="margin-top:var(--space-4)" data-i18n="drive.docsHeading">מסמכים שמורים</h4>
-      <div id="driveDocsList" class="drive-files-list"></div>
+      <p class="file-hint" style="margin-top:var(--space-2)" data-i18n="drive.docsMovedHint">העלאת מסמכי PDF ורשימת המסמכים השמורים עברו לטאב "מסמכים" בתוך ניהול החופשה.</p>
     </div>
 
   </section>
@@ -1180,6 +1173,9 @@ const I18N = {
   'trip.tabItinerary': { he: 'נקודות עניין', en: 'Points of interest', ru: 'Достопримечательности' , ar: 'معالم سياحية' },
   'trip.tabExpenses': { he: 'הוצאות', en: 'Expenses', ru: 'Расходы' , ar: 'مصروفات' },
   'trip.tabLinks': { he: 'קישורים', en: 'Links', ru: 'Ссылки' , ar: 'روابط' },
+  'trip.tabDocuments': { he: 'מסמכים', en: 'Documents', ru: 'Документы' , ar: 'المستندات' },
+  'trip.docsConnectPrompt': { he: 'התחברו ל-Google Drive כדי להעלות ולשמור מסמכים (כרטיסי טיסה, שוברים, ביטוח) לתיקייה שנקראת על שם הטיול.', en: 'Connect to Google Drive to upload and save documents (boarding passes, vouchers, insurance) to a folder named after the trip.', ru: 'Подключитесь к Google Drive, чтобы загружать и сохранять документы (посадочные талоны, ваучеры, страховку) в папку с названием поездки.', ar: 'اتصلوا بـ Google Drive لرفع وحفظ المستندات (بطاقات صعود، قسائم، تأمين) في مجلد يحمل اسم الرحلة.' },
+  'drive.docsMovedHint': { he: 'העלאת מסמכי PDF ורשימת המסמכים השמורים עברו לטאב "מסמכים" בתוך ניהול החופשה.', en: 'Uploading PDF documents and the saved-documents list moved to the "Documents" tab inside vacation management.', ru: 'Загрузка PDF-документов и список сохранённых документов перенесены на вкладку «Документы» в разделе управления отпуском.', ar: 'انتقل رفع مستندات PDF وقائمة المستندات المحفوظة إلى تبويب "المستندات" داخل إدارة الإجازة.' },
   'trip.links.convertTo': { he: 'העברה ל...', en: 'Move to...', ru: 'Переместить в...' , ar: 'نقل إلى...' },
   'trip.linkPreview.loading': { he: 'טוען פרטים מהקישור...', en: 'Fetching info from the link...', ru: 'Получение данных по ссылке...' , ar: 'جارٍ جلب المعلومات من الرابط...' },
   'trip.linkPreview.notFound': { he: 'לא נמצאו פרטים אוטומטית — אפשר למלא שם ותיאור ידנית.', en: 'No info found automatically - you can fill in name and description manually.', ru: 'Данные не найдены автоматически — можно заполнить название и описание вручную.' , ar: 'لم يتم العثور على معلومات تلقائياً — يمكنكم تعبئة الاسم والوصف يدوياً.' },
@@ -1420,7 +1416,7 @@ applyLang(localStorage.getItem('or-lang') || 'he', false);
 // ===================== Client-side data layer (runs fully in the browser) =====================
 // Data lives in localStorage; Excel import/export via SheetJS. No server needed — works on GitHub Pages.
 // (In the future a cloud backend such as Google Drive can replace loadDB/saveDB.)
-const APP_VERSION = '1.24.0';
+const APP_VERSION = '1.25.0';
 const APP_BUILT_AT = 'dev'; // replaced by build.js with the deploy timestamp — lets a running page detect it's stale
 const STORE_KEY = 'or-store-v1';
 const BUGS_COLS = ['field.date', 'field.toolOrPage', 'field.description', 'field.browser'];
@@ -1752,6 +1748,7 @@ function updateDriveUI() {
   document.getElementById('drivePickSharedBtn').hidden = !connected;
   document.getElementById('driveDisconnectBtn').hidden = !connected;
   document.getElementById('driveFilesSection').hidden = !connected;
+  renderTripDocsTab();
   const email = localStorage.getItem('or-drive-email') || '';
   document.getElementById('driveStatus').textContent = connected ? t('drive.connected', { email }) : t('drive.notConnected');
   const lastBackup = localStorage.getItem('or-drive-last-backup');
@@ -2254,16 +2251,6 @@ document.getElementById('driveLocalFileInput').addEventListener('change', async 
 document.getElementById('driveFilesList').addEventListener('click', ev => {
   const btn = ev.target.closest('[data-restore-file]');
   if (btn) driveRestoreFromFile(btn.dataset.restoreFile, btn.dataset.restoreName);
-});
-document.getElementById('driveUploadDocBtn').addEventListener('click', () => document.getElementById('driveDocFileInput').click());
-document.getElementById('driveDocFileInput').addEventListener('change', async ev => {
-  const file = ev.target.files[0];
-  ev.target.value = '';
-  if (file) await driveUploadDocument(file);
-});
-document.getElementById('driveDocsList').addEventListener('click', ev => {
-  const btn = ev.target.closest('[data-open-file]');
-  if (btn) window.open(`https://drive.google.com/file/d/${btn.dataset.openFile}/view`, '_blank', 'noopener');
 });
 updateDriveUI();
 
@@ -3194,6 +3181,7 @@ function tripViewHTML() {
       <button type="button" class="tab" data-tab="itinerary">${t('trip.tabItinerary')}</button>
       <button type="button" class="tab" data-tab="tripexp">${t('trip.tabExpenses')}</button>
       <button type="button" class="tab" data-tab="triplinks">${t('trip.tabLinks')}</button>
+      <button type="button" class="tab" data-tab="documents">${t('trip.tabDocuments')}</button>
     </div>
 
     <div class="tab-panel" data-panel="agenda">
@@ -3231,7 +3219,23 @@ function tripViewHTML() {
       <section class="cards" id="trip-summary"></section>
       ${listViewHTML('tripexp', TOOLKIT.tripexp)}
     </div>
-    <div class="tab-panel" data-panel="triplinks" hidden>${listViewHTML('triplinks', TOOLKIT.triplinks)}</div>`;
+    <div class="tab-panel" data-panel="triplinks" hidden>${listViewHTML('triplinks', TOOLKIT.triplinks)}</div>
+    <div class="tab-panel" data-panel="documents" hidden>
+      <section class="panel" id="tripDocsConnectPrompt">
+        <h2>${t('drive.heading')}</h2>
+        <p class="file-hint">${t('trip.docsConnectPrompt')}</p>
+        <button type="button" class="btn-primary" id="tripDocsConnectBtn">${t('drive.connectBtn')}</button>
+      </section>
+      <section class="panel" id="tripDocsUploadSection" hidden>
+        <h2>${t('drive.docsHeading')}</h2>
+        <div class="file-actions">
+          <button type="button" class="btn-edit" id="driveUploadDocBtn">${t('drive.uploadDocBtn')}</button>
+          <input type="file" id="driveDocFileInput" accept=".pdf,application/pdf" hidden>
+        </div>
+        <p class="file-hint" style="margin-top:var(--space-1)">${t('drive.uploadDocHint')}</p>
+        <div id="driveDocsList" class="drive-files-list" style="margin-top:var(--space-3)"></div>
+      </section>
+    </div>`;
 }
 
 // Click-and-drag horizontal scrolling for a strip (project chips, trip day
@@ -3285,6 +3289,17 @@ function wireTripView() {
   wireToolView('cars', TOOLKIT.cars);
   wireToolView('tripexp', TOOLKIT.tripexp);
   wireToolView('triplinks', TOOLKIT.triplinks);
+  document.getElementById('tripDocsConnectBtn').addEventListener('click', driveConnect); // updateDriveUI() (called by driveConnect) refreshes this tab too
+  document.getElementById('driveUploadDocBtn').addEventListener('click', () => document.getElementById('driveDocFileInput').click());
+  document.getElementById('driveDocFileInput').addEventListener('change', async ev => {
+    const file = ev.target.files[0];
+    ev.target.value = '';
+    if (file) await driveUploadDocument(file);
+  });
+  document.getElementById('driveDocsList').addEventListener('click', ev => {
+    const btn = ev.target.closest('[data-open-file]');
+    if (btn) window.open(`https://drive.google.com/file/d/${btn.dataset.openFile}/view`, '_blank', 'noopener');
+  });
   const tabs = document.getElementById('trip-tabs');
   tabs.addEventListener('click', ev => {
     const btn = ev.target.closest('.tab');
@@ -3515,6 +3530,20 @@ function renderTrip() {
   renderDayStrip();
   renderTripSummary();
   renderTripDayViews();
+  renderTripDocsTab();
+}
+
+// Shows a "connect to Drive" prompt or the upload/list UI in the trip's own
+// "documents" tab, depending on connection state - kept in sync from every
+// place Drive's connected state can change (this render, Settings, disconnect).
+function renderTripDocsTab() {
+  const prompt = document.getElementById('tripDocsConnectPrompt');
+  const section = document.getElementById('tripDocsUploadSection');
+  if (!prompt || !section) return;
+  const connected = isDriveConnected();
+  prompt.hidden = connected;
+  section.hidden = !connected;
+  if (connected) driveListDocuments();
 }
 
 // Native <input type="date"/"time"> render their picker/placeholder/chosen-

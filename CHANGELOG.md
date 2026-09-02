@@ -2,6 +2,11 @@
 
 All notable changes to Or are logged here, newest first. Version shown matches the number in the app's Help dialog (בדיקת עדכונים).
 
+## 1.25.0 — 2026-09-02
+
+- **Added**: a new "מסמכים" (Documents) tab in the trip's own tab bar, after "קישורים" (Links) — surfaces the Google Drive PDF upload button and saved-documents list directly in the main navigation instead of only inside Settings. Shows a "connect to Drive" prompt first if not yet connected.
+- **Changed**: Settings → Google Drive no longer duplicates the document upload/list UI — it points to the new Documents tab instead.
+
 ## 1.24.0 — 2026-09-02
 
 - **Changed**: the header now shows only two icons — the save/backup icon and a hamburger (☰) menu. Report Center, Settings, Theme toggle, language switcher, the RLAPP.net link, and Help all moved inside the hamburger menu.

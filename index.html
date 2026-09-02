@@ -353,6 +353,35 @@
   #toast.show { opacity: 1; }
   #toast.error { background: var(--color-destructive); }
 
+  /* AI trip assistant: a floating, non-modal chat widget (not a <dialog> - it should
+     stay open and usable alongside the rest of the app, not block it). */
+  .assistant-toggle {
+    position: fixed; inset-inline-end: 20px; bottom: 20px; z-index: 90;
+    width: 52px; height: 52px; border-radius: 50%; min-height: auto;
+    background: var(--color-secondary); color: #fff; border: none;
+    font-size: 22px; box-shadow: 0 4px 16px rgba(0,0,0,0.35); cursor: pointer;
+  }
+  .assistant-panel {
+    position: fixed; inset-inline-end: 20px; bottom: 84px; z-index: 91;
+    width: min(360px, calc(100vw - 32px)); height: min(520px, calc(100vh - 140px));
+    background: var(--color-card); border: 1px solid var(--color-border);
+    border-radius: var(--radius); box-shadow: 0 12px 40px rgba(0,0,0,0.45);
+    display: flex; flex-direction: column; overflow: hidden;
+  }
+  .assistant-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 14px; border-bottom: 1px solid var(--color-border); font-weight: 700;
+  }
+  .assistant-close { background: none; border: none; min-height: auto; padding: 4px; font-size: 16px; color: var(--color-text-dim); cursor: pointer; }
+  .assistant-messages { flex: 1; overflow-y: auto; padding: 12px 14px; display: flex; flex-direction: column; gap: 10px; }
+  .assistant-msg { max-width: 85%; padding: 8px 12px; border-radius: 12px; font-size: 14px; line-height: 1.5; white-space: pre-wrap; }
+  .assistant-msg.role-user { align-self: flex-end; background: var(--color-secondary); color: #fff; }
+  .assistant-msg.role-model { align-self: flex-start; background: var(--color-muted); }
+  .assistant-msg.is-thinking { color: var(--color-text-dim); font-style: italic; }
+  .assistant-form { display: flex; gap: 8px; padding: 10px; border-top: 1px solid var(--color-border); }
+  .assistant-form input { flex: 1; min-height: 40px; }
+  .assistant-form button { min-height: 40px; }
+
   /* Dialogs (shared base) */
   dialog {
     background: var(--color-card); color: var(--color-fg);
@@ -490,7 +519,7 @@
   @media print {
     @page { margin: 1.2cm; }
     html, body { background: #fff !important; color: #000 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-    #splash, header, #toast, dialog,
+    #splash, header, #toast, dialog, .assistant-toggle, .assistant-panel,
     .header-actions, .add-form, form, .actions-cell,
     .tabs, .file-hint, .empty, .details-footer { display: none !important; }
     .container { max-width: 100% !important; padding: 0 !important; }
@@ -883,6 +912,19 @@
 
 <div id="toast" role="status" aria-live="polite"></div>
 
+<button type="button" id="assistantToggle" class="assistant-toggle" data-i18n-aria="assistant.toggle" data-i18n-title="assistant.toggle">💬</button>
+<div id="assistantPanel" class="assistant-panel" hidden>
+  <div class="assistant-header">
+    <span data-i18n="assistant.title">עוזר הטיול</span>
+    <button type="button" id="assistantClose" class="assistant-close" data-i18n-aria="common.close">✕</button>
+  </div>
+  <div id="assistantMessages" class="assistant-messages"></div>
+  <form id="assistantForm" class="assistant-form">
+    <input type="text" id="assistantInput" data-i18n-ph="assistant.placeholder" autocomplete="off">
+    <button type="submit" class="btn-primary" data-i18n="assistant.send">שלח</button>
+  </form>
+</div>
+
 <script>
 // --- Storage resilience — must run before ANY localStorage access ---
 // Some browsers (Edge/Chrome with cookies/site-data blocked, strict privacy
@@ -1114,6 +1156,17 @@ const I18N = {
   'list.copyLink': { he: 'העתקת הקישור', en: 'Copy link', ru: 'Скопировать ссылку' , ar: 'نسخ الرابط' },
   'toast.linkCopied': { he: 'הקישור הועתק', en: 'Link copied', ru: 'Ссылка скопирована' , ar: 'تم نسخ الرابط' },
   'toast.linkCopyFailed': { he: 'העתקת הקישור נכשלה', en: 'Copying the link failed', ru: 'Не удалось скопировать ссылку' , ar: 'فشل نسخ الرابط' },
+  'assistant.toggle': { he: 'עוזר הטיול', en: 'Trip assistant', ru: 'Помощник по поездке' , ar: 'مساعد الرحلة' },
+  'assistant.title': { he: 'עוזר הטיול', en: 'Trip assistant', ru: 'Помощник по поездке' , ar: 'مساعد الرحلة' },
+  'assistant.placeholder': { he: 'שאלו אותי משהו על הטיול...', en: 'Ask me something about the trip...', ru: 'Спросите меня о поездке...' , ar: 'اسألني شيئاً عن الرحلة...' },
+  'assistant.send': { he: 'שלח', en: 'Send', ru: 'Отправить' , ar: 'إرسال' },
+  'assistant.welcome': { he: 'שלום! אפשר לשאול אותי על הטיול, או לבקש ממני להוסיף/לעדכן טיסות, מלונות, מסעדות ועוד.', en: 'Hi! Ask me about the trip, or ask me to add or update flights, hotels, restaurants and more.', ru: 'Привет! Спросите меня о поездке или попросите добавить/изменить рейсы, отели, рестораны и т.д.' , ar: 'مرحباً! اسألني عن الرحلة، أو اطلب مني إضافة/تحديث رحلات طيران، فنادق، مطاعم وغيرها.' },
+  'assistant.thinking': { he: 'חושב...', en: 'Thinking...', ru: 'Думаю...' , ar: 'أفكر...' },
+  'assistant.noReply': { he: 'לא התקבלה תשובה.', en: 'No reply received.', ru: 'Ответ не получен.' , ar: 'لم يتم استلام رد.' },
+  'assistant.error': { he: 'משהו השתבש: {msg}', en: 'Something went wrong: {msg}', ru: 'Что-то пошло не так: {msg}' , ar: 'حدث خطأ ما: {msg}' },
+  'assistant.notConfigured': { he: 'העוזר עדיין לא מוגדר בצד השרת.', en: 'The assistant isn’t configured on the server yet.', ru: 'Помощник ещё не настроен на сервере.' , ar: 'المساعد غير مهيأ على الخادم بعد.' },
+  'assistant.rateLimited': { he: 'יותר מדי בקשות. נסו שוב בעוד דקה.', en: 'Too many requests. Try again in a minute.', ru: 'Слишком много запросов. Повторите через минуту.' , ar: 'طلبات كثيرة جداً. حاولوا مرة أخرى بعد دقيقة.' },
+  'assistant.confirmDelete': { he: 'העוזר מבקש למחוק רשומה זו — לאשר?', en: 'The assistant wants to delete this record — allow it?', ru: 'Помощник хочет удалить эту запись — разрешить?' , ar: 'يريد المساعد حذف هذا السجل — هل توافق؟' },
   'nav.mapsTitle': { he: 'פתיחה בגוגל מפות', en: 'Open in Google Maps', ru: 'Открыть в Google Картах' , ar: 'فتح في خرائط جوجل' },
   'nav.wazeTitle': { he: 'ניווט ב-Waze', en: 'Navigate with Waze', ru: 'Навигация в Waze' , ar: 'ملاحة عبر Waze' },
   'nav.mapsLabel': { he: 'מפות', en: 'Maps', ru: 'Карты' , ar: 'خرائط' },
@@ -1448,7 +1501,7 @@ applyLang(localStorage.getItem('or-lang') || 'he', false);
 // ===================== Client-side data layer (runs fully in the browser) =====================
 // Data lives in localStorage; Excel import/export via SheetJS. No server needed — works on GitHub Pages.
 // (In the future a cloud backend such as Google Drive can replace loadDB/saveDB.)
-const APP_VERSION = '1.28.1';
+const APP_VERSION = '1.29.0';
 const APP_BUILT_AT = 'dev'; // replaced by build.js with the deploy timestamp — lets a running page detect it's stale
 const STORE_KEY = 'or-store-v1';
 const BUGS_COLS = ['field.date', 'field.toolOrPage', 'field.description', 'field.browser'];
@@ -1739,32 +1792,61 @@ const GOOGLE_CLIENT_ID = '297437869958-gvh093f0s50ti02t8l7bg4dbo858g38h.apps.goo
 const GOOGLE_API_KEY = 'AIzaSyDHoEebFT_6lKYpF0IDFSpZknBUqeHjf8M';
 const DRIVE_SCOPE = 'https://www.googleapis.com/auth/drive.file';
 const DRIVE_FILE_NAME = 'or-backup.xlsx';
+const DRIVE_REFRESH_KEY = 'or-drive-refresh-token';
 let driveTokenClient = null;
 let driveAccessToken = null;
 let driveTokenExpiry = 0;
 
 function driveConfigured() { return !!GOOGLE_CLIENT_ID; }
+// Uses the authorization-code flow (still just a popup, ux_mode:'popup' - no redirect
+// URI needed) instead of the plain implicit token flow, because only the code flow can
+// ever produce a refresh token. The code itself is useless to the browser - exchanging
+// it for tokens needs GOOGLE_CLIENT_SECRET, which can only live on the worker - so
+// driveRequestToken() below immediately hands it off to driveExchangeCode().
 function initDriveTokenClient() {
   if (driveTokenClient || !driveConfigured() || typeof google === 'undefined') return;
-  driveTokenClient = google.accounts.oauth2.initTokenClient({ client_id: GOOGLE_CLIENT_ID, scope: DRIVE_SCOPE, callback: '' });
+  driveTokenClient = google.accounts.oauth2.initCodeClient({ client_id: GOOGLE_CLIENT_ID, scope: DRIVE_SCOPE, ux_mode: 'popup', callback: '' });
+}
+async function driveExchangeCode(code) {
+  const res = await fetch('/api/google/exchange', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ code }) });
+  const data = await res.json();
+  if (!res.ok || data.error) throw new Error(data.error || `HTTP ${res.status}`);
+  driveAccessToken = data.access_token;
+  driveTokenExpiry = Date.now() + (Number(data.expires_in) || 3600) * 1000 - 60000;
+  if (data.refresh_token) localStorage.setItem(DRIVE_REFRESH_KEY, data.refresh_token);
+  return driveAccessToken;
 }
 function driveRequestToken() {
   return new Promise((resolve, reject) => {
     if (!driveConfigured()) { reject(new Error(t('drive.notConfigured'))); return; }
     initDriveTokenClient();
     if (!driveTokenClient) { reject(new Error(t('drive.notConfigured'))); return; }
-    driveTokenClient.callback = resp => {
+    driveTokenClient.callback = async resp => {
       if (resp.error) { reject(new Error(resp.error)); return; }
-      driveAccessToken = resp.access_token;
-      driveTokenExpiry = Date.now() + (Number(resp.expires_in) || 3600) * 1000 - 60000;
-      resolve(driveAccessToken);
+      try { resolve(await driveExchangeCode(resp.code)); } catch (err) { reject(err); }
     };
-    driveTokenClient.requestAccessToken({ prompt: driveAccessToken ? '' : 'consent' });
+    driveTokenClient.requestCode();
   });
+}
+// Trades a stored refresh token for a fresh access token with no popup at all. Returns
+// null (never throws) on any failure so driveEnsureToken() below can fall back to the
+// normal popup flow - e.g. the refresh token was revoked, or GOOGLE_CLIENT_SECRET isn't
+// set on the worker yet, in which case Or behaves exactly as it did before this existed.
+async function driveSilentRefresh() {
+  const refreshToken = localStorage.getItem(DRIVE_REFRESH_KEY);
+  if (!refreshToken) return null;
+  try {
+    const res = await fetch('/api/google/refresh', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ refresh_token: refreshToken }) });
+    const data = await res.json();
+    if (!res.ok || data.error) { if (data.error === 'invalid_grant') localStorage.removeItem(DRIVE_REFRESH_KEY); return null; }
+    driveAccessToken = data.access_token;
+    driveTokenExpiry = Date.now() + (Number(data.expires_in) || 3600) * 1000 - 60000;
+    return driveAccessToken;
+  } catch (e) { return null; }
 }
 async function driveEnsureToken() {
   if (driveAccessToken && Date.now() < driveTokenExpiry) return driveAccessToken;
-  return driveRequestToken();
+  return (await driveSilentRefresh()) || driveRequestToken();
 }
 async function driveFetchUserEmail(token) {
   try {
@@ -1929,7 +2011,7 @@ async function driveConnect() {
 function driveDisconnect() {
   const token = driveAccessToken;
   driveAccessToken = null; driveTokenExpiry = 0;
-  ['or-drive-connected', 'or-drive-email', 'or-drive-file-id', 'or-drive-last-backup', 'or-drive-last-restore'].forEach(k => localStorage.removeItem(k));
+  ['or-drive-connected', 'or-drive-email', 'or-drive-file-id', 'or-drive-last-backup', 'or-drive-last-restore', DRIVE_REFRESH_KEY].forEach(k => localStorage.removeItem(k));
   updateDriveUI();
   // Disconnecting Drive shouldn't leave a stale "Backup not done yet" dialog
   // open behind the settings panel - close it here rather than waiting for
@@ -2860,6 +2942,158 @@ document.addEventListener('click', ev => {
   if (!headerMenu.hidden && !ev.target.closest('.menu-wrap')) closeHeaderMenu();
 });
 document.addEventListener('keydown', ev => { if (ev.key === 'Escape') closeHeaderMenu(); });
+
+// --- AI trip assistant ---
+// Function-calling tool schema generated straight from REC, so every record type
+// the app already knows about (and any future one added to REC) is automatically
+// available to the assistant with no separate schema to keep in sync by hand.
+function buildGeminiTools() {
+  const types = Object.keys(REC);
+  const typeFields = types.map(k => `${k}: ${REC[k].fields.filter(f => f !== 'id').join(', ')}`).join(' | ');
+  return [{
+    functionDeclarations: [
+      {
+        name: 'add_record',
+        description: 'Add a new record to the trip. Field names per record type - ' + typeFields,
+        parameters: { type: 'OBJECT', properties: {
+          type: { type: 'STRING', enum: types, description: 'Which kind of trip record to add.' },
+          fields: { type: 'OBJECT', description: 'Field values for the new record.' },
+        }, required: ['type', 'fields'] },
+      },
+      {
+        name: 'update_record',
+        description: 'Change fields on an existing trip record. Find its id in the trip data you were given.',
+        parameters: { type: 'OBJECT', properties: {
+          type: { type: 'STRING', enum: types },
+          id: { type: 'NUMBER', description: 'The id of the record to update.' },
+          fields: { type: 'OBJECT', description: 'Only the fields to change.' },
+        }, required: ['type', 'id', 'fields'] },
+      },
+      {
+        name: 'delete_record',
+        description: 'Delete a trip record by id. The user is always asked to confirm before this actually happens.',
+        parameters: { type: 'OBJECT', properties: {
+          type: { type: 'STRING', enum: types },
+          id: { type: 'NUMBER' },
+        }, required: ['type', 'id'] },
+      },
+    ],
+  }];
+}
+// Everything the model needs to know beyond the running conversation: what it is,
+// how this app's data looks, and the trip's current data so it can answer questions
+// and find the right id to update/delete without a separate "read" round-trip.
+function buildAssistantSystemInstruction() {
+  const data = {};
+  Object.keys(REC).forEach(k => { data[k] = toolData[k] || []; });
+  return 'You are the built-in trip-planning assistant inside "Or" (אור), a vacation-management app. '
+    + 'You help only the current user, with only their own trip data - never mention or assume any other user or trip. '
+    + 'Reply in the same language the user writes in. Dates are always "YYYY-MM-DD" strings, times are 24h "HH:MM" strings or empty. '
+    + 'Use the provided tools to actually add, update, or delete a trip record whenever the user asks for a change - do not just describe the change in text without calling a tool. '
+    + 'When updating or deleting, first find the right record\'s id in the trip data below; if it is not clear which record is meant, ask instead of guessing. '
+    + 'After a tool call, briefly confirm in plain language what happened (including if the user declined a deletion). '
+    + 'Current trip data (JSON): ' + JSON.stringify(data);
+}
+// Executes one tool call the model asked for, through the exact same api() calls (and
+// therefore the exact same validation/persistence) a manual add/edit/delete form uses -
+// this is not a separate write path. Deleting is the one destructive tool, so it's the
+// one gated behind an explicit confirm(), same as the manual delete button elsewhere.
+async function executeAssistantTool(name, args) {
+  args = args || {};
+  try {
+    if ((name === 'add_record' || name === 'update_record' || name === 'delete_record') && !REC[args.type]) {
+      return { ok: false, error: 'Unknown record type: ' + args.type };
+    }
+    if (name === 'add_record') {
+      const rec = await api(`/api/records/${args.type}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(args.fields || {}) });
+      await refreshCurrent();
+      return { ok: true, record: rec };
+    }
+    if (name === 'update_record') {
+      const rec = await api(`/api/records/${args.type}/${args.id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(args.fields || {}) });
+      await refreshCurrent();
+      return { ok: true, record: rec };
+    }
+    if (name === 'delete_record') {
+      if (!confirm(t('assistant.confirmDelete'))) return { ok: false, error: 'The user declined to delete this record.' };
+      await api(`/api/records/${args.type}/${args.id}`, { method: 'DELETE' });
+      await refreshCurrent();
+      return { ok: true };
+    }
+    return { ok: false, error: 'Unknown tool: ' + name };
+  } catch (err) { return { ok: false, error: err.message }; }
+}
+
+const assistantMessagesEl = document.getElementById('assistantMessages');
+let assistantContents = []; // Gemini-format conversation so far - kept client-side only, resets on page reload
+let assistantBusy = false;
+function renderAssistantMessage(role, text, isThinking) {
+  const div = document.createElement('div');
+  div.className = 'assistant-msg role-' + role + (isThinking ? ' is-thinking' : '');
+  div.textContent = text;
+  assistantMessagesEl.appendChild(div);
+  assistantMessagesEl.scrollTop = assistantMessagesEl.scrollHeight;
+  return div;
+}
+async function askAssistant(userText) {
+  if (assistantBusy || !userText.trim()) return;
+  assistantBusy = true;
+  assistantContents.push({ role: 'user', parts: [{ text: userText }] });
+  renderAssistantMessage('user', userText);
+  const thinkingEl = renderAssistantMessage('model', t('assistant.thinking'), true);
+  try {
+    let guard = 0;
+    while (guard++ < 8) { // hard cap on tool-call round-trips in one turn, so a confused model can't loop forever
+      const res = await fetch('/api/chat', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contents: assistantContents, tools: buildGeminiTools(), systemInstruction: buildAssistantSystemInstruction() }),
+      });
+      const data = await res.json();
+      if (res.status === 500 && data.error === 'not configured') throw new Error(t('assistant.notConfigured'));
+      if (res.status === 429) throw new Error(t('assistant.rateLimited'));
+      if (!res.ok || data.error) throw new Error(data.error || `HTTP ${res.status}`);
+      const modelTurn = data.content;
+      assistantContents.push(modelTurn);
+      const functionCalls = (modelTurn.parts || []).filter(p => p.functionCall);
+      if (!functionCalls.length) {
+        const text = (modelTurn.parts || []).map(p => p.text || '').join('').trim();
+        thinkingEl.remove();
+        renderAssistantMessage('model', text || t('assistant.noReply'));
+        return;
+      }
+      const responses = [];
+      for (const part of functionCalls) {
+        const result = await executeAssistantTool(part.functionCall.name, part.functionCall.args);
+        responses.push({ functionResponse: { name: part.functionCall.name, response: result } });
+      }
+      assistantContents.push({ role: 'function', parts: responses });
+    }
+    thinkingEl.remove();
+    renderAssistantMessage('model', t('assistant.noReply'));
+  } catch (err) {
+    thinkingEl.remove();
+    renderAssistantMessage('model', t('assistant.error', { msg: err.message }));
+  } finally {
+    assistantBusy = false;
+  }
+}
+const assistantToggle = document.getElementById('assistantToggle');
+const assistantPanel = document.getElementById('assistantPanel');
+assistantToggle.addEventListener('click', () => {
+  assistantPanel.hidden = !assistantPanel.hidden;
+  if (!assistantPanel.hidden) {
+    if (!assistantContents.length) renderAssistantMessage('model', t('assistant.welcome'));
+    document.getElementById('assistantInput').focus();
+  }
+});
+document.getElementById('assistantClose').addEventListener('click', () => { assistantPanel.hidden = true; });
+document.getElementById('assistantForm').addEventListener('submit', ev => {
+  ev.preventDefault();
+  const input = document.getElementById('assistantInput');
+  const text = input.value;
+  input.value = '';
+  askAssistant(text);
+});
 
 function showTool(id) {
   if (!TOOLKIT[id]) id = 'trip';

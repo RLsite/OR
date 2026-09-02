@@ -2,6 +2,11 @@
 
 All notable changes to Or are logged here, newest first. Version shown matches the number in the app's Help dialog (בדיקת עדכונים).
 
+## 1.29.0 — 2026-09-02
+
+- **Added**: an AI trip assistant (chat bubble, bottom corner) that can answer questions about the trip and add, update, or delete flights, hotels, restaurants, car rentals, itinerary points, expenses, and links on request. Needs `GEMINI_API_KEY` set on the server to actually respond — shows a clear message if it isn't set yet. Deleting is always confirmed before it happens.
+- **Changed**: connecting Google Drive now also gets a refresh token, so the access token renews itself silently in the background — no more reconnect popup every ~hour. (Needs `GOOGLE_CLIENT_SECRET` set on the server; falls back to the old reconnect-popup behavior until it is.)
+
 ## 1.28.0 — 2026-09-02
 
 - **Fixed**: a date field's own browser-native text could still show through (in the device's regional format, e.g. `mm/dd/yyyy`) while the field was focused, instead of the app's own `dd.mm.yyyy` overlay — most visible right after opening an "add" dialog and clicking straight into a date field.

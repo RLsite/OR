@@ -2,6 +2,12 @@
 
 All notable changes to Or are logged here, newest first. Version shown matches the number in the app's Help dialog (בדיקת עדכונים).
 
+## 1.26.0 — 2026-09-02
+
+- **Changed**: dates throughout the app now display as `dd.mm.yyyy` (was `dd/mm/yy`) — this is the shared, non-locale-dependent format used everywhere (tables, agenda, reports, date inputs).
+- **Changed**: every "add" form in the trip (flights, hotels, restaurants, cars, itinerary points of interest, expenses, links) is now a popup dialog opened via a "+" button, instead of always sitting inline above the table — editing an existing row opens the same dialog pre-filled. Each tab now shows just its list by default.
+- **Added**: uploading documents in the Documents tab now supports selecting multiple PDFs at once, and an optional description (Drive's own file-description field) applied to the files in that upload.
+
 ## 1.25.0 — 2026-09-02
 
 - **Added**: a new "מסמכים" (Documents) tab in the trip's own tab bar, after "קישורים" (Links) — surfaces the Google Drive PDF upload button and saved-documents list directly in the main navigation instead of only inside Settings. Shows a "connect to Drive" prompt first if not yet connected.

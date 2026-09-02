@@ -213,6 +213,9 @@ async function handleChat(request, env) {
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
+    // TEMPORARY diagnostic - names only, never values - to find out why configured
+    // secrets aren't reaching this Worker at runtime. Remove once resolved.
+    if (url.pathname === '/api/debug-env') return jsonResponse({ envKeys: Object.keys(env) });
     if (url.pathname === '/api/link-preview') return handleLinkPreview(request);
     if (url.pathname === '/api/google/exchange') return handleGoogleExchange(request, env);
     if (url.pathname === '/api/google/refresh') return handleGoogleRefresh(request, env);

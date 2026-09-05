@@ -2,6 +2,10 @@
 
 All notable changes to Or are logged here, newest first. Version shown matches the number in the app's Help dialog (בדיקת עדכונים).
 
+## 1.35.6 — 2026-09-05
+
+- **Fixed**: found the real cause behind Workers AI (and any future GET-based `/api/*` route) appearing to silently run stale code after every deploy: Cloudflare's static-assets layer answers a GET request whose path matches no real file *before* worker.js's router ever runs, so it never actually reached the new code - only POST requests (like the assistant's actual chat calls) always reached the Worker regardless. `/api/*` now always runs the Worker first.
+
 ## 1.35.5 — 2026-09-05
 
 - **Fixed**: Cloudflare Workers AI, the assistant's first-choice provider, never actually activated in production — every deploy updated the site but silently kept running old code, with no visible error, because of how the `[ai]` binding it depended on interacted with this Worker's deploy pipeline. It's now called over a plain HTTPS request with an API token instead of that binding, the same way the Gemini/NVIDIA fallbacks already work. Requires a new `CF_API_TOKEN` Worker secret (Workers AI read permission) to actually activate.

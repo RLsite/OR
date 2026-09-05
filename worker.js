@@ -10,12 +10,17 @@
 // Settings > Variables and Secrets for this Worker) - routes that need one
 // degrade to a clear {error:"not configured"} response until it's set:
 //   GOOGLE_CLIENT_SECRET - for /api/google/exchange and /api/google/refresh
-//   GEMINI_API_KEY       - for /api/chat (first fallback, after Workers AI)
-//   NVIDIA_API_KEY        - for /api/chat (second fallback)
-// /api/chat's actual first attempt is Cloudflare Workers AI via the [ai] binding
-// in wrangler.toml (env.AI) - that one is deployed with the code, not a secret,
-// so it needs no dashboard step and can't fall out of sync the way the two
-// secrets above have (see the functions/ duplication note in CLAUDE.md).
+//   CF_API_TOKEN          - for /api/chat (first attempt, Workers AI)
+//   GEMINI_API_KEY       - for /api/chat (second attempt)
+//   NVIDIA_API_KEY        - for /api/chat (third attempt)
+// CF_API_TOKEN needs "Workers AI: Read" permission on this account (My Profile
+// > API Tokens > Create Token in the Cloudflare dashboard). Workers AI is
+// called over plain HTTPS (api.cloudflare.com/.../ai/run/<model>) with that
+// token, the same way Gemini/NVIDIA are called below - NOT via wrangler.toml's
+// [ai] binding (env.AI), which was tried first and abandoned: every deploy
+// that added it updated static assets but never actually activated the new
+// worker.js, with no error and no way to tell why. The REST call sidesteps
+// that entirely, at the cost of needing this one extra secret like the others.
 //
 // (Earlier attempt: a Cloudflare Pages "functions/api/*.js" file. That's a
 // Pages-only convention and is never invoked under this project's actual
@@ -23,6 +28,7 @@
 // 404'd. This is the version that actually runs.)
 
 const GOOGLE_CLIENT_ID = '297437869958-gvh093f0s50ti02t8l7bg4dbo858g38h.apps.googleusercontent.com'; // public, not a secret - kept in sync with index.html's copy
+const CF_ACCOUNT_ID = '530e19fb222ff31560e9fe60073df458'; // public - visible in every Cloudflare dashboard URL for this account, not a secret
 const WORKERS_AI_MODEL = '@cf/meta/llama-3.2-1b-instruct'; // cheapest Workers AI model confirmed to support tool_calls
 const GEMINI_MODEL = 'gemini-3.6-flash';
 const NVIDIA_MODEL = 'nvidia/nemotron-3.5-lightning-30b-a3b';
@@ -341,10 +347,10 @@ function workersAiToGeminiContent(data) {
   }
   return parts.length ? { role: 'model', parts } : null;
 }
-// Cloudflare Workers AI - a binding (env.AI), not a secret, so it's always
-// available and can never fall out of sync the way a dashboard-set secret can
-// (see the functions/ duplication note in CLAUDE.md). Tried first: fastest, and
-// free up to the account's daily Workers AI allowance before any per-token cost.
+// Cloudflare Workers AI, called over plain HTTPS with an API token rather than
+// wrangler.toml's [ai] binding - see the secrets comment at the top of this file
+// for why. Tried first: fastest, and free up to the account's daily Workers AI
+// allowance before any per-token cost.
 async function askWorkersAi(body, env) {
   const messages = [];
   if (body.systemInstruction || body.googleSearch) {
@@ -355,27 +361,31 @@ async function askWorkersAi(body, env) {
   const options = { messages };
   const tools = geminiToWorkersAiTools(body.tools);
   if (tools.length) options.tools = tools;
-  // env.AI.run()'s documented signature is (model, options) - no third argument
-  // for a request timeout/AbortSignal is confirmed to exist, unlike the plain
-  // fetch() calls elsewhere in this file, so none is passed here.
-  let data;
+  let json;
   try {
-    data = await env.AI.run(WORKERS_AI_MODEL, options);
+    const res = await fetch(`https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT_ID}/ai/run/${WORKERS_AI_MODEL}`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${env.CF_API_TOKEN}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify(options),
+      signal: AbortSignal.timeout(20000),
+    });
+    json = await res.json();
   } catch (e) { return { error: (e && e.message) || 'workers ai request failed' }; }
-  const content = workersAiToGeminiContent(data);
+  if (!json || !json.success) return { error: (json && json.errors && json.errors[0] && json.errors[0].message) || 'workers ai request failed' };
+  const content = workersAiToGeminiContent(json.result);
   return content ? { content } : { error: 'workers ai returned an empty response' };
 }
 
 async function handleChat(request, env) {
   if (request.method !== 'POST') return jsonResponse({ error: 'method not allowed' }, 405);
-  if (!env.AI && !env.GEMINI_API_KEY && !env.NVIDIA_API_KEY) return jsonResponse({ error: 'not configured' }, 500);
+  if (!env.CF_API_TOKEN && !env.GEMINI_API_KEY && !env.NVIDIA_API_KEY) return jsonResponse({ error: 'not configured' }, 500);
   const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
   if (isRateLimited(ip)) return jsonResponse({ error: 'rate limited' }, 429);
 
   const body = await readJsonBody(request);
   if (!body || !Array.isArray(body.contents) || !body.contents.length) return jsonResponse({ error: 'missing contents' }, 400);
 
-  const workersAi = env.AI ? await askWorkersAi(body, env) : { error: 'workers ai not configured' };
+  const workersAi = env.CF_API_TOKEN ? await askWorkersAi(body, env) : { error: 'workers ai not configured' };
   if (workersAi.content) return jsonResponse({ content: workersAi.content, provider: 'workers-ai' });
 
   const gemini = env.GEMINI_API_KEY ? await askGemini(body, env) : { error: 'gemini not configured' };
@@ -398,7 +408,7 @@ export default {
     // TEMPORARY diagnostic - isolates Workers AI from the Gemini/NVIDIA fallback
     // chain so its own error (if any) is visible directly. Remove once verified.
     if (url.pathname === '/api/debug-ai') {
-      if (!env.AI) return jsonResponse({ error: 'no AI binding' });
+      if (!env.CF_API_TOKEN) return jsonResponse({ error: 'no CF_API_TOKEN secret' });
       const result = await askWorkersAi({ contents: [{ role: 'user', parts: [{ text: 'Say hello in exactly three words.' }] }] }, env);
       return jsonResponse(result);
     }

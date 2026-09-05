@@ -2,6 +2,10 @@
 
 All notable changes to Or are logged here, newest first. Version shown matches the number in the app's Help dialog (בדיקת עדכונים).
 
+## 1.35.5 — 2026-09-05
+
+- **Fixed**: Cloudflare Workers AI, the assistant's first-choice provider, never actually activated in production — every deploy updated the site but silently kept running old code, with no visible error, because of how the `[ai]` binding it depended on interacted with this Worker's deploy pipeline. It's now called over a plain HTTPS request with an API token instead of that binding, the same way the Gemini/NVIDIA fallbacks already work. Requires a new `CF_API_TOKEN` Worker secret (Workers AI read permission) to actually activate.
+
 ## 1.35.4 — 2026-09-05
 
 - **Added**: right-click any activity in the Daily Agenda to move it to another day. The picker includes every calendar day in the trip, including days that are currently empty, and moves the underlying flight, hotel event, restaurant, car pickup/return, or point-of-interest date safely.

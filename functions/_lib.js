@@ -7,14 +7,17 @@
 //
 // Required secrets (Pages project → Settings → Environment variables, Production):
 //   GOOGLE_CLIENT_SECRET - for /api/google/exchange and /api/google/refresh
-//   GEMINI_API_KEY       - for /api/chat (first fallback, after Workers AI)
-//   NVIDIA_API_KEY       - for /api/chat (second fallback)
-// /api/chat's actual first attempt is Cloudflare Workers AI via the AI binding
-// (env.AI) - a binding, not a secret, so it needs no dashboard step here.
+//   CF_API_TOKEN          - for /api/chat (first attempt, Workers AI)
+//   GEMINI_API_KEY       - for /api/chat (second attempt)
+//   NVIDIA_API_KEY       - for /api/chat (third attempt)
+// CF_API_TOKEN needs "Workers AI: Read" permission on the account - Workers AI
+// is called over plain HTTPS with that token, not a wrangler.toml [ai] binding
+// (see worker.js's own copy of this comment for why).
 // Routes that need a secret degrade to a clear {error:"not configured"} until
 // it's set.
 
 export const GOOGLE_CLIENT_ID = '297437869958-gvh093f0s50ti02t8l7bg4dbo858g38h.apps.googleusercontent.com'; // public, not a secret - kept in sync with index.html's copy
+export const CF_ACCOUNT_ID = '530e19fb222ff31560e9fe60073df458'; // public - visible in every Cloudflare dashboard URL for this account, not a secret
 export const WORKERS_AI_MODEL = '@cf/meta/llama-3.2-1b-instruct'; // cheapest Workers AI model confirmed to support tool_calls
 export const GEMINI_MODEL = 'gemini-3.6-flash';
 export const NVIDIA_MODEL = 'nvidia/nemotron-3.5-lightning-30b-a3b';

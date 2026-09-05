@@ -13,10 +13,8 @@ binding = "ASSETS"
 include = ["index.html", "version.json", "terms.html", "privacy.html", "manifest.json", "*.png", "*.ico"]
 not_found_handling = "404-page"
 
-# TEMPORARILY REMOVED for a diagnostic test: every deploy since this [ai] block
-# was added has updated static assets (version.json) but never actually
-# activated the new worker.js - /api/debug-ai kept 404ing on old code no matter
-# how many versions were pushed. Testing whether the account can't yet bind
-# Workers AI, silently failing worker activation while assets still sync.
-# [ai]
-# binding = "AI"
+# No [ai] binding here on purpose: an earlier attempt at one never actually
+# activated on deploy (assets updated, worker.js silently didn't - no error,
+# never diagnosed). worker.js instead calls Workers AI over plain HTTPS with
+# the CF_API_TOKEN secret, the same way it calls Gemini/NVIDIA - see the
+# secrets comment at the top of worker.js.

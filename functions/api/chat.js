@@ -1,4 +1,4 @@
-import { GEMINI_MODEL, NVIDIA_MODEL, WORKERS_AI_MODEL, corsResponse, geminiToOpenAiMessages, geminiToOpenAiTools, jsonResponse, openAiSchema, openAiToGeminiContent, readJsonBody } from '../_lib.js';
+import { CF_ACCOUNT_ID, GEMINI_MODEL, NVIDIA_MODEL, WORKERS_AI_MODEL, corsResponse, geminiToOpenAiMessages, geminiToOpenAiTools, jsonResponse, openAiSchema, openAiToGeminiContent, readJsonBody } from '../_lib.js';
 
 // Best-effort per-isolate rate limit - NOT a hard guarantee (Pages Functions run
 // many parallel isolates around the world with no shared memory between them),
@@ -92,10 +92,10 @@ function workersAiToGeminiContent(data) {
   }
   return parts.length ? { role: 'model', parts } : null;
 }
-// Cloudflare Workers AI - a binding (env.AI), not a secret, so it's always
-// available and can never fall out of sync the way a dashboard-set secret can
-// (see the functions/ duplication note in CLAUDE.md). Tried first: fastest, and
-// free up to the account's daily Workers AI allowance before any per-token cost.
+// Cloudflare Workers AI, called over plain HTTPS with the CF_API_TOKEN secret
+// rather than a wrangler.toml [ai] binding - see worker.js's secrets comment
+// for why. Tried first: fastest, and free up to the account's daily Workers AI
+// allowance before any per-token cost.
 async function askWorkersAi(body, env) {
   const messages = [];
   if (body.systemInstruction || body.googleSearch) {
@@ -106,14 +106,18 @@ async function askWorkersAi(body, env) {
   const options = { messages };
   const tools = geminiToWorkersAiTools(body.tools);
   if (tools.length) options.tools = tools;
-  // env.AI.run()'s documented signature is (model, options) - no third argument
-  // for a request timeout/AbortSignal is confirmed to exist, unlike the plain
-  // fetch() calls elsewhere in this file, so none is passed here.
-  let data;
+  let json;
   try {
-    data = await env.AI.run(WORKERS_AI_MODEL, options);
+    const res = await fetch(`https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT_ID}/ai/run/${WORKERS_AI_MODEL}`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${env.CF_API_TOKEN}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify(options),
+      signal: AbortSignal.timeout(20000),
+    });
+    json = await res.json();
   } catch (e) { return { error: (e && e.message) || 'workers ai request failed' }; }
-  const content = workersAiToGeminiContent(data);
+  if (!json || !json.success) return { error: (json && json.errors && json.errors[0] && json.errors[0].message) || 'workers ai request failed' };
+  const content = workersAiToGeminiContent(json.result);
   return content ? { content } : { error: 'workers ai returned an empty response' };
 }
 
@@ -124,14 +128,14 @@ async function askWorkersAi(body, env) {
 // between requests, so every call is self-contained and scoped only to its sender.
 export async function onRequestPost(context) {
   const { request, env } = context;
-  if (!env.AI && !env.GEMINI_API_KEY && !env.NVIDIA_API_KEY) return jsonResponse({ error: 'not configured' }, 500);
+  if (!env.CF_API_TOKEN && !env.GEMINI_API_KEY && !env.NVIDIA_API_KEY) return jsonResponse({ error: 'not configured' }, 500);
   const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
   if (isRateLimited(ip)) return jsonResponse({ error: 'rate limited' }, 429);
 
   const body = await readJsonBody(request);
   if (!body || !Array.isArray(body.contents) || !body.contents.length) return jsonResponse({ error: 'missing contents' }, 400);
 
-  const workersAi = env.AI ? await askWorkersAi(body, env) : { error: 'workers ai not configured' };
+  const workersAi = env.CF_API_TOKEN ? await askWorkersAi(body, env) : { error: 'workers ai not configured' };
   if (workersAi.content) return jsonResponse({ content: workersAi.content, provider: 'workers-ai' });
 
   const gemini = env.GEMINI_API_KEY ? await askGemini(body, env) : { error: 'gemini not configured' };

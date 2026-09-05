@@ -2,6 +2,11 @@
 
 All notable changes to Or are logged here, newest first. Version shown matches the number in the app's Help dialog (בדיקת עדכונים).
 
+## 1.35.4 — 2026-09-05
+
+- **Added**: right-click any activity in the Daily Agenda to move it to another day. The picker includes every calendar day in the trip, including days that are currently empty, and moves the underlying flight, hotel event, restaurant, car pickup/return, or point-of-interest date safely.
+- **Improved**: when the source day is currently filtered, moving an activity follows it to the selected destination day so the result is immediately visible.
+
 ## 1.35.3 — 2026-09-05
 
 - **Added**: the Documents tab can now create and maintain an `or-trip-assistant-brief.md` file inside the existing per-trip Google Drive folder. It keeps user-editable permanent instructions alongside a refreshed, privacy-filtered trip snapshot, and the assistant reads it as user context for each new question without opening a surprise Google sign-in popup.

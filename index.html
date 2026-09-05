@@ -267,7 +267,7 @@
   .agenda { display: flex; flex-direction: column; }
   .agenda-day { font-weight: 700; color: var(--color-secondary); background: rgba(59,130,246,0.10); border: 1px solid rgba(59,130,246,0.25); border-radius: 8px; padding: 6px 12px; margin: 14px 0 8px; font-size: 14px; }
   .agenda-day:first-child { margin-top: 0; }
-  .agenda-item { display: flex; align-items: flex-start; gap: 10px; padding: 8px 4px; position: relative; border-inline-start: 2px solid var(--color-border); margin-inline-start: 56px; padding-inline-start: 14px; }
+  .agenda-item { display: flex; align-items: flex-start; gap: 10px; padding: 8px 4px; position: relative; border-inline-start: 2px solid var(--color-border); margin-inline-start: 56px; padding-inline-start: 14px; cursor: context-menu; }
   .agenda-time { position: absolute; inset-inline-start: -56px; top: 10px; width: 44px; text-align: end; font-variant-numeric: tabular-nums; font-size: 13px; color: var(--color-text-dim); font-weight: 600; }
   .agenda-dot { position: absolute; inset-inline-start: -5px; top: 14px; width: 8px; height: 8px; border-radius: 50%; background: var(--color-secondary); }
   .agenda-body { flex: 1; min-width: 0; }
@@ -1529,6 +1529,13 @@ const I18N = {
   'trip.agenda.carReturnPrefix': { he: 'החזרת רכב — ', en: 'Car return — ', ru: 'Возврат автомобиля — ' , ar: 'إرجاع السيارة — ' },
   'trip.agenda.landingPrefix': { he: 'נחיתה ', en: 'Landing ', ru: 'Посадка ' , ar: 'هبوط ' },
   'trip.agenda.dragHint': { he: 'גררו כדי לשנות סדר', en: 'Drag to reorder', ru: 'Перетащите, чтобы изменить порядок' , ar: 'اسحب لإعادة الترتيب' },
+  'trip.agenda.moveContextHint': { he: 'קליק ימני להעברה ליום אחר', en: 'Right-click to move to another day', ru: 'Щёлкните правой кнопкой, чтобы перенести на другой день', ar: 'انقر بزر الماوس الأيمن للنقل إلى يوم آخر' },
+  'trip.agenda.moveTitle': { he: 'העברת פעילות ליום אחר', en: 'Move activity to another day', ru: 'Перенести событие на другой день', ar: 'نقل النشاط إلى يوم آخر' },
+  'trip.agenda.moveHint': { he: 'כל ימי החופשה מוצגים כאן, גם ימים שעדיין אין בהם פעילות.', en: 'Every vacation day is listed here, including days that do not yet have an activity.', ru: 'Здесь показаны все дни отпуска, включая дни, в которых пока нет событий.', ar: 'تظهر هنا كل أيام الإجازة، بما في ذلك الأيام التي لا يوجد فيها نشاط بعد.' },
+  'trip.agenda.moveToLabel': { he: 'העברה ליום', en: 'Move to day', ru: 'Перенести на день', ar: 'النقل إلى يوم' },
+  'trip.agenda.moveBtn': { he: 'העבר פעילות', en: 'Move activity', ru: 'Перенести событие', ar: 'نقل النشاط' },
+  'trip.agenda.moveNoDays': { he: 'כדי להעביר פעילות, יש לבחור תחילה תאריכי התחלה וסיום לחופשה.', en: 'Choose trip start and end dates before moving an activity.', ru: 'Сначала выберите даты начала и окончания поездки, чтобы перенести событие.', ar: 'اختاروا أولاً تاريخي بدء وانتهاء الرحلة قبل نقل نشاط.' },
+  'trip.agenda.moveSuccess': { he: 'הפעילות הועברה ל־{day}', en: 'Activity moved to {day}', ru: 'Событие перенесено на {day}', ar: 'تم نقل النشاط إلى {day}' },
   'trip.agenda.noActivitiesToday': { he: 'אין פעילויות ביום זה. הוסיפו טיסות, מלונות או נקודות עניין.', en: 'No activities on this day. Add flights, hotels, or points of interest.', ru: 'В этот день нет мероприятий. Добавьте рейсы, отели или достопримечательности.' , ar: 'لا توجد أنشطة في هذا اليوم. أضيفوا رحلات طيران، فنادق أو معالم سياحية.' },
   'trip.agenda.noActivitiesYet': { he: 'אין פעילויות עדיין. הוסיפו טיסות, מלונות או נקודות עניין.', en: 'No activities yet. Add flights, hotels, or points of interest.', ru: 'Пока нет мероприятий. Добавьте рейсы, отели или достопримечательности.' , ar: 'لا توجد أنشطة بعد. أضيفوا رحلات طيران، فنادق أو معالم سياحية.' },
   'trip.dayNotice.showing': { he: 'מציג את המידע של <strong>{day}</strong> בכל הטאבים · ', en: 'Showing information for <strong>{day}</strong> across all tabs · ', ru: 'Показаны данные за <strong>{day}</strong> на всех вкладках · ' , ar: 'يتم عرض معلومات <strong>{day}</strong> في كل الألسنة · ' },
@@ -1754,7 +1761,7 @@ applyLang(localStorage.getItem('or-lang') || 'he', false);
 // ===================== Client-side data layer (runs fully in the browser) =====================
 // Data lives in localStorage; Excel import/export via SheetJS. No server needed — works on GitHub Pages.
 // (In the future a cloud backend such as Google Drive can replace loadDB/saveDB.)
-const APP_VERSION = '1.35.3';
+const APP_VERSION = '1.35.4';
 const APP_BUILT_AT = 'dev'; // replaced by build.js with the deploy timestamp — lets a running page detect it's stale
 const STORE_KEY = 'or-store-v1';
 const BUGS_COLS = ['field.date', 'field.toolOrPage', 'field.description', 'field.browser'];
@@ -4348,7 +4355,20 @@ function tripViewHTML() {
         <p class="file-hint" style="margin-top:var(--space-1)">${t('drive.aiDescriptionHint')}</p>
         <div id="driveDocsList" class="drive-files-list" style="margin-top:var(--space-3)"></div>
       </section>
-    </div>`;
+    </div>
+
+    <dialog class="add-dialog" id="agendaMoveDialog">
+      <h3>${t('trip.agenda.moveTitle')}</h3>
+      <p class="file-hint" id="agendaMoveItemName"></p>
+      <label style="margin-top:var(--space-2)"><span>${t('trip.agenda.moveToLabel')}</span>
+        <select id="agendaMoveDaySelect"></select>
+      </label>
+      <p class="file-hint" style="margin-top:var(--space-2)">${t('trip.agenda.moveHint')}</p>
+      <div class="dialog-actions">
+        <button type="button" class="btn-primary" id="agendaMoveConfirm">${t('trip.agenda.moveBtn')}</button>
+        <button type="button" class="btn-ghost" id="agendaMoveCancel">${t('common.cancel')}</button>
+      </div>
+    </dialog>`;
 }
 
 // Click-and-drag horizontal scrolling for a strip (project chips, trip day
@@ -4399,6 +4419,12 @@ function wireTripView() {
   document.addEventListener('pointermove', agendaDragMove);
   document.addEventListener('pointerup', agendaDragEnd);
   document.addEventListener('pointercancel', agendaDragEnd);
+  document.getElementById('trip-agenda').addEventListener('contextmenu', agendaMoveContextMenu);
+  const agendaMoveDialog = document.getElementById('agendaMoveDialog');
+  document.getElementById('agendaMoveConfirm').addEventListener('click', confirmAgendaMove);
+  document.getElementById('agendaMoveCancel').addEventListener('click', () => agendaMoveDialog.close());
+  agendaMoveDialog.addEventListener('click', ev => { if (ev.target === agendaMoveDialog) agendaMoveDialog.close(); });
+  agendaMoveDialog.addEventListener('close', () => { agendaMoveTarget = null; });
   wireToolView('itinerary', TOOLKIT.itinerary);
   wireToolView('flights', TOOLKIT.flights);
   wireToolView('hotels', TOOLKIT.hotels);
@@ -4660,7 +4686,7 @@ function renderAgenda() {
       const n = dayNo(e.date);
       html += `<div class="agenda-day" data-date="${escapeHtml(e.date)}">${n && n > 0 ? t('trip.dayNPrefix', { n }) : ''}${fmtDate(e.date, { weekday: 'long' })}</div>`;
     }
-    html += `<div class="agenda-item" data-key="${escapeHtml(e.key)}" data-date="${escapeHtml(e.date)}">
+    html += `<div class="agenda-item" data-key="${escapeHtml(e.key)}" data-date="${escapeHtml(e.date)}" title="${t('trip.agenda.moveContextHint')}">
       <span class="agenda-time">${escapeHtml(e.time) || '—'}</span>
       <span class="agenda-dot"></span>
       <div class="agenda-body">
@@ -4681,7 +4707,9 @@ function renderAgenda() {
 // different day" means. Uses Pointer Events rather than native HTML5
 // drag-and-drop so it works with touch, not just a mouse.
 let agendaDrag = null;
+let agendaMoveTarget = null;
 function agendaDragStart(ev) {
+  if (ev.button !== 0) return;
   const handle = ev.target.closest('.agenda-drag');
   const item = handle && handle.closest('.agenda-item');
   if (!item) return;
@@ -4739,6 +4767,52 @@ const AGENDA_DATE_FIELD = {
   'car:pickup': { rec: 'cars', field: 'pickupDate' },
   'car:return': { rec: 'cars', field: 'returnDate' },
 };
+function agendaMoveDayLabel(day) {
+  return `${t('trip.dayStrip.dayN', { n: day.n })} · ${fmtDate(day.iso, { weekday: 'long' })}`;
+}
+function agendaMoveContextMenu(ev) {
+  const item = ev.target.closest('.agenda-item');
+  // Preserve the browser's useful link menu for the Maps/Waze links inside an
+  // activity; every other part of the activity opens the move picker.
+  if (!item || ev.target.closest('a')) return;
+  ev.preventDefault();
+  const days = tripDaysList();
+  if (!days.length) { toast(t('trip.agenda.moveNoDays'), true); return; }
+  const dialog = document.getElementById('agendaMoveDialog');
+  const select = document.getElementById('agendaMoveDaySelect');
+  const itemName = document.getElementById('agendaMoveItemName');
+  if (!dialog || !select || !itemName) return;
+  if (dialog.open) dialog.close();
+  agendaMoveTarget = { key: item.dataset.key, date: item.dataset.date };
+  select.innerHTML = days.map(day => `<option value="${escapeHtml(day.iso)}">${escapeHtml(agendaMoveDayLabel(day))}</option>`).join('');
+  select.value = days.some(day => day.iso === agendaMoveTarget.date) ? agendaMoveTarget.date : days[0].iso;
+  itemName.textContent = item.querySelector('.agenda-title')?.textContent?.trim() || '';
+  dialog.showModal();
+}
+async function confirmAgendaMove() {
+  const dialog = document.getElementById('agendaMoveDialog');
+  const select = document.getElementById('agendaMoveDaySelect');
+  const button = document.getElementById('agendaMoveConfirm');
+  const target = agendaMoveTarget;
+  const newDate = select && select.value;
+  if (!dialog || !select || !button || !target || !newDate) { if (dialog?.open) dialog.close(); return; }
+  if (newDate === target.date) { dialog.close(); return; }
+  const day = tripDaysList().find(item => item.iso === newDate);
+  button.disabled = true;
+  try {
+    await moveAgendaItemToDate(target.key, newDate);
+    // If the source day is filtered, follow the moved activity to its new day
+    // rather than leaving the visitor on a suddenly empty list.
+    if (tripDay === target.date) tripDay = newDate;
+    dialog.close();
+    await refreshCurrent();
+    toast(t('trip.agenda.moveSuccess', { day: day ? agendaMoveDayLabel(day) : fmtDate(newDate) }));
+  } catch (err) {
+    toast(err.message, true);
+  } finally {
+    if (button?.isConnected) button.disabled = false;
+  }
+}
 async function moveAgendaItemToDate(key, newDate) {
   const [type, id, sub] = key.split(':');
   const spec = AGENDA_DATE_FIELD[sub ? `${type}:${sub}` : type];

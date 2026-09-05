@@ -1,0 +1,15 @@
+.git
+.git/**
+.claude
+.claude/**
+.wrangler
+.wrangler/**
+node_modules
+node_modules/**
+functions
+functions/**
+worker.js
+wrangler.toml
+CLAUDE.md
+CHANGELOG.md
+SETUP_PROGRESS.md

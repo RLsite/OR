@@ -2,6 +2,11 @@
 
 All notable changes to Or are logged here, newest first. Version shown matches the number in the app's Help dialog (בדיקת עדכונים).
 
+## 1.34.3 — 2026-09-05
+
+- **Security**: excluded Git, worktree, Wrangler, server-source, and internal documentation files from public Worker assets.
+- **Security**: removed the temporary environment-diagnostics endpoint from the Worker.
+
 ## 1.34.2 — 2026-09-05
 
 - **Fixed**: replaced NVIDIA's retired `meta/llama-3.1-8b-instruct` fallback with the available `nvidia/nemotron-3.5-nano-30b-a3b` model, which supports tool calling and has only 3B active parameters.

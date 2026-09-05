@@ -2,6 +2,11 @@
 
 All notable changes to Or are logged here, newest first. Version shown matches the number in the app's Help dialog (בדיקת עדכונים).
 
+## 1.35.12 — 2026-09-06
+
+- **Added**: right-click an activity in the Daily Agenda and choose Delete to remove it directly, without switching to its own tab first - same confirmation as every other delete in the app.
+- **Added**: every trip record (and the trip's own details) now silently keeps its own last-updated timestamp, laying the groundwork for a smarter, automatic backup that can tell what actually changed instead of only comparing one whole-trip save time.
+
 ## 1.35.11 — 2026-09-05
 
 - **Added**: the itinerary/points-of-interest tab now has website and image columns/fields, like the Links tab already did. When the assistant adds an attraction with a source link, its real page image is fetched automatically (the same trusted lookup the Links tab already uses) - never an AI-guessed picture.

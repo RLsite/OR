@@ -1820,7 +1820,7 @@ applyLang(localStorage.getItem('or-lang') || 'he', false);
 // ===================== Client-side data layer (runs fully in the browser) =====================
 // Data lives in localStorage; Excel import/export via SheetJS. No server needed — works on GitHub Pages.
 // (In the future a cloud backend such as Google Drive can replace loadDB/saveDB.)
-const APP_VERSION = '1.35.11';
+const APP_VERSION = '1.35.12';
 const APP_BUILT_AT = 'dev'; // replaced by build.js with the deploy timestamp — lets a running page detect it's stale
 const STORE_KEY = 'or-store-v1';
 const BUGS_COLS = ['field.date', 'field.toolOrPage', 'field.description', 'field.browser'];
@@ -1921,7 +1921,11 @@ async function api(url, opts) {
     if (method === 'GET') return s.records[tool];
     if (method === 'POST') {
       if (rec0.fields.includes('date') && !body.date) throw new Error(t('err.requiredDate'));
-      const rec = { id: nextId(s.records[tool]) };
+      // updatedAt is bookkeeping, not a user field - kept out of REC.fields (and
+      // therefore out of Excel columns, the add/edit form, and the assistant's
+      // tool schema) so nothing else has to special-case it; set directly here
+      // and in the PUT branch below, same as id.
+      const rec = { id: nextId(s.records[tool]), updatedAt: new Date().toISOString() };
       rec0.fields.forEach(f => { if (f === 'id') return; let v = body[f]; if (rec0.numeric.includes(f)) v = Number(v) || 0; rec[f] = v == null ? '' : v; });
       s.records[tool].push(rec); saveDB(s); return rec;
     }
@@ -1935,6 +1939,7 @@ async function api(url, opts) {
     if (idx === -1) throw new Error(t('err.recordNotFound'));
     if (method === 'PUT') {
       rec0.fields.forEach(f => { if (f === 'id' || body[f] === undefined) return; let v = body[f]; if (rec0.numeric.includes(f)) v = Number(v) || 0; s.records[tool][idx][f] = v; });
+      s.records[tool][idx].updatedAt = new Date().toISOString();
       saveDB(s); return s.records[tool][idx];
     }
     if (method === 'DELETE') { s.records[tool].splice(idx, 1); saveDB(s); return { ok: true }; }
@@ -1952,6 +1957,7 @@ async function api(url, opts) {
         assistantProfile: body.assistantProfile === undefined
           ? normalizeAssistantProfile(s.trip.assistantProfile)
           : normalizeAssistantProfile(body.assistantProfile),
+        updatedAt: new Date().toISOString(),
       };
       saveDB(s); return s.trip;
     }
@@ -4780,6 +4786,7 @@ function tripViewHTML() {
       </label>
       <p class="file-hint" style="margin-top:var(--space-2)">${t('trip.agenda.moveHint')}</p>
       <div class="dialog-actions">
+        <button type="button" class="btn-danger" id="agendaMoveDelete">${t('expenses.deleteBtn')}</button>
         <button type="button" class="btn-primary" id="agendaMoveConfirm">${t('trip.agenda.moveBtn')}</button>
         <button type="button" class="btn-ghost" id="agendaMoveCancel">${t('common.cancel')}</button>
       </div>
@@ -4837,6 +4844,7 @@ function wireTripView() {
   document.getElementById('trip-agenda').addEventListener('contextmenu', agendaMoveContextMenu);
   const agendaMoveDialog = document.getElementById('agendaMoveDialog');
   document.getElementById('agendaMoveConfirm').addEventListener('click', confirmAgendaMove);
+  document.getElementById('agendaMoveDelete').addEventListener('click', confirmAgendaDelete);
   document.getElementById('agendaMoveCancel').addEventListener('click', () => agendaMoveDialog.close());
   agendaMoveDialog.addEventListener('click', ev => { if (ev.target === agendaMoveDialog) agendaMoveDialog.close(); });
   agendaMoveDialog.addEventListener('close', () => { agendaMoveTarget = null; });
@@ -5224,6 +5232,27 @@ async function confirmAgendaMove() {
     dialog.close();
     await refreshCurrent();
     toast(t('trip.agenda.moveSuccess', { day: day ? agendaMoveDayLabel(day) : fmtDate(newDate) }));
+  } catch (err) {
+    toast(err.message, true);
+  } finally {
+    if (button?.isConnected) button.disabled = false;
+  }
+}
+async function confirmAgendaDelete() {
+  const dialog = document.getElementById('agendaMoveDialog');
+  const target = agendaMoveTarget;
+  if (!target) { if (dialog?.open) dialog.close(); return; }
+  const [type, id, sub] = target.key.split(':');
+  const spec = AGENDA_DATE_FIELD[sub ? `${type}:${sub}` : type];
+  if (!spec) { dialog.close(); return; }
+  if (!confirm(t('confirm.deleteRecord'))) return;
+  const button = document.getElementById('agendaMoveDelete');
+  button.disabled = true;
+  try {
+    await api(`/api/records/${spec.rec}/${id}`, { method: 'DELETE' });
+    dialog.close();
+    await refreshCurrent();
+    toast(t('toast.recordDeleted'));
   } catch (err) {
     toast(err.message, true);
   } finally {

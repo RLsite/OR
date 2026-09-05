@@ -639,8 +639,11 @@
     .header-actions { flex-wrap: nowrap; }
     .header-actions .icon-btn { flex: 0 0 44px; }
     .header-menu {
-      inset-inline-start: 0;
-      inset-inline-end: auto;
+      /* Anchor stays inset-inline-end (the base rule): the hamburger button
+         itself sits at the inline-start (left, in RTL) edge of the header on
+         mobile, so anchoring the menu to inline-start instead - as this rule
+         used to - opened it growing further past the edge of the screen and
+         off-viewport entirely, rather than back in toward the header. */
       width: min(280px, calc(100vw - 24px));
       min-width: 0;
       max-height: calc(100dvh - 90px);
@@ -1720,7 +1723,7 @@ applyLang(localStorage.getItem('or-lang') || 'he', false);
 // ===================== Client-side data layer (runs fully in the browser) =====================
 // Data lives in localStorage; Excel import/export via SheetJS. No server needed — works on GitHub Pages.
 // (In the future a cloud backend such as Google Drive can replace loadDB/saveDB.)
-const APP_VERSION = '1.34.14';
+const APP_VERSION = '1.34.15';
 const APP_BUILT_AT = 'dev'; // replaced by build.js with the deploy timestamp — lets a running page detect it's stale
 const STORE_KEY = 'or-store-v1';
 const BUGS_COLS = ['field.date', 'field.toolOrPage', 'field.description', 'field.browser'];

@@ -2,6 +2,10 @@
 
 All notable changes to Or are logged here, newest first. Version shown matches the number in the app's Help dialog (בדיקת עדכונים).
 
+## 1.34.15 — 2026-09-05
+
+- **Fixed**: on a narrow phone screen, opening the hamburger menu placed it entirely off the left edge of the screen instead of near the button that opened it.
+
 ## 1.34.14 — 2026-09-05
 
 - **Fixed**: hardened the assistant identity instruction so the NVIDIA fallback no longer introduces itself as a model or discusses its training; lowered its response randomness to reduce repeated, off-topic output while preserving the Gemini-first provider order.

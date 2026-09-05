@@ -13,13 +13,16 @@ binding = "ASSETS"
 include = ["index.html", "version.json", "terms.html", "privacy.html", "manifest.json", "*.png", "*.ico"]
 not_found_handling = "404-page"
 # Without this, GET requests are matched against static assets BEFORE
-# worker.js's fetch() ever runs, so an unmatched GET path (any /api/* route
-# with no query params changing that) is answered directly by the assets
-# layer's not_found_handling and never reaches the router below - POST
-# requests are unaffected (assets can't serve those, so they always reach the
-# Worker) which is exactly why /api/chat always worked while a GET-based
-# diagnostic route looked like it was silently running stale code.
-run_worker_first = ["/api/*"]
+# worker.js's fetch() ever runs, so an unmatched GET path (any /api/* route)
+# is answered directly by the assets layer's not_found_handling and never
+# reaches the router below - POST requests are unaffected (assets can't serve
+# those, so they always reach the Worker) which is exactly why /api/chat
+# always worked while a GET-based diagnostic route looked like it was running
+# stale code. Set globally (not scoped to "/api/*") since the per-path array
+# form didn't change this deploy's behavior - worker.js already forwards
+# every non-API path to ASSETS itself, so routing everything through it first
+# costs nothing.
+run_worker_first = true
 
 # No [ai] binding here on purpose: an earlier attempt at one never actually
 # activated on deploy (assets updated, worker.js silently didn't - no error,

@@ -2,6 +2,12 @@
 
 All notable changes to Or are logged here, newest first. Version shown matches the number in the app's Help dialog (בדיקת עדכונים).
 
+## 1.32.0 — 2026-09-05
+
+- **Added**: the AI assistant can now list and read text from PDF documents in the current trip's Google Drive folder after the user connects Drive and asks about a document.
+- **Security**: document access stays limited to Or's own trip folder and selected PDFs; the assistant never receives a Google Drive token or general Drive access.
+- **Improved**: HTML responses from a misrouted chat endpoint now show a clear service-availability message instead of the raw `Unexpected token '<'` parsing error.
+
 ## 1.31.0 — 2026-09-05
 
 - **Added**: full responsive mobile layout for the trip dashboard, forms, dialogs, tabs, tables, reports and floating assistant, including safe-area spacing and touch-friendly controls.

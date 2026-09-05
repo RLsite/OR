@@ -1338,6 +1338,9 @@ const I18N = {
   'assistant.thinking': { he: 'חושב...', en: 'Thinking...', ru: 'Думаю...' , ar: 'أفكر...' },
   'assistant.noReply': { he: 'לא התקבלה תשובה.', en: 'No reply received.', ru: 'Ответ не получен.' , ar: 'لم يتم استلام رد.' },
   'assistant.error': { he: 'משהו השתבש: {msg}', en: 'Something went wrong: {msg}', ru: 'Что-то пошло не так: {msg}' , ar: 'حدث خطأ ما: {msg}' },
+  'assistant.apiUnavailable': { he: 'שירות העוזר לא זמין כרגע — השרת החזיר דף אתר במקום תשובת נתונים. נסו לרענן את הדפדפן.', en: 'The assistant service is unavailable right now — the server returned the site page instead of data. Please refresh the browser.', ru: 'Сервис помощника сейчас недоступен — сервер вернул страницу сайта вместо данных. Обновите браузер.', ar: 'خدمة المساعد غير متاحة حالياً — أعاد الخادم صفحة الموقع بدلاً من البيانات. يرجى تحديث المتصفح.' },
+  'assistant.driveNotConnected': { he: 'Google Drive לא מחובר. התחברו ל-Drive דרך לשונית המסמכים ונסו שוב.', en: 'Google Drive is not connected. Connect it from the Documents tab and try again.', ru: 'Google Drive не подключён. Подключите его на вкладке документов и повторите попытку.', ar: 'Google Drive غير متصل. اتصلوا به من تبويب المستندات وحاولوا مرة أخرى.' },
+  'assistant.documentReadError': { he: 'לא ניתן לקרוא את המסמך כרגע: {msg}', en: 'The document could not be read right now: {msg}', ru: 'Не удалось прочитать документ: {msg}', ar: 'تعذرت قراءة المستند حالياً: {msg}' },
   'assistant.notConfigured': { he: 'העוזר עדיין לא מוגדר בצד השרת.', en: 'The assistant isn’t configured on the server yet.', ru: 'Помощник ещё не настроен на сервере.' , ar: 'المساعد غير مهيأ على الخادم بعد.' },
   'assistant.rateLimited': { he: 'יותר מדי בקשות. נסו שוב בעוד דקה.', en: 'Too many requests. Try again in a minute.', ru: 'Слишком много запросов. Повторите через минуту.' , ar: 'طلبات كثيرة جداً. حاولوا مرة أخرى بعد دقيقة.' },
   'assistant.confirmDelete': { he: 'העוזר מבקש למחוק רשומה זו — לאשר?', en: 'The assistant wants to delete this record — allow it?', ru: 'Помощник хочет удалить эту запись — разрешить?' , ar: 'يريد المساعد حذف هذا السجل — هل توافق؟' },
@@ -1687,7 +1690,7 @@ applyLang(localStorage.getItem('or-lang') || 'he', false);
 // ===================== Client-side data layer (runs fully in the browser) =====================
 // Data lives in localStorage; Excel import/export via SheetJS. No server needed — works on GitHub Pages.
 // (In the future a cloud backend such as Google Drive can replace loadDB/saveDB.)
-const APP_VERSION = '1.31.0';
+const APP_VERSION = '1.32.0';
 const APP_BUILT_AT = 'dev'; // replaced by build.js with the deploy timestamp — lets a running page detect it's stale
 const STORE_KEY = 'or-store-v1';
 const BUGS_COLS = ['field.date', 'field.toolOrPage', 'field.description', 'field.browser'];
@@ -2330,13 +2333,7 @@ async function driveListDocuments() {
   try {
     if (!(await waitForGsi(8000))) throw new Error(t('drive.notConfigured'));
     const token = await driveEnsureToken();
-    const folderId = await driveFolderId(token, false);
-    if (!folderId) { listEl.innerHTML = `<p class="drive-files-empty">${t('drive.docsEmpty')}</p>`; return; }
-    const q = encodeURIComponent(`'${folderId}' in parents and mimeType = 'application/pdf' and trashed = false`);
-    const res = await fetch(`https://www.googleapis.com/drive/v3/files?q=${q}&fields=files(id,name,modifiedTime,description)&orderBy=modifiedTime desc&pageSize=25`, { headers: { Authorization: `Bearer ${token}` } });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
-    let files = data.files || [];
+    let files = await driveListTripDocumentMetadata(token);
     // Drive allows several files with the identical name in one folder
     // (unlike a filesystem) - de-dupe by name as a safety net for anything
     // that predates driveUploadDocuments()'s own duplicate-name check,
@@ -2358,6 +2355,73 @@ async function driveListDocuments() {
     listEl.innerHTML = `<p class="drive-files-empty">${escapeHtml(t('drive.docsLoadError', { msg: err.message }))}</p>`;
   }
 }
+
+// Returns only PDFs inside Or's current trip folder. The folder and its files
+// are created by this app, so this stays within the existing narrow drive.file
+// permission and never turns the assistant into a general Drive browser.
+async function driveListTripDocumentMetadata(token) {
+  const folderId = await driveFolderId(token, false);
+  if (!folderId) return [];
+  const q = encodeURIComponent(`'${folderId}' in parents and mimeType = 'application/pdf' and trashed = false`);
+  const res = await fetch(`https://www.googleapis.com/drive/v3/files?q=${q}&fields=files(id,name,size,modifiedTime,description,mimeType)&orderBy=modifiedTime desc&pageSize=25`, { headers: { Authorization: `Bearer ${token}` } });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  const data = await res.json();
+  return data.files || [];
+}
+
+let pdfJsPromise = null;
+function loadPdfJs() {
+  if (window.pdfjsLib) return Promise.resolve(window.pdfjsLib);
+  if (pdfJsPromise) return pdfJsPromise;
+  pdfJsPromise = new Promise((resolve, reject) => {
+    const script = document.createElement('script');
+    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+    script.onload = () => {
+      if (!window.pdfjsLib) { reject(new Error('PDF reader unavailable')); return; }
+      window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+      resolve(window.pdfjsLib);
+    };
+    script.onerror = () => reject(new Error('PDF reader unavailable'));
+    document.head.appendChild(script);
+  });
+  return pdfJsPromise;
+}
+
+async function extractPdfText(buf) {
+  const pdfjs = await loadPdfJs();
+  const pdf = await pdfjs.getDocument({ data: new Uint8Array(buf) }).promise;
+  const pages = [];
+  const maxPages = Math.min(pdf.numPages, 30);
+  for (let pageNo = 1; pageNo <= maxPages; pageNo++) {
+    const page = await pdf.getPage(pageNo);
+    const content = await page.getTextContent();
+    const text = content.items.map(item => item.str || '').join(' ').replace(/[ \t]+/g, ' ').trim();
+    if (text) pages.push(`עמוד ${pageNo}: ${text}`);
+    if (pages.join('\n').length >= 28000) break;
+  }
+  return pages.join('\n');
+}
+
+async function driveReadTripDocument(fileId) {
+  try {
+    if (!fileId) return { ok: false, error: t('assistant.documentReadError', { msg: 'missing document id' }) };
+    if (!(await waitForGsi(8000))) return { ok: false, error: t('drive.notConfigured') };
+    const token = await driveEnsureToken();
+    const docs = await driveListTripDocumentMetadata(token);
+    const doc = docs.find(f => f.id === String(fileId));
+    if (!doc) return { ok: false, error: t('assistant.documentReadError', { msg: 'document not found in the current trip folder' }) };
+    const size = Number(doc.size) || 0;
+    if (size > 12 * 1024 * 1024) return { ok: false, error: t('assistant.documentReadError', { msg: 'the PDF is larger than 12 MB' }) };
+    const res = await fetch(`https://www.googleapis.com/drive/v3/files/${encodeURIComponent(doc.id)}?alt=media`, { headers: { Authorization: `Bearer ${token}` } });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const text = await extractPdfText(await res.arrayBuffer());
+    if (!text.trim()) return { ok: true, name: doc.name, text: 'No selectable text was found in this PDF. It may be a scanned document and needs OCR.' };
+    return { ok: true, name: doc.name, modifiedTime: doc.modifiedTime, text: text.slice(0, 28000), truncated: text.length > 28000 };
+  } catch (err) {
+    return { ok: false, error: t('assistant.documentReadError', { msg: err.message }) };
+  }
+}
+
 async function driveDeleteDocument(fileId) {
   const token = await driveEnsureToken();
   const res = await fetch(`https://www.googleapis.com/drive/v3/files/${fileId}`, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } });
@@ -3198,6 +3262,18 @@ function buildGeminiTools() {
           id: { type: 'NUMBER' },
         }, required: ['type', 'id'] },
       },
+      {
+        name: 'list_trip_documents',
+        description: 'List PDF documents in the current trip folder in Google Drive. Use this when the user asks what documents are available. The user must have connected Google Drive first.',
+        parameters: { type: 'OBJECT', properties: {} },
+      },
+      {
+        name: 'read_trip_document',
+        description: 'Read the text from one PDF document in the current trip folder in Google Drive. Only use an id returned by list_trip_documents. If the PDF is scanned and has no selectable text, explain that clearly.',
+        parameters: { type: 'OBJECT', properties: {
+          id: { type: 'STRING', description: 'The Drive file id returned by list_trip_documents.' },
+        }, required: ['id'] },
+      },
     ],
   }];
 }
@@ -3211,6 +3287,7 @@ function buildAssistantSystemInstruction() {
     + 'You help only the current user, with only their own trip data - never mention or assume any other user or trip. '
     + 'Reply in the same language the user writes in. Dates are always "YYYY-MM-DD" strings, times are 24h "HH:MM" strings or empty. '
     + 'Use the provided tools to actually add, update, or delete a trip record whenever the user asks for a change - do not just describe the change in text without calling a tool. '
+    + 'When the user asks about documents, first use list_trip_documents, then use read_trip_document for the specific PDF they choose or clearly identify. You only have access to PDFs in the current trip folder, not the rest of Google Drive. '
     + 'When updating or deleting, first find the right record\'s id in the trip data below; if it is not clear which record is meant, ask instead of guessing. '
     + 'After a tool call, briefly confirm in plain language what happened (including if the user declined a deletion). '
     + 'Current trip data (JSON): ' + JSON.stringify(data);
@@ -3241,6 +3318,16 @@ async function executeAssistantTool(name, args) {
       await refreshCurrent();
       return { ok: true };
     }
+    if (name === 'list_trip_documents') {
+      if (!isDriveConnected()) return { ok: false, error: t('assistant.driveNotConnected') };
+      const token = await driveEnsureToken();
+      const docs = await driveListTripDocumentMetadata(token);
+      return { ok: true, documents: docs.map(f => ({ id: f.id, name: f.name, description: f.description || '', modifiedTime: f.modifiedTime, size: Number(f.size) || 0 })) };
+    }
+    if (name === 'read_trip_document') {
+      if (!isDriveConnected()) return { ok: false, error: t('assistant.driveNotConnected') };
+      return await driveReadTripDocument(args.id);
+    }
     return { ok: false, error: 'Unknown tool: ' + name };
   } catch (err) { return { ok: false, error: err.message }; }
 }
@@ -3269,7 +3356,10 @@ async function askAssistant(userText) {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ contents: assistantContents, tools: buildGeminiTools(), systemInstruction: buildAssistantSystemInstruction() }),
       });
-      const data = await res.json();
+      const raw = await res.text();
+      let data;
+      try { data = JSON.parse(raw); }
+      catch (parseErr) { throw new Error(t('assistant.apiUnavailable')); }
       if (res.status === 500 && data.error === 'not configured') throw new Error(t('assistant.notConfigured'));
       if (res.status === 429) throw new Error(t('assistant.rateLimited'));
       if (!res.ok || data.error) throw new Error(data.error || `HTTP ${res.status}`);

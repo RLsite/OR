@@ -2,6 +2,10 @@
 
 All notable changes to Or are logged here, newest first. Version shown matches the number in the app's Help dialog (בדיקת עדכונים).
 
+## 1.32.2 — 2026-09-05
+
+- **Fixed**: assistant requests now bypass browser and edge caching with a timestamped, `no-store` API request, preventing an old HTML response from being reused for chat.
+
 ## 1.32.1 — 2026-09-05
 
 - **Fixed**: chat API failures now remain JSON responses, including when Gemini returns an invalid upstream response, preventing the browser from receiving an HTML error page and showing the misleading `Unexpected token '<'` message.

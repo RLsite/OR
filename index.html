@@ -1690,7 +1690,7 @@ applyLang(localStorage.getItem('or-lang') || 'he', false);
 // ===================== Client-side data layer (runs fully in the browser) =====================
 // Data lives in localStorage; Excel import/export via SheetJS. No server needed — works on GitHub Pages.
 // (In the future a cloud backend such as Google Drive can replace loadDB/saveDB.)
-const APP_VERSION = '1.32.1';
+const APP_VERSION = '1.32.2';
 const APP_BUILT_AT = 'dev'; // replaced by build.js with the deploy timestamp — lets a running page detect it's stale
 const STORE_KEY = 'or-store-v1';
 const BUGS_COLS = ['field.date', 'field.toolOrPage', 'field.description', 'field.browser'];
@@ -3352,8 +3352,9 @@ async function askAssistant(userText) {
   try {
     let guard = 0;
     while (guard++ < 8) { // hard cap on tool-call round-trips in one turn, so a confused model can't loop forever
-      const res = await fetch('/api/chat', {
+      const res = await fetch('/api/chat?_=' + Date.now(), {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
+        cache: 'no-store',
         body: JSON.stringify({ contents: assistantContents, tools: buildGeminiTools(), systemInstruction: buildAssistantSystemInstruction() }),
       });
       const raw = await res.text();

@@ -2,6 +2,11 @@
 
 All notable changes to Or are logged here, newest first. Version shown matches the number in the app's Help dialog (בדיקת עדכונים).
 
+## 1.35.11 — 2026-09-05
+
+- **Added**: the itinerary/points-of-interest tab now has website and image columns/fields, like the Links tab already did. When the assistant adds an attraction with a source link, its real page image is fetched automatically (the same trusted lookup the Links tab already uses) - never an AI-guessed picture.
+- **Improved**: the assistant now puts an attraction's source link in its own website field instead of burying it in notes, only records a cost when a source actually states a price, and is instructed to tell the user plainly which details (such as an exact visit time) it could not find, instead of silently leaving them blank.
+
 ## 1.35.10 — 2026-09-05
 
 - **Fixed**: malformed AI output containing raw Markdown escapes or a long run of underscores/asterisks is now rejected server-side and cleaned client-side before it can fill the chat. Assistant replies are capped at 256 output tokens and instructed to use plain text only.

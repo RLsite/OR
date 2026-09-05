@@ -2,6 +2,12 @@
 
 All notable changes to Or are logged here, newest first. Version shown matches the number in the app's Help dialog (בדיקת עדכונים).
 
+## 1.34.12 — 2026-09-05
+
+- **Added**: every text-based PDF in the trip Documents tab can now receive a short AI description on explicit request; the description is saved with the file in its existing Google Drive trip folder.
+- **Improved**: document actions are grouped together, with Open directly beside Delete.
+- **Privacy**: the documents tab now explains before use that readable PDF text is sent to the configured assistant provider only after clicking “AI description”; the privacy policy and terms now reflect this optional processing.
+
 ## 1.34.11 — 2026-09-05
 
 - **Fixed**: the NVIDIA fallback always failed with "Unsupported parameter(s): `extra_body`" — that field only means something to the OpenAI Python SDK, not to a direct HTTP call. The affected settings are now sent as plain top-level fields instead.

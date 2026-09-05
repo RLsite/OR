@@ -2,6 +2,10 @@
 
 All notable changes to Or are logged here, newest first. Version shown matches the number in the app's Help dialog (בדיקת עדכונים).
 
+## 1.34.13 — 2026-09-05
+
+- **Privacy**: clarified that Google states prompts sent through its Gemini Free Tier may be used to improve its products, so the explicit AI-document description notice now gives users a clear warning before they choose to send readable PDF text.
+
 ## 1.34.12 — 2026-09-05
 
 - **Added**: every text-based PDF in the trip Documents tab can now receive a short AI description on explicit request; the description is saved with the file in its existing Google Drive trip folder.

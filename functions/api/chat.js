@@ -155,28 +155,30 @@ export async function onRequestPost(context) {
   if (!body || !Array.isArray(body.contents) || !body.contents.length) return jsonResponse({ error: 'missing contents' }, 400);
 
   // Gemini is the only configured provider with Google Search. A request that
-  // requires current recommendations must therefore try Gemini first; normal
-  // chat remains Workers AI -> Gemini -> NVIDIA for speed and cost control.
+  // requires current recommendations therefore uses Gemini -> NVIDIA. Workers
+  // AI is intentionally not used for this fallback: it cannot search the web
+  // and its small first-line model can turn a useful search request into a
+  // low-quality generic reply. Ordinary chat remains Workers -> Gemini -> NVIDIA.
+  if (body.googleSearch) {
+    const gemini = env.GEMINI_API_KEY ? await askGemini(body, env) : { error: 'gemini not configured' };
+    if (gemini.content) return jsonResponse({ content: gemini.content, provider: 'gemini' });
+    const nvidia = env.NVIDIA_API_KEY ? await askNvidia(body, env) : { error: 'nvidia not configured' };
+    if (nvidia.content) return jsonResponse({ content: nvidia.content, provider: 'nvidia', fallback: 'gemini' });
+    return jsonResponse({ error: `Gemini: ${gemini.error}; NVIDIA: ${nvidia.error}` }, 500);
+  }
+
   let workersAi = { error: 'workers ai not attempted' };
   let gemini = { error: 'gemini not attempted' };
-  if (body.googleSearch && env.GEMINI_API_KEY) {
-    gemini = await askGemini(body, env);
-    if (gemini.content) return jsonResponse({ content: gemini.content, provider: 'gemini' });
-  }
 
   workersAi = env.CF_API_TOKEN ? await askWorkersAi(body, env) : { error: 'workers ai not configured' };
-  if (workersAi.content) return jsonResponse({ content: workersAi.content, provider: 'workers-ai', ...(body.googleSearch ? { fallback: 'gemini' } : {}) });
+  if (workersAi.content) return jsonResponse({ content: workersAi.content, provider: 'workers-ai' });
 
-  if (!body.googleSearch) {
-    gemini = env.GEMINI_API_KEY ? await askGemini(body, env) : { error: 'gemini not configured' };
-    if (gemini.content) return jsonResponse({ content: gemini.content, provider: 'gemini', fallback: 'workers-ai' });
-  } else if (!env.GEMINI_API_KEY) {
-    gemini = { error: 'gemini not configured' };
-  }
+  gemini = env.GEMINI_API_KEY ? await askGemini(body, env) : { error: 'gemini not configured' };
+  if (gemini.content) return jsonResponse({ content: gemini.content, provider: 'gemini', fallback: 'workers-ai' });
 
   if (env.NVIDIA_API_KEY) {
     const nvidia = await askNvidia(body, env);
-    if (nvidia.content) return jsonResponse({ content: nvidia.content, provider: 'nvidia', fallback: body.googleSearch ? 'workers-ai' : 'gemini' });
+    if (nvidia.content) return jsonResponse({ content: nvidia.content, provider: 'nvidia', fallback: 'gemini' });
     return jsonResponse({ error: `Workers AI: ${workersAi.error}; Gemini: ${gemini.error}; NVIDIA: ${nvidia.error}` }, 500);
   }
   return jsonResponse({ error: `Workers AI: ${workersAi.error}; Gemini: ${gemini.error}` }, 500);

@@ -2,6 +2,10 @@
 
 All notable changes to Or are logged here, newest first. Version shown matches the number in the app's Help dialog (בדיקת עדכונים).
 
+## 1.35.8 — 2026-09-05
+
+- **Fixed**: a request that needs current web information (such as finding child-friendly attractions) now follows Gemini → NVIDIA directly. It no longer falls through to the small Workers AI model, which cannot search the web and could return a weak generic sentence instead of a useful trip response. Ordinary chat still uses Workers AI → Gemini → NVIDIA.
+
 ## 1.35.7 — 2026-09-05
 
 - **Added**: a short, optional personalisation questionnaire in the assistant (trip style, travelling party, pace, interests, budget and an optional note). Its answers are saved with the current trip, backed up in Excel, and supplied to every provider on future questions.

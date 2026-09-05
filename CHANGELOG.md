@@ -2,6 +2,10 @@
 
 All notable changes to Or are logged here, newest first. Version shown matches the number in the app's Help dialog (בדיקת עדכונים).
 
+## 1.34.1 — 2026-09-05
+
+- **Fixed**: NVIDIA API errors now expose the provider's useful HTTP/detail message so tool-payload incompatibilities can be diagnosed instead of appearing only as `nvidia error`.
+
 ## 1.34.0 — 2026-09-05
 
 - **Improved**: the assistant now shows an animated spinner and progress stages while waiting for the AI service or executing trip tools.

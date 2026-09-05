@@ -52,7 +52,7 @@ async function askNvidia(body, env) {
   } catch (e) { return { error: e && e.name === 'TimeoutError' ? 'nvidia request timed out' : 'nvidia request failed' }; }
   let data;
   try { data = await res.json(); } catch (e) { return { error: 'nvidia returned an invalid response' }; }
-  if (!res.ok) return { error: (data.error && (data.error.message || data.error)) || 'nvidia error' };
+  if (!res.ok) return { error: (data.error && (data.error.message || data.error)) || data.detail || data.message || `nvidia HTTP ${res.status}` };
   const content = openAiToGeminiContent(data);
   return content ? { content } : { error: 'nvidia returned an empty response' };
 }

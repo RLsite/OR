@@ -11,7 +11,7 @@
 // Routes that need one degrade to a clear {error:"not configured"} until it's set.
 
 export const GOOGLE_CLIENT_ID = '297437869958-gvh093f0s50ti02t8l7bg4dbo858g38h.apps.googleusercontent.com'; // public, not a secret - kept in sync with index.html's copy
-export const GEMINI_MODEL = 'gemini-2.5-flash';
+export const GEMINI_MODEL = 'gemini-3.6-flash';
 
 export function jsonResponse(body, status) {
   return new Response(JSON.stringify(body), { status: status || 200, headers: { 'Content-Type': 'application/json; charset=utf-8' } });

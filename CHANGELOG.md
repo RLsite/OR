@@ -2,6 +2,10 @@
 
 All notable changes to Or are logged here, newest first. Version shown matches the number in the app's Help dialog (בדיקת עדכונים).
 
+## 1.30.1 — 2026-09-05
+
+- **Fixed**: the AI trip assistant now uses the available Gemini 3.6 Flash model instead of the retired Gemini 2.5 Flash model.
+
 ## 1.30.0 — 2026-09-05
 
 - **Fixed**: a date saved with a 2-digit year (e.g. a hotel check-in stored as `26-09-11` instead of `2026-09-11`) showed up as its own separate day in the daily agenda, splitting one real day into two — with one of them displaying the year as `26`. Such dates are now read as the year 2000-something everywhere, and repaired in place the next time the app loads.

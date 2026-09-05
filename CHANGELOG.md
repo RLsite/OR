@@ -2,6 +2,12 @@
 
 All notable changes to Or are logged here, newest first. Version shown matches the number in the app's Help dialog (בדיקת עדכונים).
 
+## 1.34.7 — 2026-09-05
+
+- **Improved**: NVIDIA is now the primary assistant provider when `NVIDIA_API_KEY` is configured, with Gemini as a secondary fallback.
+- **Fixed**: disabled extended reasoning and reduced the NVIDIA response budget to prevent timeout on the full trip/tool context.
+- **Improved**: the assistant status notice now clearly identifies NVIDIA as the active provider.
+
 ## 1.34.6 — 2026-09-05
 
 - **Security**: restricted Worker static assets to an explicit public allowlist so server source, Git metadata, and internal files cannot be served as website assets.

@@ -1353,7 +1353,7 @@ const I18N = {
   'assistant.noReply': { he: 'לא התקבלה תשובה.', en: 'No reply received.', ru: 'Ответ не получен.' , ar: 'لم يتم استلام رد.' },
   'assistant.error': { he: 'משהו השתבש: {msg}', en: 'Something went wrong: {msg}', ru: 'Что-то пошло не так: {msg}' , ar: 'حدث خطأ ما: {msg}' },
   'assistant.apiUnavailable': { he: 'שירות העוזר לא זמין כרגע — השרת החזיר דף אתר במקום תשובת נתונים. נסו לרענן את הדפדפן.', en: 'The assistant service is unavailable right now — the server returned the site page instead of data. Please refresh the browser.', ru: 'Сервис помощника сейчас недоступен — сервер вернул страницу сайта вместо данных. Обновите браузер.', ar: 'خدمة المساعد غير متاحة حالياً — أعاد الخادم صفحة الموقع بدلاً من البيانات. يرجى تحديث المتصفح.' },
-  'assistant.providerFallback': { he: 'Gemini הגיע למכסה — העוזר עבר זמנית ל־NVIDIA API.', en: 'Gemini reached its quota — the assistant temporarily switched to the NVIDIA API.', ru: 'Gemini достиг лимита — помощник временно переключился на NVIDIA API.', ar: 'وصل Gemini إلى الحد المسموح — انتقل المساعد مؤقتاً إلى NVIDIA API.' },
+  'assistant.providerFallback': { he: 'העוזר עובד כרגע דרך NVIDIA API.', en: 'The assistant is currently working through the NVIDIA API.', ru: 'Помощник сейчас работает через NVIDIA API.', ar: 'يعمل المساعد حالياً عبر NVIDIA API.' },
   'assistant.nvidiaNotConfigured': { he: 'מכסת Gemini הסתיימה. כדי להמשיך, יש להגדיר את NVIDIA_API_KEY ב־Cloudflare.', en: 'Gemini quota has been reached. Configure NVIDIA_API_KEY in Cloudflare to continue.', ru: 'Лимит Gemini исчерпан. Для продолжения настройте NVIDIA_API_KEY в Cloudflare.', ar: 'تم الوصول إلى حد Gemini. للمتابعة، قم بإعداد NVIDIA_API_KEY في Cloudflare.' },
   'assistant.driveNotConnected': { he: 'Google Drive לא מחובר. התחברו ל-Drive דרך לשונית המסמכים ונסו שוב.', en: 'Google Drive is not connected. Connect it from the Documents tab and try again.', ru: 'Google Drive не подключён. Подключите его на вкладке документов и повторите попытку.', ar: 'Google Drive غير متصل. اتصلوا به من تبويب المستندات وحاولوا مرة أخرى.' },
   'assistant.documentReadError': { he: 'לא ניתן לקרוא את המסמך כרגע: {msg}', en: 'The document could not be read right now: {msg}', ru: 'Не удалось прочитать документ: {msg}', ar: 'تعذرت قراءة المستند حالياً: {msg}' },
@@ -1706,7 +1706,7 @@ applyLang(localStorage.getItem('or-lang') || 'he', false);
 // ===================== Client-side data layer (runs fully in the browser) =====================
 // Data lives in localStorage; Excel import/export via SheetJS. No server needed — works on GitHub Pages.
 // (In the future a cloud backend such as Google Drive can replace loadDB/saveDB.)
-const APP_VERSION = '1.34.6';
+const APP_VERSION = '1.34.7';
 const APP_BUILT_AT = 'dev'; // replaced by build.js with the deploy timestamp — lets a running page detect it's stale
 const STORE_KEY = 'or-store-v1';
 const BUGS_COLS = ['field.date', 'field.toolOrPage', 'field.description', 'field.browser'];

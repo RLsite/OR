@@ -284,7 +284,7 @@ async function askNvidia(body, env) {
   const messages = [];
   if (body.systemInstruction) messages.push({ role: 'system', content: String(body.systemInstruction) });
   messages.push(...geminiToOpenAiMessages(body.contents));
-  const payload = { model: env.NVIDIA_MODEL || NVIDIA_MODEL, messages, temperature: 0.2, max_tokens: 1024, stream: false };
+  const payload = { model: env.NVIDIA_MODEL || NVIDIA_MODEL, messages, temperature: 1, top_p: 0.95, max_tokens: 512, stream: false, extra_body: { chat_template_kwargs: { enable_thinking: false } } };
   const tools = geminiToOpenAiTools(body.tools);
   if (tools.length) { payload.tools = tools; payload.tool_choice = 'auto'; }
   let res;
@@ -310,13 +310,16 @@ async function handleChat(request, env) {
   const body = await readJsonBody(request);
   if (!body || !Array.isArray(body.contents) || !body.contents.length) return jsonResponse({ error: 'missing contents' }, 400);
 
-  const gemini = env.GEMINI_API_KEY ? await askGemini(body, env) : { error: 'gemini not configured' };
-  if (gemini.content) return jsonResponse({ content: gemini.content, provider: 'gemini' });
   if (env.NVIDIA_API_KEY) {
     const nvidia = await askNvidia(body, env);
-    if (nvidia.content) return jsonResponse({ content: nvidia.content, provider: 'nvidia', fallback: 'gemini' });
-    return jsonResponse({ error: `Gemini: ${gemini.error}; NVIDIA: ${nvidia.error}` }, 500);
+    if (nvidia.content) return jsonResponse({ content: nvidia.content, provider: 'nvidia' });
+    if (!env.GEMINI_API_KEY) return jsonResponse({ error: `NVIDIA: ${nvidia.error}` }, 500);
+    const gemini = await askGemini(body, env);
+    if (gemini.content) return jsonResponse({ content: gemini.content, provider: 'gemini', fallback: 'nvidia' });
+    return jsonResponse({ error: `NVIDIA: ${nvidia.error}; Gemini: ${gemini.error}` }, 500);
   }
+  const gemini = env.GEMINI_API_KEY ? await askGemini(body, env) : { error: 'gemini not configured' };
+  if (gemini.content) return jsonResponse({ content: gemini.content, provider: 'gemini' });
   return jsonResponse({ error: gemini.error, fallback: 'nvidia', nvidiaConfigured: false }, 500);
 }
 

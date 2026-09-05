@@ -2,6 +2,10 @@
 
 All notable changes to Or are logged here, newest first. Version shown matches the number in the app's Help dialog (בדיקת עדכונים).
 
+## 1.34.11 — 2026-09-05
+
+- **Fixed**: the NVIDIA fallback always failed with "Unsupported parameter(s): `extra_body`" — that field only means something to the OpenAI Python SDK, not to a direct HTTP call. The affected settings are now sent as plain top-level fields instead.
+
 ## 1.34.10 — 2026-09-05
 
 - **Added**: search-intent requests can now use Gemini's Google Search grounding before calling the existing record tools, so the assistant can find a current place and add it to the itinerary.

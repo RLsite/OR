@@ -48,7 +48,12 @@ async function askNvidia(body, env) {
     messages.push({ role: 'system', content: systemInstruction });
   }
   messages.push(...geminiToOpenAiMessages(body.contents));
-  const payload = { model: env.NVIDIA_MODEL || NVIDIA_MODEL, messages, temperature: 1, top_p: 0.95, max_tokens: 512, stream: false, extra_body: { chat_template_kwargs: { enable_thinking: false } } };
+  // `extra_body` is a wrapper the OpenAI *Python SDK* uses to merge extra fields
+  // into the request when you can't pass them as named kwargs - it isn't a real
+  // API field. Calling the HTTP API directly (as this does), those fields belong
+  // at the top level of the JSON body instead, or NVIDIA rejects the whole
+  // request with "Unsupported parameter(s): `extra_body`".
+  const payload = { model: env.NVIDIA_MODEL || NVIDIA_MODEL, messages, temperature: 1, top_p: 0.95, max_tokens: 512, stream: false, chat_template_kwargs: { enable_thinking: false } };
   const tools = geminiToOpenAiTools(body.tools);
   if (tools.length) { payload.tools = tools; payload.tool_choice = 'auto'; }
   let res;

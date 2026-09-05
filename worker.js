@@ -19,7 +19,7 @@
 
 const GOOGLE_CLIENT_ID = '297437869958-gvh093f0s50ti02t8l7bg4dbo858g38h.apps.googleusercontent.com'; // public, not a secret - kept in sync with index.html's copy
 const GEMINI_MODEL = 'gemini-3.6-flash';
-const NVIDIA_MODEL = 'openai/gpt-oss-20b';
+const NVIDIA_MODEL = 'meta/llama-3.1-8b-instruct';
 const MAX_HTML_BYTES = 300000; // the tags we need are always in <head>; no reason to buffer a whole page
 
 function decodeEntities(s) {
@@ -284,7 +284,7 @@ async function askNvidia(body, env) {
   const messages = [];
   if (body.systemInstruction) messages.push({ role: 'system', content: String(body.systemInstruction) });
   messages.push(...geminiToOpenAiMessages(body.contents));
-  const payload = { model: env.NVIDIA_MODEL || NVIDIA_MODEL, messages, temperature: 0.2, max_tokens: 4096, stream: false };
+  const payload = { model: env.NVIDIA_MODEL || NVIDIA_MODEL, messages, temperature: 0.2, max_tokens: 1024, stream: false };
   const tools = geminiToOpenAiTools(body.tools);
   if (tools.length) { payload.tools = tools; payload.tool_choice = 'auto'; }
   let res;
@@ -292,7 +292,7 @@ async function askNvidia(body, env) {
     res = await fetch('https://integrate.api.nvidia.com/v1/chat/completions', {
       method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${env.NVIDIA_API_KEY}` }, body: JSON.stringify(payload), signal: AbortSignal.timeout(30000),
     });
-  } catch (e) { return { error: 'nvidia request failed' }; }
+  } catch (e) { return { error: e && e.name === 'TimeoutError' ? 'nvidia request timed out' : 'nvidia request failed' }; }
   let data;
   try { data = await res.json(); } catch (e) { return { error: 'nvidia returned an invalid response' }; }
   if (!res.ok) return { error: (data.error && (data.error.message || data.error)) || 'nvidia error' };

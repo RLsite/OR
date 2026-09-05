@@ -2,6 +2,11 @@
 
 All notable changes to Or are logged here, newest first. Version shown matches the number in the app's Help dialog (בדיקת עדכונים).
 
+## 1.34.0 — 2026-09-05
+
+- **Improved**: the assistant now shows an animated spinner and progress stages while waiting for the AI service or executing trip tools.
+- **Fixed**: the NVIDIA fallback now uses the lighter `meta/llama-3.1-8b-instruct` model with a shorter response limit to reduce timeouts on full trip context.
+
 ## 1.33.0 — 2026-09-05
 
 - **Added**: NVIDIA API fallback when Gemini is unavailable or its quota is exhausted.

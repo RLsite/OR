@@ -19,7 +19,7 @@
 
 const GOOGLE_CLIENT_ID = '297437869958-gvh093f0s50ti02t8l7bg4dbo858g38h.apps.googleusercontent.com'; // public, not a secret - kept in sync with index.html's copy
 const GEMINI_MODEL = 'gemini-3.6-flash';
-const NVIDIA_MODEL = 'nvidia/nemotron-3.5-nano-30b-a3b';
+const NVIDIA_MODEL = 'openai/gpt-oss-20b';
 const MAX_HTML_BYTES = 300000; // the tags we need are always in <head>; no reason to buffer a whole page
 
 function decodeEntities(s) {
@@ -290,11 +290,12 @@ async function askNvidia(body, env) {
   let res;
   try {
     res = await fetch('https://integrate.api.nvidia.com/v1/chat/completions', {
-      method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${env.NVIDIA_API_KEY}` }, body: JSON.stringify(payload), signal: AbortSignal.timeout(30000),
+      method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json', Authorization: `Bearer ${env.NVIDIA_API_KEY}` }, body: JSON.stringify(payload), signal: AbortSignal.timeout(30000),
     });
   } catch (e) { return { error: e && e.name === 'TimeoutError' ? 'nvidia request timed out' : 'nvidia request failed' }; }
+  const raw = await res.text();
   let data;
-  try { data = await res.json(); } catch (e) { return { error: 'nvidia returned an invalid response' }; }
+  try { data = JSON.parse(raw); } catch (e) { return { error: `nvidia HTTP ${res.status}: ${raw.slice(0, 300) || 'invalid response'}` }; }
   if (!res.ok) return { error: (data.error && (data.error.message || data.error)) || data.detail || data.message || `nvidia HTTP ${res.status}` };
   const content = openAiToGeminiContent(data);
   return content ? { content } : { error: 'nvidia returned an empty response' };

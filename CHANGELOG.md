@@ -2,6 +2,12 @@
 
 All notable changes to Or are logged here, newest first. Version shown matches the number in the app's Help dialog (בדיקת עדכונים).
 
+## 1.34.4 — 2026-09-05
+
+- **Fixed**: switched the NVIDIA fallback to the available `openai/gpt-oss-20b` endpoint shown in the NVIDIA catalog.
+- **Improved**: NVIDIA non-JSON/API failures now include a short provider response for diagnosis.
+- **Security**: unknown asset paths now return a real 404 instead of the SPA homepage.
+
 ## 1.34.3 — 2026-09-05
 
 - **Security**: excluded Git, worktree, Wrangler, server-source, and internal documentation files from public Worker assets.

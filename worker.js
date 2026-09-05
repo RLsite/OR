@@ -395,6 +395,13 @@ export default {
     if (url.pathname === '/api/link-preview') return handleLinkPreview(request);
     if (url.pathname === '/api/google/exchange') return handleGoogleExchange(request, env);
     if (url.pathname === '/api/google/refresh') return handleGoogleRefresh(request, env);
+    // TEMPORARY diagnostic - isolates Workers AI from the Gemini/NVIDIA fallback
+    // chain so its own error (if any) is visible directly. Remove once verified.
+    if (url.pathname === '/api/debug-ai') {
+      if (!env.AI) return jsonResponse({ error: 'no AI binding' });
+      const result = await askWorkersAi({ contents: [{ role: 'user', parts: [{ text: 'Say hello in exactly three words.' }] }] }, env);
+      return jsonResponse(result);
+    }
     if (url.pathname === '/api/chat') {
       if (request.method === 'OPTIONS') return corsResponse();
       return handleChat(request, env);

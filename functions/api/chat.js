@@ -41,7 +41,7 @@ async function askNvidia(body, env) {
   const messages = [];
   if (body.systemInstruction) messages.push({ role: 'system', content: String(body.systemInstruction) });
   messages.push(...geminiToOpenAiMessages(body.contents));
-  const payload = { model: env.NVIDIA_MODEL || NVIDIA_MODEL, messages, temperature: 0.2, max_tokens: 1024, stream: false };
+  const payload = { model: env.NVIDIA_MODEL || NVIDIA_MODEL, messages, temperature: 1, top_p: 0.95, max_tokens: 512, stream: false, extra_body: { chat_template_kwargs: { enable_thinking: false } } };
   const tools = geminiToOpenAiTools(body.tools);
   if (tools.length) { payload.tools = tools; payload.tool_choice = 'auto'; }
   let res;

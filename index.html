@@ -1394,8 +1394,10 @@ const I18N = {
   'field.carType': { he: 'סוג רכב', en: 'Car type', ru: 'Тип автомобиля' , ar: 'نوع السيارة' },
   'field.pickupLoc': { he: 'איסוף — מיקום', en: 'Pickup — location', ru: 'Забор — место' , ar: 'الاستلام — موقع' },
   'field.pickupDate': { he: 'איסוף — תאריך', en: 'Pickup — date', ru: 'Забор — дата' , ar: 'الاستلام — تاريخ' },
+  'field.pickupTime': { he: 'איסוף — שעה', en: 'Pickup — time', ru: 'Забор — время' , ar: 'الاستلام — وقت' },
   'field.returnLoc': { he: 'החזרה — מיקום', en: 'Return — location', ru: 'Возврат — место' , ar: 'الإرجاع — موقع' },
   'field.returnDate': { he: 'החזרה — תאריך', en: 'Return — date', ru: 'Возврат — дата' , ar: 'الإرجاع — تاريخ' },
+  'field.returnTime': { he: 'החזרה — שעה', en: 'Return — time', ru: 'Возврат — время' , ar: 'الإرجاع — وقت' },
   'projects.openSettingsBtn': { he: 'פתיחת הגדרות', en: 'Open Settings', ru: 'Открыть настройки', ar: 'فتح الإعدادات' },
   'list.itinerary.addLabel': { he: 'הוספת נקודת עניין', en: 'Add point of interest', ru: 'Добавить достопримечательность' , ar: 'إضافة معلم سياحي' },
   'list.itinerary.title': { he: 'המסלול', en: 'The itinerary', ru: 'Маршрут' , ar: 'المسار' },
@@ -1706,7 +1708,7 @@ applyLang(localStorage.getItem('or-lang') || 'he', false);
 // ===================== Client-side data layer (runs fully in the browser) =====================
 // Data lives in localStorage; Excel import/export via SheetJS. No server needed — works on GitHub Pages.
 // (In the future a cloud backend such as Google Drive can replace loadDB/saveDB.)
-const APP_VERSION = '1.34.7';
+const APP_VERSION = '1.34.9';
 const APP_BUILT_AT = 'dev'; // replaced by build.js with the deploy timestamp — lets a running page detect it's stale
 const STORE_KEY = 'or-store-v1';
 const BUGS_COLS = ['field.date', 'field.toolOrPage', 'field.description', 'field.browser'];
@@ -1724,7 +1726,7 @@ const REC = {
   flights: { sheetKey: 'sheet.flights', colKeys: ['field.id', 'field.date', 'field.flightNo', 'field.from', 'field.to', 'field.departure', 'field.arrival', 'field.reference', 'field.costTh', 'field.notes'], fields: ['id', 'date', 'flight', 'from', 'to', 'dep', 'arr', 'ref', 'cost', 'notes'], numeric: ['cost'], enumFields: {} },
   hotels: { sheetKey: 'sheet.hotels', colKeys: ['field.id', 'field.hotelName', 'field.address', 'field.coords', 'field.checkin', 'field.checkout', 'field.reference', 'field.costTh', 'field.notes'], fields: ['id', 'name', 'address', 'coords', 'checkin', 'checkout', 'ref', 'cost', 'notes'], numeric: ['cost'], enumFields: {} },
   restaurants: { sheetKey: 'sheet.restaurants', colKeys: ['field.id', 'field.date', 'field.restaurantName', 'field.address', 'field.coords', 'field.reference', 'field.costTh', 'field.notes'], fields: ['id', 'date', 'name', 'address', 'coords', 'ref', 'cost', 'notes'], numeric: ['cost'], enumFields: {} },
-  cars: { sheetKey: 'sheet.cars', colKeys: ['field.id', 'field.carCompany', 'field.carType', 'field.pickupLoc', 'field.pickupDate', 'field.returnLoc', 'field.returnDate', 'field.reference', 'field.costTh', 'field.notes'], fields: ['id', 'company', 'cartype', 'pickupLoc', 'pickupDate', 'returnLoc', 'returnDate', 'ref', 'cost', 'notes'], numeric: ['cost'], enumFields: {} },
+  cars: { sheetKey: 'sheet.cars', colKeys: ['field.id', 'field.carCompany', 'field.carType', 'field.pickupLoc', 'field.pickupDate', 'field.pickupTime', 'field.returnLoc', 'field.returnDate', 'field.returnTime', 'field.reference', 'field.costTh', 'field.notes'], fields: ['id', 'company', 'cartype', 'pickupLoc', 'pickupDate', 'pickupTime', 'returnLoc', 'returnDate', 'returnTime', 'ref', 'cost', 'notes'], numeric: ['cost'], enumFields: {} },
   itinerary: { sheetKey: 'sheet.itinerary', colKeys: ['field.id', 'field.date', 'field.time', 'field.category', 'field.name', 'field.address', 'field.coords', 'field.costTh', 'field.notes'], fields: ['id', 'date', 'time', 'category', 'name', 'address', 'coords', 'cost', 'notes'], numeric: ['cost'], enumFields: { category: true } },
   tripexp: { sheetKey: 'sheet.tripexp', colKeys: ['field.id', 'field.date', 'field.category', 'field.description', 'field.amount'], fields: ['id', 'date', 'category', 'description', 'amount'], numeric: ['amount'], enumFields: { category: true } },
   triplinks: { sheetKey: 'sheet.triplinks', colKeys: ['field.id', 'field.name', 'field.url', 'field.description', 'field.image'], fields: ['id', 'name', 'url', 'description', 'image'], numeric: [], enumFields: {} }
@@ -3190,8 +3192,10 @@ const TOOLKIT = {
       { f: 'cartype', label: 'field.carType', type: 'text' },
       { f: 'pickupLoc', label: 'field.pickupLoc', type: 'text', nav: true },
       { f: 'pickupDate', label: 'field.pickupDate', type: 'date', isDate: true },
+      { f: 'pickupTime', label: 'field.pickupTime', type: 'time' },
       { f: 'returnLoc', label: 'field.returnLoc', type: 'text', nav: true },
       { f: 'returnDate', label: 'field.returnDate', type: 'date', isDate: true },
+      { f: 'returnTime', label: 'field.returnTime', type: 'time' },
       { f: 'ref', label: 'field.referenceShort', type: 'text', table: false },
       { f: 'cost', label: 'field.costILS', type: 'number', money: true },
       { f: 'notes', label: 'field.notes', type: 'text', table: false }
@@ -4178,8 +4182,8 @@ async function loadTrip() {
 }
 
 // Kind priority used only to order same-day events that have no clock time
-// (hotel/car/restaurant never carry a time-of-day) — flight always first,
-// then car, then hotel, matching how an arrival day actually unfolds.
+// (hotel/restaurant never carry a time-of-day; car events may have one) —
+// flight always first, then car, then hotel, matching how an arrival day unfolds.
 const AGENDA_TYPE_PRIORITY = { flight: 0, car: 1, hotel: 2, restaurant: 3, poi: 4 };
 // Daily agenda: flights + hotel check-in/out + POIs merged into one hour-by-hour timeline
 function renderAgenda() {
@@ -4198,8 +4202,8 @@ function renderAgenda() {
     if (r.date) ev.push({ date: normalizeDateStr(r.date), time: '', type: 'restaurant', key: 'restaurant:' + r.id, kind: t('opt.catRestaurant'), title: r.name || '', address: r.address, coords: r.coords, cost: r.cost });
   });
   (toolData.cars || []).forEach(c => {
-    if (c.pickupDate) ev.push({ date: normalizeDateStr(c.pickupDate), time: '', type: 'car', key: 'car:' + c.id + ':pickup', kind: t('trip.agenda.carKind'), title: t('trip.agenda.carPickupPrefix') + (c.company || ''), sub: c.cartype, address: c.pickupLoc, cost: c.cost });
-    if (c.returnDate) ev.push({ date: normalizeDateStr(c.returnDate), time: '', type: 'car', key: 'car:' + c.id + ':return', kind: t('trip.agenda.carKind'), title: t('trip.agenda.carReturnPrefix') + (c.company || ''), address: c.returnLoc });
+    if (c.pickupDate) ev.push({ date: normalizeDateStr(c.pickupDate), time: c.pickupTime || '', type: 'car', key: 'car:' + c.id + ':pickup', kind: t('trip.agenda.carKind'), title: t('trip.agenda.carPickupPrefix') + (c.company || ''), sub: c.cartype, address: c.pickupLoc, cost: c.cost });
+    if (c.returnDate) ev.push({ date: normalizeDateStr(c.returnDate), time: c.returnTime || '', type: 'car', key: 'car:' + c.id + ':return', kind: t('trip.agenda.carKind'), title: t('trip.agenda.carReturnPrefix') + (c.company || ''), address: c.returnLoc });
   });
   (toolData.itinerary || []).forEach(p => {
     ev.push({ date: normalizeDateStr(p.date), time: p.time || '', type: 'poi', key: 'poi:' + p.id, kind: p.category ? optLabel(p.category) : t('trip.agenda.activityKind'), title: p.name || '', sub: p.notes, address: p.address, coords: p.coords, cost: p.cost });

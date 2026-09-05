@@ -310,16 +310,13 @@ async function handleChat(request, env) {
   const body = await readJsonBody(request);
   if (!body || !Array.isArray(body.contents) || !body.contents.length) return jsonResponse({ error: 'missing contents' }, 400);
 
-  if (env.NVIDIA_API_KEY) {
-    const nvidia = await askNvidia(body, env);
-    if (nvidia.content) return jsonResponse({ content: nvidia.content, provider: 'nvidia' });
-    if (!env.GEMINI_API_KEY) return jsonResponse({ error: `NVIDIA: ${nvidia.error}` }, 500);
-    const gemini = await askGemini(body, env);
-    if (gemini.content) return jsonResponse({ content: gemini.content, provider: 'gemini', fallback: 'nvidia' });
-    return jsonResponse({ error: `NVIDIA: ${nvidia.error}; Gemini: ${gemini.error}` }, 500);
-  }
   const gemini = env.GEMINI_API_KEY ? await askGemini(body, env) : { error: 'gemini not configured' };
   if (gemini.content) return jsonResponse({ content: gemini.content, provider: 'gemini' });
+  if (env.NVIDIA_API_KEY) {
+    const nvidia = await askNvidia(body, env);
+    if (nvidia.content) return jsonResponse({ content: nvidia.content, provider: 'nvidia', fallback: 'gemini' });
+    return jsonResponse({ error: `Gemini: ${gemini.error}; NVIDIA: ${nvidia.error}` }, 500);
+  }
   return jsonResponse({ error: gemini.error, fallback: 'nvidia', nvidiaConfigured: false }, 500);
 }
 

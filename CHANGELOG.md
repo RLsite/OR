@@ -2,6 +2,14 @@
 
 All notable changes to Or are logged here, newest first. Version shown matches the number in the app's Help dialog (בדיקת עדכונים).
 
+## 1.34.9 — 2026-09-05
+
+- **Added**: car rentals now support separate pickup and return times, shown in the car tab, Excel backup, and the trip agenda.
+
+## 1.34.8 — 2026-09-05
+
+- **Fixed**: restored the requested provider order: Gemini is always tried first, and NVIDIA is used only when Gemini is unavailable.
+
 ## 1.34.7 — 2026-09-05
 
 - **Improved**: NVIDIA is now the primary assistant provider when `NVIDIA_API_KEY` is configured, with Gemini as a secondary fallback.

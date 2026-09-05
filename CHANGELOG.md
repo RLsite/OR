@@ -2,6 +2,12 @@
 
 All notable changes to Or are logged here, newest first. Version shown matches the number in the app's Help dialog (בדיקת עדכונים).
 
+## 1.30.0 — 2026-09-05
+
+- **Fixed**: a date saved with a 2-digit year (e.g. a hotel check-in stored as `26-09-11` instead of `2026-09-11`) showed up as its own separate day in the daily agenda, splitting one real day into two — with one of them displaying the year as `26`. Such dates are now read as the year 2000-something everywhere, and repaired in place the next time the app loads.
+- **Added**: an agenda item can now be dragged onto a *different* day, not just reordered within its own. Dropping it in another day actually changes that item's date (the check-in date, the flight date, and so on) rather than just moving it on screen.
+- **Fixed**: the header's Drive icon could show a green "connected" dot while every backup attempt was actually failing. A failed connection now clears that state instead of leaving a status that isn't true.
+
 ## 1.29.1 — 2026-09-02
 
 - **Fixed**: a Google sign-in popup could appear on every page load/refresh for anyone with Drive connected - the trip's Documents tab was silently asking Drive for the file list as a side effect of the page just loading, not only when that tab was actually opened. It now only asks when you actually open the Documents tab (or connect from within it).

@@ -1431,10 +1431,22 @@ function applyI18nDom(root) {
   scope.querySelectorAll('[data-i18n-html]').forEach(el => { el.innerHTML = t(el.dataset.i18nHtml); });
 }
 
+// Best-effort repair for a date string that should be "YYYY-MM-DD" but has a
+// 2-digit year instead (e.g. "26-09-11") - seen both from Excel imports in the
+// past (see repairImportedDates()) and, now, the AI assistant occasionally
+// producing one despite being told the format explicitly. Every trip date is
+// inherently near-future, so 2000+YY is a safe, unambiguous assumption.
+// Anything else unparseable is returned unchanged rather than guessed at.
+function normalizeDateStr(v) {
+  if (typeof v !== 'string') return v;
+  const m = /^(\d{2})-(\d{2})-(\d{2})$/.exec(v);
+  return m ? `${2000 + Number(m[1])}-${m[2]}-${m[3]}` : v;
+}
 // --- Date / time formatting: always dd.mm.yyyy, always 24h (never locale-dependent) ---
 function fmtDate(dateInput, opts) {
   if (!dateInput) return '';
-  const d = dateInput instanceof Date ? dateInput : new Date(dateInput);
+  const normalized = typeof dateInput === 'string' ? normalizeDateStr(dateInput) : dateInput;
+  const d = normalized instanceof Date ? normalized : new Date(normalized);
   if (isNaN(d)) return '';
   const dd = String(d.getDate()).padStart(2, '0');
   const mm = String(d.getMonth() + 1).padStart(2, '0');
@@ -1506,7 +1518,7 @@ applyLang(localStorage.getItem('or-lang') || 'he', false);
 // ===================== Client-side data layer (runs fully in the browser) =====================
 // Data lives in localStorage; Excel import/export via SheetJS. No server needed — works on GitHub Pages.
 // (In the future a cloud backend such as Google Drive can replace loadDB/saveDB.)
-const APP_VERSION = '1.29.1';
+const APP_VERSION = '1.30.0';
 const APP_BUILT_AT = 'dev'; // replaced by build.js with the deploy timestamp — lets a running page detect it's stale
 const STORE_KEY = 'or-store-v1';
 const BUGS_COLS = ['field.date', 'field.toolOrPage', 'field.description', 'field.browser'];
@@ -1651,15 +1663,18 @@ function dateFieldsForRecordType(id) {
   return ['date'];
 }
 function repairImportedDates() {
-  if (typeof XLSX === 'undefined' || !XLSX.SSF) return false;
+  const hasXlsxSsf = typeof XLSX !== 'undefined' && !!XLSX.SSF;
   const s = loadDB();
   let changed = false;
   const fixField = (rec, field) => {
     const v = rec[field];
-    if (typeof v === 'number' && v > 20000 && v < 80000) {
+    if (hasXlsxSsf && typeof v === 'number' && v > 20000 && v < 80000) {
       const parsed = XLSX.SSF.parse_date_code(v);
       if (parsed) { rec[field] = xlsxDateToISO(parsed.y, parsed.m, parsed.d); changed = true; }
+      return;
     }
+    const fixed = normalizeDateStr(v);
+    if (fixed !== v) { rec[field] = fixed; changed = true; }
   };
   Object.keys(s.records).forEach(id => {
     const fields = dateFieldsForRecordType(id);
@@ -1812,10 +1827,21 @@ function initDriveTokenClient() {
   if (driveTokenClient || !driveConfigured() || typeof google === 'undefined') return;
   driveTokenClient = google.accounts.oauth2.initCodeClient({ client_id: GOOGLE_CLIENT_ID, scope: DRIVE_SCOPE, ux_mode: 'popup', callback: '' });
 }
+// The "connected" state is only a localStorage flag, so it happily outlives a
+// connection that has actually stopped working (an expired grant, or the server
+// half of the flow not being configured). Whenever a token attempt definitively
+// fails, clear it - otherwise the header's status dot keeps claiming "connected"
+// while every single Drive action fails, which is worse than showing nothing.
+function driveMarkDisconnected() {
+  driveAccessToken = null;
+  driveTokenExpiry = 0;
+  localStorage.removeItem('or-drive-connected');
+  updateDriveUI();
+}
 async function driveExchangeCode(code) {
   const res = await fetch('/api/google/exchange', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ code }) });
   const data = await res.json();
-  if (!res.ok || data.error) throw new Error(data.error || `HTTP ${res.status}`);
+  if (!res.ok || data.error) { driveMarkDisconnected(); throw new Error(data.error || `HTTP ${res.status}`); }
   driveAccessToken = data.access_token;
   driveTokenExpiry = Date.now() + (Number(data.expires_in) || 3600) * 1000 - 60000;
   if (data.refresh_token) localStorage.setItem(DRIVE_REFRESH_KEY, data.refresh_token);
@@ -1843,7 +1869,13 @@ async function driveSilentRefresh() {
   try {
     const res = await fetch('/api/google/refresh', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ refresh_token: refreshToken }) });
     const data = await res.json();
-    if (!res.ok || data.error) { if (data.error === 'invalid_grant') localStorage.removeItem(DRIVE_REFRESH_KEY); return null; }
+    if (!res.ok || data.error) {
+      // invalid_grant means the stored refresh token is dead for good (revoked or
+      // expired) - drop it and stop claiming to be connected, rather than silently
+      // falling back to a popup forever.
+      if (data.error === 'invalid_grant') { localStorage.removeItem(DRIVE_REFRESH_KEY); driveMarkDisconnected(); }
+      return null;
+    }
     driveAccessToken = data.access_token;
     driveTokenExpiry = Date.now() + (Number(data.expires_in) || 3600) * 1000 - 60000;
     return driveAccessToken;
@@ -3822,21 +3854,21 @@ function renderAgenda() {
   let ev = [];
   (toolData.flights || []).forEach(f => {
     if (!f.date) return;
-    ev.push({ date: f.date, time: f.dep || '', type: 'flight', key: 'flight:' + f.id, kind: t('trip.agenda.flightKind'), title: f.flight || t('trip.agenda.flightKind'), sub: [(f.from && f.to) ? f.from + ' ← ' + f.to : (f.from || f.to || ''), f.arr ? t('trip.agenda.landingPrefix') + f.arr : ''].filter(Boolean).join(' · '), cost: f.cost });
+    ev.push({ date: normalizeDateStr(f.date), time: f.dep || '', type: 'flight', key: 'flight:' + f.id, kind: t('trip.agenda.flightKind'), title: f.flight || t('trip.agenda.flightKind'), sub: [(f.from && f.to) ? f.from + ' ← ' + f.to : (f.from || f.to || ''), f.arr ? t('trip.agenda.landingPrefix') + f.arr : ''].filter(Boolean).join(' · '), cost: f.cost });
   });
   (toolData.hotels || []).forEach(h => {
-    if (h.checkin) ev.push({ date: h.checkin, time: '', type: 'hotel', key: 'hotel:' + h.id + ':in', kind: t('opt.catHotel'), title: t('trip.agenda.checkinPrefix') + (h.name || ''), address: h.address, coords: h.coords });
-    if (h.checkout) ev.push({ date: h.checkout, time: '', type: 'hotel', key: 'hotel:' + h.id + ':out', kind: t('opt.catHotel'), title: t('trip.agenda.checkoutPrefix') + (h.name || ''), address: h.address, coords: h.coords });
+    if (h.checkin) ev.push({ date: normalizeDateStr(h.checkin), time: '', type: 'hotel', key: 'hotel:' + h.id + ':in', kind: t('opt.catHotel'), title: t('trip.agenda.checkinPrefix') + (h.name || ''), address: h.address, coords: h.coords });
+    if (h.checkout) ev.push({ date: normalizeDateStr(h.checkout), time: '', type: 'hotel', key: 'hotel:' + h.id + ':out', kind: t('opt.catHotel'), title: t('trip.agenda.checkoutPrefix') + (h.name || ''), address: h.address, coords: h.coords });
   });
   (toolData.restaurants || []).forEach(r => {
-    if (r.date) ev.push({ date: r.date, time: '', type: 'restaurant', key: 'restaurant:' + r.id, kind: t('opt.catRestaurant'), title: r.name || '', address: r.address, coords: r.coords, cost: r.cost });
+    if (r.date) ev.push({ date: normalizeDateStr(r.date), time: '', type: 'restaurant', key: 'restaurant:' + r.id, kind: t('opt.catRestaurant'), title: r.name || '', address: r.address, coords: r.coords, cost: r.cost });
   });
   (toolData.cars || []).forEach(c => {
-    if (c.pickupDate) ev.push({ date: c.pickupDate, time: '', type: 'car', key: 'car:' + c.id + ':pickup', kind: t('trip.agenda.carKind'), title: t('trip.agenda.carPickupPrefix') + (c.company || ''), sub: c.cartype, address: c.pickupLoc, cost: c.cost });
-    if (c.returnDate) ev.push({ date: c.returnDate, time: '', type: 'car', key: 'car:' + c.id + ':return', kind: t('trip.agenda.carKind'), title: t('trip.agenda.carReturnPrefix') + (c.company || ''), address: c.returnLoc });
+    if (c.pickupDate) ev.push({ date: normalizeDateStr(c.pickupDate), time: '', type: 'car', key: 'car:' + c.id + ':pickup', kind: t('trip.agenda.carKind'), title: t('trip.agenda.carPickupPrefix') + (c.company || ''), sub: c.cartype, address: c.pickupLoc, cost: c.cost });
+    if (c.returnDate) ev.push({ date: normalizeDateStr(c.returnDate), time: '', type: 'car', key: 'car:' + c.id + ':return', kind: t('trip.agenda.carKind'), title: t('trip.agenda.carReturnPrefix') + (c.company || ''), address: c.returnLoc });
   });
   (toolData.itinerary || []).forEach(p => {
-    ev.push({ date: p.date, time: p.time || '', type: 'poi', key: 'poi:' + p.id, kind: p.category ? optLabel(p.category) : t('trip.agenda.activityKind'), title: p.name || '', sub: p.notes, address: p.address, coords: p.coords, cost: p.cost });
+    ev.push({ date: normalizeDateStr(p.date), time: p.time || '', type: 'poi', key: 'poi:' + p.id, kind: p.category ? optLabel(p.category) : t('trip.agenda.activityKind'), title: p.name || '', sub: p.notes, address: p.address, coords: p.coords, cost: p.cost });
   });
   if (tripDay) ev = ev.filter(e => e.date === tripDay);
   ev.sort((a, b) => {
@@ -3874,7 +3906,7 @@ function renderAgenda() {
     if (e.date !== cur) {
       cur = e.date;
       const n = dayNo(e.date);
-      html += `<div class="agenda-day">${n && n > 0 ? t('trip.dayNPrefix', { n }) : ''}${fmtDate(e.date, { weekday: 'long' })}</div>`;
+      html += `<div class="agenda-day" data-date="${escapeHtml(e.date)}">${n && n > 0 ? t('trip.dayNPrefix', { n }) : ''}${fmtDate(e.date, { weekday: 'long' })}</div>`;
     }
     html += `<div class="agenda-item" data-key="${escapeHtml(e.key)}" data-date="${escapeHtml(e.date)}">
       <span class="agenda-time">${escapeHtml(e.time) || '—'}</span>
@@ -3891,10 +3923,11 @@ function renderAgenda() {
   box.innerHTML = html;
 }
 
-// Manual drag-reorder of agenda items, scoped to a single day (crossing into another
-// day would mean changing the item's actual date, which is a separate edit, not a
-// reorder). Uses Pointer Events rather than native HTML5 drag-and-drop so it works
-// with touch, not just a mouse.
+// Drag-reorder agenda items - within a day this just remembers a manual order
+// (saveAgendaOrder); dragging across a day boundary actually changes the
+// item's date field (moveAgendaItemToDate), since that's what "moving it to a
+// different day" means. Uses Pointer Events rather than native HTML5
+// drag-and-drop so it works with touch, not just a mouse.
 let agendaDrag = null;
 function agendaDragStart(ev) {
   const handle = ev.target.closest('.agenda-drag');
@@ -3906,7 +3939,7 @@ function agendaDragStart(ev) {
   placeholder.className = 'agenda-item-placeholder';
   placeholder.style.height = rect.height + 'px';
   item.after(placeholder);
-  agendaDrag = { item, date: item.dataset.date, offsetY: ev.clientY - rect.top, placeholder };
+  agendaDrag = { item, date: item.dataset.date, key: item.dataset.key, offsetY: ev.clientY - rect.top, placeholder };
   item.classList.add('agenda-item-dragging');
   item.style.position = 'fixed';
   item.style.zIndex = '50';
@@ -3918,25 +3951,64 @@ function agendaDragStart(ev) {
 function agendaDragMove(ev) {
   if (!agendaDrag) return;
   ev.preventDefault();
-  const { item, placeholder, date } = agendaDrag;
+  const { item, placeholder } = agendaDrag;
   item.style.top = (ev.clientY - agendaDrag.offsetY) + 'px';
-  const siblings = [...document.querySelectorAll('.agenda-item')].filter(el => el !== item && el.dataset.date === date);
+  // Considers day headers too (not just other items), so the placeholder - and
+  // therefore a drop - can land in a different day's group, not just reorder
+  // within the original one.
+  const box = document.getElementById('trip-agenda');
+  const nodes = [...box.children].filter(el => el !== item && el !== placeholder);
   let placed = false;
-  for (const sib of siblings) {
-    const r = sib.getBoundingClientRect();
-    if (ev.clientY < r.top + r.height / 2) { sib.before(placeholder); placed = true; break; }
+  for (const node of nodes) {
+    const r = node.getBoundingClientRect();
+    if (ev.clientY < r.top + r.height / 2) { node.before(placeholder); placed = true; break; }
   }
-  if (!placed && siblings.length) siblings[siblings.length - 1].after(placeholder);
+  if (!placed && nodes.length) nodes[nodes.length - 1].after(placeholder);
 }
-function agendaDragEnd() {
+// Walks backward from an element to the nearest preceding node carrying a
+// data-date - either an .agenda-day header or another .agenda-item - to find
+// which day's group a given DOM position (e.g. the drag placeholder) is in.
+function agendaDateAtPosition(el) {
+  let node = el.previousElementSibling;
+  while (node) {
+    if (node.dataset && node.dataset.date) return node.dataset.date;
+    node = node.previousElementSibling;
+  }
+  return null;
+}
+// Maps an agenda item's key (see renderAgenda) to the record + field a date
+// change should actually be written to.
+const AGENDA_DATE_FIELD = {
+  flight: { rec: 'flights', field: 'date' },
+  restaurant: { rec: 'restaurants', field: 'date' },
+  poi: { rec: 'itinerary', field: 'date' },
+  'hotel:in': { rec: 'hotels', field: 'checkin' },
+  'hotel:out': { rec: 'hotels', field: 'checkout' },
+  'car:pickup': { rec: 'cars', field: 'pickupDate' },
+  'car:return': { rec: 'cars', field: 'returnDate' },
+};
+async function moveAgendaItemToDate(key, newDate) {
+  const [type, id, sub] = key.split(':');
+  const spec = AGENDA_DATE_FIELD[sub ? `${type}:${sub}` : type];
+  if (!spec) return;
+  await api(`/api/records/${spec.rec}/${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ [spec.field]: newDate }) });
+}
+async function agendaDragEnd() {
   if (!agendaDrag) return;
-  const { item, placeholder, date } = agendaDrag;
+  const { item, placeholder, date: originalDate, key } = agendaDrag;
+  agendaDrag = null; // clear up front so a stray late event can't act on stale state while the API call below is in flight
+  const newDate = agendaDateAtPosition(placeholder) || originalDate;
   placeholder.replaceWith(item);
   item.classList.remove('agenda-item-dragging');
   item.style.position = ''; item.style.zIndex = ''; item.style.width = ''; item.style.top = ''; item.style.left = '';
-  const keys = [...document.querySelectorAll('.agenda-item')].filter(el => el.dataset.date === date).map(el => el.dataset.key);
-  saveAgendaOrder(date, keys);
-  agendaDrag = null;
+
+  if (newDate !== originalDate) {
+    await moveAgendaItemToDate(key, newDate);
+    await refreshCurrent();
+  } else {
+    const keys = [...document.querySelectorAll('.agenda-item')].filter(el => el.dataset.date === newDate).map(el => el.dataset.key);
+    saveAgendaOrder(newDate, keys);
+  }
 }
 
 // Re-render everything that responds to the selected day

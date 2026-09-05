@@ -2,6 +2,10 @@
 
 All notable changes to Or are logged here, newest first. Version shown matches the number in the app's Help dialog (בדיקת עדכונים).
 
+## 1.34.5 — 2026-09-05
+
+- **Fixed**: switched the NVIDIA fallback to `nvidia/nemotron-3.5-lightning-30b-a3b`, the faster Agent-oriented model shown in the NVIDIA catalog, to reduce full-context timeouts.
+
 ## 1.34.4 — 2026-09-05
 
 - **Fixed**: switched the NVIDIA fallback to the available `openai/gpt-oss-20b` endpoint shown in the NVIDIA catalog.

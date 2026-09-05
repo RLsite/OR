@@ -12,7 +12,7 @@
 
 export const GOOGLE_CLIENT_ID = '297437869958-gvh093f0s50ti02t8l7bg4dbo858g38h.apps.googleusercontent.com'; // public, not a secret - kept in sync with index.html's copy
 export const GEMINI_MODEL = 'gemini-3.6-flash';
-export const NVIDIA_MODEL = 'openai/gpt-oss-20b';
+export const NVIDIA_MODEL = 'nvidia/nemotron-3.5-lightning-30b-a3b';
 
 export function jsonResponse(body, status) {
   return new Response(JSON.stringify(body), { status: status || 200, headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store', 'Access-Control-Allow-Origin': '*' } });

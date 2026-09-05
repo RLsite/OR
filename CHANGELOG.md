@@ -2,6 +2,10 @@
 
 All notable changes to Or are logged here, newest first. Version shown matches the number in the app's Help dialog (בדיקת עדכונים).
 
+## 1.34.14 — 2026-09-05
+
+- **Fixed**: hardened the assistant identity instruction so the NVIDIA fallback no longer introduces itself as a model or discusses its training; lowered its response randomness to reduce repeated, off-topic output while preserving the Gemini-first provider order.
+
 ## 1.34.13 — 2026-09-05
 
 - **Privacy**: clarified that Google states prompts sent through its Gemini Free Tier may be used to improve its products, so the explicit AI-document description notice now gives users a clear warning before they choose to send readable PDF text.

@@ -13,9 +13,10 @@ binding = "ASSETS"
 include = ["index.html", "version.json", "terms.html", "privacy.html", "manifest.json", "*.png", "*.ico"]
 not_found_handling = "404-page"
 
-# Cloudflare Workers AI - the first (fastest/no-key) provider the chat assistant
-# tries, before Gemini and NVIDIA. This is a binding, not a secret: it's declared
-# here and deployed with the code, so unlike GEMINI_API_KEY/NVIDIA_API_KEY it can
-# never fall out of sync between the dashboard and what's actually live.
-[ai]
-binding = "AI"
+# TEMPORARILY REMOVED for a diagnostic test: every deploy since this [ai] block
+# was added has updated static assets (version.json) but never actually
+# activated the new worker.js - /api/debug-ai kept 404ing on old code no matter
+# how many versions were pushed. Testing whether the account can't yet bind
+# Workers AI, silently failing worker activation while assets still sync.
+# [ai]
+# binding = "AI"

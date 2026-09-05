@@ -2,6 +2,13 @@
 
 All notable changes to Or are logged here, newest first. Version shown matches the number in the app's Help dialog (בדיקת עדכונים).
 
+## 1.35.7 — 2026-09-05
+
+- **Added**: a short, optional personalisation questionnaire in the assistant (trip style, travelling party, pace, interests, budget and an optional note). Its answers are saved with the current trip, backed up in Excel, and supplied to every provider on future questions.
+- **Improved**: the assistant now follows one concise travel-planning playbook across Workers AI, Gemini and NVIDIA: it checks existing trip data before suggesting places, avoids duplicates, clusters nearby attractions and local food into practical day plans, and defaults to short answers to reduce AI usage costs.
+- **Fixed**: a provider response that talks about its model, training or provider identity is now rejected server-side and automatically retried with the next provider instead of being shown to the traveller. If an actual fallback occurs, the UI only says “Switching models…”.
+- **Fixed**: requests needing current web recommendations now try Gemini first because it is the provider with Google Search; ordinary chat remains Workers AI → Gemini → NVIDIA. Provider output is capped at 360 tokens to prevent unnecessarily long, costly responses.
+
 ## 1.35.6 — 2026-09-05
 
 - **Fixed**: found the real cause behind Workers AI (and any future GET-based `/api/*` route) appearing to silently run stale code after every deploy: Cloudflare's static-assets layer answers a GET request whose path matches no real file *before* worker.js's router ever runs, so it never actually reached the new code - only POST requests (like the assistant's actual chat calls) always reached the Worker regardless. `/api/*` now always runs the Worker first.

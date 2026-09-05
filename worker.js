@@ -32,6 +32,9 @@ const CF_ACCOUNT_ID = '530e19fb222ff31560e9fe60073df458'; // public - visible in
 const WORKERS_AI_MODEL = '@cf/meta/llama-3.2-1b-instruct'; // cheapest Workers AI model confirmed to support tool_calls
 const GEMINI_MODEL = 'gemini-3.6-flash';
 const NVIDIA_MODEL = 'nvidia/nemotron-3.5-lightning-30b-a3b';
+// Keep replies short by default. The client instruction also asks for concise
+// answers, but a provider-side ceiling prevents an accidental long completion.
+const ASSISTANT_MAX_OUTPUT_TOKENS = 360;
 const MAX_HTML_BYTES = 300000; // the tags we need are always in <head>; no reason to buffer a whole page
 
 function decodeEntities(s) {
@@ -274,8 +277,24 @@ function isRateLimited(ip) {
 // All conversation state and tool-call execution is owned and looped by the client
 // (see index.html's askAssistant()) - this route never stores anything between
 // requests, so every call is self-contained and scoped only to whoever sent it.
+function isUsableAssistantContent(content) {
+  const parts = content && Array.isArray(content.parts) ? content.parts : [];
+  // A tool call is always actionable, even if the provider also included an
+  // unnecessary short text part beside it.
+  if (parts.some(part => part && part.functionCall)) return true;
+  const text = parts.map(part => part && part.text ? String(part.text) : '').join(' ').replace(/\s+/g, ' ').trim();
+  if (!text) return false;
+  // Smaller fallback models occasionally ignore the system prompt and answer
+  // with a provider/training disclaimer instead of the traveller's request.
+  // Treat it as a failed attempt so the next provider gets a chance to answer.
+  const startsWithModelIdentity = /(?:^|[\s.!?…])(?:אני|I(?:'m| am)?|I’m)\s+(?:מודל(?:\s+שפה)?|(?:an?\s+)?(?:AI|language)\s+model|בוט|chatbot|virtual\s+assistant|עוזר\s+וירטואלי)/i.test(text);
+  const providerTrainingIdentity = /(?:NVIDIA|Gemini|Google|Cloudflare|Workers?\s*AI).{0,180}(?:model|training|trained|researchers?|provider|מודל|חוקרים|אומן(?:תי)?|נוצר(?:תי)?|פותח(?:תי)?)/i.test(text)
+    || /(?:אומן(?:תי)?|נוצר(?:תי)?|פותח(?:תי)?|trained|created|developed)\s+(?:על[\s-]*ידי|by)\s+(?:חוקרי|researchers?|NVIDIA|Google|Gemini)/i.test(text);
+  return !startsWithModelIdentity && !providerTrainingIdentity;
+}
+
 async function askGemini(body, env) {
-  const payload = { contents: body.contents };
+  const payload = { contents: body.contents, generationConfig: { maxOutputTokens: ASSISTANT_MAX_OUTPUT_TOKENS } };
   if (Array.isArray(body.tools)) payload.tools = body.tools;
   if (body.googleSearch) {
     payload.tools = [...(payload.tools || []), { googleSearch: {} }];
@@ -292,7 +311,7 @@ async function askGemini(body, env) {
   try { data = await res.json(); } catch (e) { return { error: 'gemini returned an invalid response' }; }
   if (!res.ok) return { error: (data.error && data.error.message) || 'gemini error' };
   const content = data.candidates && data.candidates[0] && data.candidates[0].content;
-  return content ? { content } : { error: 'empty response' };
+  return content && isUsableAssistantContent(content) ? { content } : { error: 'gemini returned an unusable response' };
 }
 
 async function askNvidia(body, env) {
@@ -308,7 +327,7 @@ async function askNvidia(body, env) {
   // API field. Calling the HTTP API directly (as this does), those fields belong
   // at the top level of the JSON body instead, or NVIDIA rejects the whole
   // request with "Unsupported parameter(s): `extra_body`".
-  const payload = { model: env.NVIDIA_MODEL || NVIDIA_MODEL, messages, temperature: 0.2, top_p: 0.95, max_tokens: 512, stream: false, chat_template_kwargs: { enable_thinking: false } };
+  const payload = { model: env.NVIDIA_MODEL || NVIDIA_MODEL, messages, temperature: 0.2, top_p: 0.95, max_tokens: ASSISTANT_MAX_OUTPUT_TOKENS, stream: false, chat_template_kwargs: { enable_thinking: false } };
   const tools = geminiToOpenAiTools(body.tools);
   if (tools.length) { payload.tools = tools; payload.tool_choice = 'auto'; }
   let res;
@@ -322,7 +341,7 @@ async function askNvidia(body, env) {
   try { data = JSON.parse(raw); } catch (e) { return { error: `nvidia HTTP ${res.status}: ${raw.slice(0, 300) || 'invalid response'}` }; }
   if (!res.ok) return { error: (data.error && (data.error.message || data.error)) || data.detail || data.message || `nvidia HTTP ${res.status}` };
   const content = openAiToGeminiContent(data);
-  return content ? { content } : { error: 'nvidia returned an empty response' };
+  return content && isUsableAssistantContent(content) ? { content } : { error: 'nvidia returned an unusable response' };
 }
 
 // Workers AI's own tool-calling shape is a bit simpler than OpenAI's - tools are
@@ -358,7 +377,7 @@ async function askWorkersAi(body, env) {
     messages.push({ role: 'system', content: systemInstruction });
   }
   messages.push(...geminiToOpenAiMessages(body.contents));
-  const options = { messages };
+  const options = { messages, max_tokens: ASSISTANT_MAX_OUTPUT_TOKENS };
   const tools = geminiToWorkersAiTools(body.tools);
   if (tools.length) options.tools = tools;
   let json;
@@ -373,7 +392,7 @@ async function askWorkersAi(body, env) {
   } catch (e) { return { error: (e && e.message) || 'workers ai request failed' }; }
   if (!json || !json.success) return { error: (json && json.errors && json.errors[0] && json.errors[0].message) || 'workers ai request failed' };
   const content = workersAiToGeminiContent(json.result);
-  return content ? { content } : { error: 'workers ai returned an empty response' };
+  return content && isUsableAssistantContent(content) ? { content } : { error: 'workers ai returned an unusable response' };
 }
 
 async function handleChat(request, env) {
@@ -385,15 +404,29 @@ async function handleChat(request, env) {
   const body = await readJsonBody(request);
   if (!body || !Array.isArray(body.contents) || !body.contents.length) return jsonResponse({ error: 'missing contents' }, 400);
 
-  const workersAi = env.CF_API_TOKEN ? await askWorkersAi(body, env) : { error: 'workers ai not configured' };
-  if (workersAi.content) return jsonResponse({ content: workersAi.content, provider: 'workers-ai' });
+  // Gemini is the only configured provider with Google Search. A request that
+  // requires current recommendations must therefore try Gemini first; normal
+  // chat remains Workers AI -> Gemini -> NVIDIA for speed and cost control.
+  let workersAi = { error: 'workers ai not attempted' };
+  let gemini = { error: 'gemini not attempted' };
+  if (body.googleSearch && env.GEMINI_API_KEY) {
+    gemini = await askGemini(body, env);
+    if (gemini.content) return jsonResponse({ content: gemini.content, provider: 'gemini' });
+  }
 
-  const gemini = env.GEMINI_API_KEY ? await askGemini(body, env) : { error: 'gemini not configured' };
-  if (gemini.content) return jsonResponse({ content: gemini.content, provider: 'gemini', fallback: 'workers-ai' });
+  workersAi = env.CF_API_TOKEN ? await askWorkersAi(body, env) : { error: 'workers ai not configured' };
+  if (workersAi.content) return jsonResponse({ content: workersAi.content, provider: 'workers-ai', ...(body.googleSearch ? { fallback: 'gemini' } : {}) });
+
+  if (!body.googleSearch) {
+    gemini = env.GEMINI_API_KEY ? await askGemini(body, env) : { error: 'gemini not configured' };
+    if (gemini.content) return jsonResponse({ content: gemini.content, provider: 'gemini', fallback: 'workers-ai' });
+  } else if (!env.GEMINI_API_KEY) {
+    gemini = { error: 'gemini not configured' };
+  }
 
   if (env.NVIDIA_API_KEY) {
     const nvidia = await askNvidia(body, env);
-    if (nvidia.content) return jsonResponse({ content: nvidia.content, provider: 'nvidia', fallback: 'gemini' });
+    if (nvidia.content) return jsonResponse({ content: nvidia.content, provider: 'nvidia', fallback: body.googleSearch ? 'workers-ai' : 'gemini' });
     return jsonResponse({ error: `Workers AI: ${workersAi.error}; Gemini: ${gemini.error}; NVIDIA: ${nvidia.error}` }, 500);
   }
   return jsonResponse({ error: `Workers AI: ${workersAi.error}; Gemini: ${gemini.error}` }, 500);

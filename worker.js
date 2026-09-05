@@ -40,7 +40,16 @@ function metaContent(html, prop) {
 }
 
 function jsonResponse(body, status) {
-  return new Response(JSON.stringify(body), { status: status || 200, headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' } });
+  return new Response(JSON.stringify(body), { status: status || 200, headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store', 'Access-Control-Allow-Origin': '*' } });
+}
+
+function corsResponse() {
+  return new Response(null, { status: 204, headers: {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type',
+    'Cache-Control': 'no-store',
+  } });
 }
 
 async function readJsonBody(request) {
@@ -222,7 +231,10 @@ export default {
     if (url.pathname === '/api/link-preview') return handleLinkPreview(request);
     if (url.pathname === '/api/google/exchange') return handleGoogleExchange(request, env);
     if (url.pathname === '/api/google/refresh') return handleGoogleRefresh(request, env);
-    if (url.pathname === '/api/chat') return handleChat(request, env);
+    if (url.pathname === '/api/chat') {
+      if (request.method === 'OPTIONS') return corsResponse();
+      return handleChat(request, env);
+    }
     return env.ASSETS.fetch(request);
   },
 };

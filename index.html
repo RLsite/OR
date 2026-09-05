@@ -1690,7 +1690,7 @@ applyLang(localStorage.getItem('or-lang') || 'he', false);
 // ===================== Client-side data layer (runs fully in the browser) =====================
 // Data lives in localStorage; Excel import/export via SheetJS. No server needed — works on GitHub Pages.
 // (In the future a cloud backend such as Google Drive can replace loadDB/saveDB.)
-const APP_VERSION = '1.32.2';
+const APP_VERSION = '1.32.3';
 const APP_BUILT_AT = 'dev'; // replaced by build.js with the deploy timestamp — lets a running page detect it's stale
 const STORE_KEY = 'or-store-v1';
 const BUGS_COLS = ['field.date', 'field.toolOrPage', 'field.description', 'field.browser'];
@@ -3352,18 +3352,30 @@ async function askAssistant(userText) {
   try {
     let guard = 0;
     while (guard++ < 8) { // hard cap on tool-call round-trips in one turn, so a confused model can't loop forever
-      const res = await fetch('/api/chat?_=' + Date.now(), {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        cache: 'no-store',
-        body: JSON.stringify({ contents: assistantContents, tools: buildGeminiTools(), systemInstruction: buildAssistantSystemInstruction() }),
-      });
-      const raw = await res.text();
-      let data;
-      const contentType = (res.headers.get('content-type') || '').toLowerCase();
-      try {
-        if (contentType.includes('text/html') || raw.trimStart().startsWith('<')) throw new Error('html response');
-        data = JSON.parse(raw);
-      } catch (parseErr) { throw new Error(t('assistant.apiUnavailable')); }
+      const payload = JSON.stringify({ contents: assistantContents, tools: buildGeminiTools(), systemInstruction: buildAssistantSystemInstruction() });
+      const endpoints = [];
+      try { endpoints.push(new URL('/api/chat', location.href).href); } catch (e) { /* invalid location is handled by the production endpoint below */ }
+      const productionEndpoint = 'https://or.rlapp.net/api/chat';
+      if (!endpoints.includes(productionEndpoint)) endpoints.push(productionEndpoint);
+      let res = null;
+      let data = null;
+      for (const endpoint of endpoints) {
+        try {
+          const separator = endpoint.includes('?') ? '&' : '?';
+          const candidate = await fetch(endpoint + separator + '_=' + Date.now(), {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            cache: 'no-store',
+            body: payload,
+          });
+          const raw = await candidate.text();
+          const contentType = (candidate.headers.get('content-type') || '').toLowerCase();
+          if (contentType.includes('text/html') || raw.trimStart().startsWith('<')) continue;
+          try { data = JSON.parse(raw); } catch (parseErr) { continue; }
+          res = candidate;
+          break;
+        } catch (requestErr) { /* try the production endpoint if this is an old/preview host */ }
+      }
+      if (!res || !data) throw new Error(t('assistant.apiUnavailable'));
       if (res.status === 500 && data.error === 'not configured') throw new Error(t('assistant.notConfigured'));
       if (res.status === 429) throw new Error(t('assistant.rateLimited'));
       if (!res.ok || data.error) throw new Error(data.error || `HTTP ${res.status}`);

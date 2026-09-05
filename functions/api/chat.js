@@ -1,4 +1,4 @@
-import { GEMINI_MODEL, jsonResponse, readJsonBody } from '../_lib.js';
+import { GEMINI_MODEL, corsResponse, jsonResponse, readJsonBody } from '../_lib.js';
 
 // Best-effort per-isolate rate limit - NOT a hard guarantee (Pages Functions run
 // many parallel isolates around the world with no shared memory between them),
@@ -13,6 +13,10 @@ function isRateLimited(ip) {
   hits.push(now);
   chatHits.set(ip, hits);
   return hits.length > CHAT_LIMIT.max;
+}
+
+export function onRequestOptions() {
+  return corsResponse();
 }
 
 // POST /api/chat {contents, tools?, systemInstruction?} - a thin, stateless relay

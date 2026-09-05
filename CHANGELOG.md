@@ -2,6 +2,10 @@
 
 All notable changes to Or are logged here, newest first. Version shown matches the number in the app's Help dialog (בדיקת עדכונים).
 
+## 1.32.4 — 2026-09-05
+
+- **Fixed**: upstream Gemini failures now stay JSON with a client-visible error instead of using HTTP 502, which Cloudflare was replacing with an unhelpful plain-text gateway page.
+
 ## 1.32.3 — 2026-09-05
 
 - **Fixed**: the assistant now falls back to the production chat API when the app is opened through an old Pages deployment, and the chat API supports cross-origin preflight/JSON responses so stale preview URLs do not strand the assistant.

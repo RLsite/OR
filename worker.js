@@ -210,15 +210,15 @@ async function handleChat(request, env) {
       signal: AbortSignal.timeout(30000),
     });
   } catch (e) {
-    return jsonResponse({ error: 'gemini request failed' }, 502);
+    return jsonResponse({ error: 'gemini request failed' }, 500);
   }
   let data;
   try { data = await res.json(); }
-  catch (e) { return jsonResponse({ error: 'gemini returned an invalid response' }, 502); }
+  catch (e) { return jsonResponse({ error: 'gemini returned an invalid response' }, 500); }
   data = data || {};
-  if (!res.ok) return jsonResponse({ error: (data.error && data.error.message) || 'gemini error' }, 502);
+  if (!res.ok) return jsonResponse({ error: (data.error && data.error.message) || 'gemini error' }, 500);
   const content = data.candidates && data.candidates[0] && data.candidates[0].content;
-  if (!content) return jsonResponse({ error: 'empty response' }, 502);
+  if (!content) return jsonResponse({ error: 'empty response' }, 500);
   return jsonResponse({ content });
 }
 

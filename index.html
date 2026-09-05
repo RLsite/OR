@@ -637,8 +637,12 @@
     .trip-datebar-head { align-items: stretch; }
     .trip-datebar-head > .btn-primary,
     .trip-datebar-head > .btn-edit { flex: 1 1 0; min-width: 0; }
-    .day-strip { flex-basis: 100%; width: 100%; order: 3; }
+    .day-strip { flex-basis: 100%; width: 100%; order: 1; }
     .day-sq { flex: 0 0 66px; }
+    /* "All days" as one wide bar below the day cells, not a narrow square
+       squeezed above them on its own line. */
+    .day-sq-all { order: 2; flex: 0 0 100%; width: 100%; flex-direction: row; justify-content: center; gap: 8px; padding: 10px 6px; }
+    .day-sq-all .ddate, .day-sq-all .ddot { display: none; }
 
     .agenda-item { margin-inline-start: 44px; padding-inline-start: 10px; gap: 6px; }
     .agenda-time { inset-inline-start: -44px; width: 36px; font-size: 12px; }
@@ -1820,7 +1824,7 @@ applyLang(localStorage.getItem('or-lang') || 'he', false);
 // ===================== Client-side data layer (runs fully in the browser) =====================
 // Data lives in localStorage; Excel import/export via SheetJS. No server needed — works on GitHub Pages.
 // (In the future a cloud backend such as Google Drive can replace loadDB/saveDB.)
-const APP_VERSION = '1.35.12';
+const APP_VERSION = '1.35.13';
 const APP_BUILT_AT = 'dev'; // replaced by build.js with the deploy timestamp — lets a running page detect it's stale
 const STORE_KEY = 'or-store-v1';
 const BUGS_COLS = ['field.date', 'field.toolOrPage', 'field.description', 'field.browser'];

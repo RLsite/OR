@@ -2,6 +2,10 @@
 
 All notable changes to Or are logged here, newest first. Version shown matches the number in the app's Help dialog (בדיקת עדכונים).
 
+## 1.35.13 — 2026-09-06
+
+- **Fixed**: on a narrow phone screen, the "All days" button sat squeezed above the day cells on its own line. It's now one wide bar below the day-cell row instead.
+
 ## 1.35.12 — 2026-09-06
 
 - **Added**: right-click an activity in the Daily Agenda and choose Delete to remove it directly, without switching to its own tab first - same confirmation as every other delete in the app.

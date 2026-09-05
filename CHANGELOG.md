@@ -2,6 +2,10 @@
 
 All notable changes to Or are logged here, newest first. Version shown matches the number in the app's Help dialog (בדיקת עדכונים).
 
+## 1.35.1 — 2026-09-05
+
+- **Changed**: switched Workers AI to Llama 3.2 1B Instruct, the cheapest Workers AI model confirmed to still support tool calling, instead of the 3B version.
+
 ## 1.35.0 — 2026-09-05
 
 - **Added**: Cloudflare Workers AI (Llama 3.2 3B Instruct) as the assistant's new first provider, tried before Gemini and NVIDIA. It needs no API key - it runs directly on Cloudflare's own infrastructure - so it can't be affected by a key going missing or invalid.

@@ -23,7 +23,7 @@
 // 404'd. This is the version that actually runs.)
 
 const GOOGLE_CLIENT_ID = '297437869958-gvh093f0s50ti02t8l7bg4dbo858g38h.apps.googleusercontent.com'; // public, not a secret - kept in sync with index.html's copy
-const WORKERS_AI_MODEL = '@cf/meta/llama-3.2-3b-instruct';
+const WORKERS_AI_MODEL = '@cf/meta/llama-3.2-1b-instruct'; // cheapest Workers AI model confirmed to support tool_calls
 const GEMINI_MODEL = 'gemini-3.6-flash';
 const NVIDIA_MODEL = 'nvidia/nemotron-3.5-lightning-30b-a3b';
 const MAX_HTML_BYTES = 300000; // the tags we need are always in <head>; no reason to buffer a whole page

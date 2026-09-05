@@ -1644,8 +1644,15 @@ function applyI18nDom(root) {
 // Anything else unparseable is returned unchanged rather than guessed at.
 function normalizeDateStr(v) {
   if (typeof v !== 'string') return v;
-  const m = /^(\d{2})-(\d{2})-(\d{2})$/.exec(v);
-  return m ? `${2000 + Number(m[1])}-${m[2]}-${m[3]}` : v;
+  // Year is 1-4 digits, not just exactly 2: a browser date-input can also leave
+  // a short year zero-padded to "0026" (native <input type=date> pads digits
+  // from the right as they're typed - if a form is submitted before all 4 are
+  // in, "26" typed into the year segment reads back as "0026", not "26").
+  // Both shapes carry the same real year, so both get the same +2000 fix.
+  const m = /^(\d{1,4})-(\d{2})-(\d{2})$/.exec(v);
+  if (!m) return v;
+  const year = Number(m[1]);
+  return year < 100 ? `${2000 + year}-${m[2]}-${m[3]}` : v;
 }
 // --- Date / time formatting: always dd.mm.yyyy, always 24h (never locale-dependent) ---
 function fmtDate(dateInput, opts) {
@@ -1723,7 +1730,7 @@ applyLang(localStorage.getItem('or-lang') || 'he', false);
 // ===================== Client-side data layer (runs fully in the browser) =====================
 // Data lives in localStorage; Excel import/export via SheetJS. No server needed — works on GitHub Pages.
 // (In the future a cloud backend such as Google Drive can replace loadDB/saveDB.)
-const APP_VERSION = '1.35.1';
+const APP_VERSION = '1.35.2';
 const APP_BUILT_AT = 'dev'; // replaced by build.js with the deploy timestamp — lets a running page detect it's stale
 const STORE_KEY = 'or-store-v1';
 const BUGS_COLS = ['field.date', 'field.toolOrPage', 'field.description', 'field.browser'];
@@ -3225,7 +3232,7 @@ const TOOLKIT = {
   },
   flights: {
     kind: 'list', addLabel: 'list.flights.addLabel', listTitle: 'list.flights.title', emptyMsg: 'list.flights.empty',
-    dayFilter: (r, day) => r.date === day,
+    dayFilter: (r, day) => normalizeDateStr(r.date) === day,
     columns: [
       { f: 'date', label: 'field.date', type: 'date', required: true, isDate: true },
       { f: 'flight', label: 'field.flightNo', type: 'text', required: true },
@@ -3239,7 +3246,7 @@ const TOOLKIT = {
   },
   hotels: {
     kind: 'list', addLabel: 'list.hotels.addLabel', listTitle: 'list.hotels.title', emptyMsg: 'list.hotels.empty',
-    dayFilter: (r, day) => (r.checkin && r.checkout) ? (r.checkin <= day && day <= r.checkout) : false,
+    dayFilter: (r, day) => (r.checkin && r.checkout) ? (normalizeDateStr(r.checkin) <= day && day <= normalizeDateStr(r.checkout)) : false,
     columns: [
       { f: 'name', label: 'field.hotelName', type: 'text', required: true },
       { f: 'address', label: 'field.address', type: 'text', nav: true },
@@ -3253,7 +3260,7 @@ const TOOLKIT = {
   },
   restaurants: {
     kind: 'list', addLabel: 'list.restaurants.addLabel', listTitle: 'list.restaurants.title', emptyMsg: 'list.restaurants.empty',
-    dayFilter: (r, day) => r.date === day,
+    dayFilter: (r, day) => normalizeDateStr(r.date) === day,
     columns: [
       { f: 'date', label: 'field.date', type: 'date', isDate: true },
       { f: 'name', label: 'field.restaurantName', type: 'text', required: true },
@@ -3266,7 +3273,7 @@ const TOOLKIT = {
   },
   cars: {
     kind: 'list', addLabel: 'list.cars.addLabel', listTitle: 'list.cars.title', emptyMsg: 'list.cars.empty',
-    dayFilter: (r, day) => (r.pickupDate && r.returnDate) ? (r.pickupDate <= day && day <= r.returnDate) : (r.pickupDate === day),
+    dayFilter: (r, day) => (r.pickupDate && r.returnDate) ? (normalizeDateStr(r.pickupDate) <= day && day <= normalizeDateStr(r.returnDate)) : (normalizeDateStr(r.pickupDate) === day),
     columns: [
       { f: 'company', label: 'field.carCompany', type: 'text', required: true },
       { f: 'cartype', label: 'field.carType', type: 'text' },
@@ -3283,7 +3290,7 @@ const TOOLKIT = {
   },
   tripexp: {
     kind: 'list', addLabel: 'list.tripexp.addLabel', listTitle: 'list.tripexp.title', emptyMsg: 'list.tripexp.empty',
-    dayFilter: (r, day) => r.date === day,
+    dayFilter: (r, day) => normalizeDateStr(r.date) === day,
     columns: [
       { f: 'date', label: 'field.date', type: 'date', required: true, isDate: true },
       { f: 'category', label: 'field.category', type: 'select', options: ['טיסות', 'לינה', 'אוכל', 'אטרקציות', 'תחבורה', 'קניות', 'ביטוח', 'אחר'], badge: true },
@@ -3914,6 +3921,24 @@ function updateTripDestHead() {
   btn.hidden = !!dest;
 }
 
+// Every calendar day of the trip as { iso, n }, regardless of whether anything
+// is scheduled on it yet - shared by the day-strip and anything else that needs
+// to offer "every day of this trip" as a choice (e.g. moving an agenda item to a
+// day that doesn't have any activity yet, which dragging alone can't reach since
+// there's no day-header to drop onto).
+function tripDaysList() {
+  const trip = toolData.trip || {};
+  if (!trip.from || !trip.to || trip.to < trip.from) return [];
+  const days = [];
+  const [fy, fm, fd] = trip.from.split('-').map(Number);
+  const [ty, tm, td] = trip.to.split('-').map(Number);
+  const cur = new Date(fy, fm - 1, fd), end = new Date(ty, tm - 1, td);
+  while (cur <= end && days.length < 120) {
+    days.push({ iso: cur.getFullYear() + '-' + pad2(cur.getMonth() + 1) + '-' + pad2(cur.getDate()), n: days.length + 1 });
+    cur.setDate(cur.getDate() + 1);
+  }
+  return days;
+}
 function renderDayStrip() {
   const strip = document.getElementById('tripDayStrip');
   const allBtn = document.getElementById('tripAllDaysBtn');
@@ -3930,19 +3955,11 @@ function renderDayStrip() {
     label.textContent = t('trip.dates.notChosen');
     return;
   }
-  const days = [];
-  const [fy, fm, fd] = trip.from.split('-').map(Number);
-  const [ty, tm, td] = trip.to.split('-').map(Number);
-  const cur = new Date(fy, fm - 1, fd), end = new Date(ty, tm - 1, td);
-  while (cur <= end && days.length < 120) {
-    days.push({
-      iso: cur.getFullYear() + '-' + pad2(cur.getMonth() + 1) + '-' + pad2(cur.getDate()),
-      n: days.length + 1,
-      wd: WEEKDAY_SHORT[currentLang][cur.getDay()],
-      dm: pad2(cur.getDate()) + '/' + pad2(cur.getMonth() + 1)
-    });
-    cur.setDate(cur.getDate() + 1);
-  }
+  const days = tripDaysList().map(d => {
+    const [y, m, day] = d.iso.split('-').map(Number);
+    const wdIndex = new Date(y, m - 1, day).getDay();
+    return { ...d, wd: WEEKDAY_SHORT[currentLang][wdIndex], dm: pad2(day) + '/' + pad2(m) };
+  });
   if (tripDay && !days.some(x => x.iso === tripDay)) tripDay = '';
   const has = new Set((toolData.itinerary || []).map(r => r.date));
   if (allBtn) {
@@ -4256,7 +4273,7 @@ function renderTripSummary() {
 function renderItinerary() {
   let rows = [...(toolData.itinerary || [])].sort((a, b) =>
     a.date === b.date ? String(a.time || '').localeCompare(String(b.time || '')) : (a.date > b.date ? 1 : -1));
-  if (tripDay) rows = rows.filter(r => r.date === tripDay);
+  if (tripDay) rows = rows.filter(r => normalizeDateStr(r.date) === tripDay);
   document.getElementById('itinerary-empty').hidden = rows.length > 0;
   const trip = toolData.trip || {};
   const dayNo = d => trip.from ? Math.round((new Date(d) - new Date(trip.from)) / 86400000) + 1 : null;

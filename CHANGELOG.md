@@ -2,6 +2,10 @@
 
 All notable changes to Or are logged here, newest first. Version shown matches the number in the app's Help dialog (בדיקת עדכונים).
 
+## 1.35.2 — 2026-09-05
+
+- **Fixed**: a date field could get stuck with only a 2-digit year (e.g. "0026" instead of "2026") if a date input was saved before all 4 year digits were typed. This showed up two ways: the date displaying with a 2-digit year in tables, and that record silently disappearing when filtering the trip to that specific day (it still showed up fine in the "all days" view). The repair now recognizes this shape too and fixes it automatically on next load; day-view filtering for flights, hotels, restaurants, cars, expenses and itinerary items also no longer relies on the raw stored value being well-formed.
+
 ## 1.35.1 — 2026-09-05
 
 - **Changed**: switched Workers AI to Llama 3.2 1B Instruct, the cheapest Workers AI model confirmed to still support tool calling, instead of the 3B version.

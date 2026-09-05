@@ -40,7 +40,7 @@ function metaContent(html, prop) {
 }
 
 function jsonResponse(body, status) {
-  return new Response(JSON.stringify(body), { status: status || 200, headers: { 'Content-Type': 'application/json; charset=utf-8' } });
+  return new Response(JSON.stringify(body), { status: status || 200, headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' } });
 }
 
 async function readJsonBody(request) {
@@ -203,7 +203,10 @@ async function handleChat(request, env) {
   } catch (e) {
     return jsonResponse({ error: 'gemini request failed' }, 502);
   }
-  const data = await res.json();
+  let data;
+  try { data = await res.json(); }
+  catch (e) { return jsonResponse({ error: 'gemini returned an invalid response' }, 502); }
+  data = data || {};
   if (!res.ok) return jsonResponse({ error: (data.error && data.error.message) || 'gemini error' }, 502);
   const content = data.candidates && data.candidates[0] && data.candidates[0].content;
   if (!content) return jsonResponse({ error: 'empty response' }, 502);

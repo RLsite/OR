@@ -1690,7 +1690,7 @@ applyLang(localStorage.getItem('or-lang') || 'he', false);
 // ===================== Client-side data layer (runs fully in the browser) =====================
 // Data lives in localStorage; Excel import/export via SheetJS. No server needed — works on GitHub Pages.
 // (In the future a cloud backend such as Google Drive can replace loadDB/saveDB.)
-const APP_VERSION = '1.32.0';
+const APP_VERSION = '1.32.1';
 const APP_BUILT_AT = 'dev'; // replaced by build.js with the deploy timestamp — lets a running page detect it's stale
 const STORE_KEY = 'or-store-v1';
 const BUGS_COLS = ['field.date', 'field.toolOrPage', 'field.description', 'field.browser'];
@@ -3358,8 +3358,11 @@ async function askAssistant(userText) {
       });
       const raw = await res.text();
       let data;
-      try { data = JSON.parse(raw); }
-      catch (parseErr) { throw new Error(t('assistant.apiUnavailable')); }
+      const contentType = (res.headers.get('content-type') || '').toLowerCase();
+      try {
+        if (contentType.includes('text/html') || raw.trimStart().startsWith('<')) throw new Error('html response');
+        data = JSON.parse(raw);
+      } catch (parseErr) { throw new Error(t('assistant.apiUnavailable')); }
       if (res.status === 500 && data.error === 'not configured') throw new Error(t('assistant.notConfigured'));
       if (res.status === 429) throw new Error(t('assistant.rateLimited'));
       if (!res.ok || data.error) throw new Error(data.error || `HTTP ${res.status}`);

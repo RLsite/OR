@@ -44,7 +44,10 @@ export async function onRequestPost(context) {
   } catch (e) {
     return jsonResponse({ error: 'gemini request failed' }, 502);
   }
-  const data = await res.json();
+  let data;
+  try { data = await res.json(); }
+  catch (e) { return jsonResponse({ error: 'gemini returned an invalid response' }, 502); }
+  data = data || {};
   if (!res.ok) return jsonResponse({ error: (data.error && data.error.message) || 'gemini error' }, 502);
   const content = data.candidates && data.candidates[0] && data.candidates[0].content;
   if (!content) return jsonResponse({ error: 'empty response' }, 502);

@@ -2,6 +2,10 @@
 
 All notable changes to Or are logged here, newest first. Version shown matches the number in the app's Help dialog (בדיקת עדכונים).
 
+## 1.34.16 — 2026-09-05
+
+- **Fixed**: the floating chat bubble stayed visible while the assistant panel was open, sitting right below the panel's own Send button and reading as a second, confusing button. It now hides while the panel is open.
+
 ## 1.34.15 — 2026-09-05
 
 - **Fixed**: on a narrow phone screen, opening the hamburger menu placed it entirely off the left edge of the screen instead of near the button that opened it.

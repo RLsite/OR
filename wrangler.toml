@@ -10,4 +10,5 @@ compatibility_date = "2026-07-13"
 [assets]
 directory = "./"
 binding = "ASSETS"
+include = ["index.html", "version.json", "terms.html", "privacy.html", "manifest.json", "*.png", "*.ico"]
 not_found_handling = "404-page"

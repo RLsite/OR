@@ -2,6 +2,10 @@
 
 All notable changes to Or are logged here, newest first. Version shown matches the number in the app's Help dialog (בדיקת עדכונים).
 
+## 1.34.6 — 2026-09-05
+
+- **Security**: restricted Worker static assets to an explicit public allowlist so server source, Git metadata, and internal files cannot be served as website assets.
+
 ## 1.34.5 — 2026-09-05
 
 - **Fixed**: switched the NVIDIA fallback to `nvidia/nemotron-3.5-lightning-30b-a3b`, the faster Agent-oriented model shown in the NVIDIA catalog, to reduce full-context timeouts.

@@ -2,6 +2,11 @@
 
 All notable changes to Or are logged here, newest first. Version shown matches the number in the app's Help dialog (בדיקת עדכונים).
 
+## 1.35.0 — 2026-09-05
+
+- **Added**: Cloudflare Workers AI (Llama 3.2 3B Instruct) as the assistant's new first provider, tried before Gemini and NVIDIA. It needs no API key - it runs directly on Cloudflare's own infrastructure - so it can't be affected by a key going missing or invalid.
+- **Improved**: the in-chat notice that names the active provider now covers Gemini too, not just NVIDIA, whenever the assistant isn't running on the fast, free Workers AI path.
+
 ## 1.34.16 — 2026-09-05
 
 - **Fixed**: the floating chat bubble stayed visible while the assistant panel was open, sitting right below the panel's own Send button and reading as a second, confusing button. It now hides while the panel is open.

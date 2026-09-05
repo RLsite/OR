@@ -7,10 +7,15 @@
 //
 // Required secrets (Pages project → Settings → Environment variables, Production):
 //   GOOGLE_CLIENT_SECRET - for /api/google/exchange and /api/google/refresh
-//   GEMINI_API_KEY       - for /api/chat
-// Routes that need one degrade to a clear {error:"not configured"} until it's set.
+//   GEMINI_API_KEY       - for /api/chat (first fallback, after Workers AI)
+//   NVIDIA_API_KEY       - for /api/chat (second fallback)
+// /api/chat's actual first attempt is Cloudflare Workers AI via the AI binding
+// (env.AI) - a binding, not a secret, so it needs no dashboard step here.
+// Routes that need a secret degrade to a clear {error:"not configured"} until
+// it's set.
 
 export const GOOGLE_CLIENT_ID = '297437869958-gvh093f0s50ti02t8l7bg4dbo858g38h.apps.googleusercontent.com'; // public, not a secret - kept in sync with index.html's copy
+export const WORKERS_AI_MODEL = '@cf/meta/llama-3.2-3b-instruct';
 export const GEMINI_MODEL = 'gemini-3.6-flash';
 export const NVIDIA_MODEL = 'nvidia/nemotron-3.5-lightning-30b-a3b';
 
@@ -34,7 +39,7 @@ export async function readJsonBody(request) {
 // NVIDIA's hosted endpoint is OpenAI-compatible, while the browser keeps its
 // conversation in Gemini's format. These adapters keep the provider switch
 // server-side and preserve the assistant's existing tool-calling contract.
-function openAiSchema(schema) {
+export function openAiSchema(schema) {
   schema = schema || {};
   const out = {};
   if (schema.type) out.type = String(schema.type).toLowerCase();

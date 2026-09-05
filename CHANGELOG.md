@@ -2,6 +2,11 @@
 
 All notable changes to Or are logged here, newest first. Version shown matches the number in the app's Help dialog (בדיקת עדכונים).
 
+## 1.35.10 — 2026-09-05
+
+- **Fixed**: malformed AI output containing raw Markdown escapes or a long run of underscores/asterisks is now rejected server-side and cleaned client-side before it can fill the chat. Assistant replies are capped at 256 output tokens and instructed to use plain text only.
+- **Fixed**: pressing “Personalize” again while the questionnaire is already open now returns to the existing question instead of duplicating the introduction and first question in the chat history.
+
 ## 1.35.9 — 2026-09-05
 
 - **Improved**: the vacation-style question in the assistant’s personalisation chat now supports multiple selections. For example, travellers can choose both “City & culture” and “Nature & beaches”, then press Continue; old one-choice profiles are migrated safely.

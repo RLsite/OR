@@ -1820,7 +1820,7 @@ applyLang(localStorage.getItem('or-lang') || 'he', false);
 // ===================== Client-side data layer (runs fully in the browser) =====================
 // Data lives in localStorage; Excel import/export via SheetJS. No server needed — works on GitHub Pages.
 // (In the future a cloud backend such as Google Drive can replace loadDB/saveDB.)
-const APP_VERSION = '1.35.9';
+const APP_VERSION = '1.35.10';
 const APP_BUILT_AT = 'dev'; // replaced by build.js with the deploy timestamp — lets a running page detect it's stale
 const STORE_KEY = 'or-store-v1';
 const BUGS_COLS = ['field.date', 'field.toolOrPage', 'field.description', 'field.browser'];
@@ -3825,6 +3825,7 @@ function buildAssistantSystemInstruction(googleSearchEnabled, assistantBrief) {
     + 'Never describe yourself as an NVIDIA, Gemini, AI model, chatbot, or other AI system; never discuss your training, researchers, provider, or internal identity. Never give an unsolicited generic list of your capabilities. If asked who you are, say simply that you are Or\'s trip-planning assistant and offer help with the user\'s trip. Answer the trip request directly and never emit provider or model status boilerplate. '
     + 'Apply this canonical travel-planning playbook on every request:\n---\n' + ASSISTANT_TRIP_CORE_SKILL + '\n---\n'
     + 'Keep the final answer concise by default: at most five brief bullets or about 120 words, unless the user explicitly asks for more detail. '
+    + 'Use plain text only: no Markdown syntax, asterisks, underscores, code blocks, tables, or decorative repeated characters. '
     + 'Before recommending or adding a place, inspect the existing trip records. Do not recommend an already-planned place as if it were new; acknowledge it and offer a complementary or alternative option instead. '
     + 'You help only the current user, with only their own trip data - never mention or assume any other user or trip. '
     + 'Reply in the same language the user writes in. Dates are always "YYYY-MM-DD" strings, times are 24h "HH:MM" strings or empty. '
@@ -4045,7 +4046,11 @@ async function completeAssistantProfile(notes) {
 }
 function startAssistantProfileQuestionnaire() {
   if (assistantBusy) { toast(t('assistant.profile.busy'), true); return; }
-  cancelAssistantProfileQuestionnaire();
+  // A second click while the questionnaire is open should bring the traveller
+  // back to the current question, not append the introduction and first
+  // question a second time.
+  if (assistantProfileFlow) { scrollAssistantMessagesToEnd(); return; }
+  clearAssistantProfileChoices();
   assistantProfileFlow = {
     step: 0,
     awaitingNotes: false,
@@ -4075,8 +4080,19 @@ function renderAssistantMessage(role, text, isThinking) {
   assistantMessagesEl.scrollTop = assistantMessagesEl.scrollHeight;
   return div;
 }
+function cleanAssistantReplyText(text) {
+  return String(text || '')
+    // The chat bubble renders text, not Markdown. Remove formatting escapes
+    // and symbols so a provider cannot expose raw **bold** or \_ characters.
+    .replace(/\\([*_`])/g, '$1')
+    // Stop a failed completion from filling the bubble with decorative symbols.
+    .replace(/(?:[_*`]\s*){8,}/g, ' ')
+    .replace(/[*_`]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
 function normalizeAssistantReply(text) {
-  const compact = String(text || '').replace(/\s+/g, ' ').trim();
+  const compact = cleanAssistantReplyText(text);
   if (!compact) return '';
   // A fallback model may occasionally return a useful first sentence (for
   // example, that a requested PDF cannot be found) followed by a generic

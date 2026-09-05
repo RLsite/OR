@@ -9,7 +9,7 @@ const chatHits = new Map(); // ip -> timestamps[]
 const CHAT_LIMIT = { windowMs: 60000, max: 15 };
 // Keep replies short by default. The client instruction also asks for concise
 // answers, but a provider-side ceiling prevents an accidental long completion.
-const ASSISTANT_MAX_OUTPUT_TOKENS = 360;
+const ASSISTANT_MAX_OUTPUT_TOKENS = 256;
 function isRateLimited(ip) {
   const now = Date.now();
   const hits = (chatHits.get(ip) || []).filter(t => now - t < CHAT_LIMIT.windowMs);
@@ -29,6 +29,9 @@ function isUsableAssistantContent(content) {
   if (parts.some(part => part && part.functionCall)) return true;
   const text = parts.map(part => part && part.text ? String(part.text) : '').join(' ').replace(/\s+/g, ' ').trim();
   if (!text) return false;
+  // A broken generation can get stuck emitting escaped Markdown punctuation.
+  // Retry with the next provider rather than letting it fill the chat bubble.
+  if (/(?:\\?[_*`]\s*){8,}/.test(text)) return false;
   // Smaller fallback models occasionally ignore the system prompt and answer
   // with a provider/training disclaimer instead of the traveller's request.
   // Treat it as a failed attempt so the next provider gets a chance to answer.

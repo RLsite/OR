@@ -37,7 +37,7 @@ const GEMINI_MODEL = 'gemini-3.6-flash';
 const NVIDIA_MODEL = 'openai/gpt-oss-20b';
 // Keep replies short by default. The client instruction also asks for concise
 // answers, but a provider-side ceiling prevents an accidental long completion.
-const ASSISTANT_MAX_OUTPUT_TOKENS = 360;
+const ASSISTANT_MAX_OUTPUT_TOKENS = 256;
 const MAX_HTML_BYTES = 300000; // the tags we need are always in <head>; no reason to buffer a whole page
 
 function decodeEntities(s) {
@@ -287,6 +287,9 @@ function isUsableAssistantContent(content) {
   if (parts.some(part => part && part.functionCall)) return true;
   const text = parts.map(part => part && part.text ? String(part.text) : '').join(' ').replace(/\s+/g, ' ').trim();
   if (!text) return false;
+  // A broken generation can get stuck emitting escaped Markdown punctuation.
+  // Retry with the next provider rather than letting it fill the chat bubble.
+  if (/(?:\\?[_*`]\s*){8,}/.test(text)) return false;
   // Smaller fallback models occasionally ignore the system prompt and answer
   // with a provider/training disclaimer instead of the traveller's request.
   // Treat it as a failed attempt so the next provider gets a chance to answer.

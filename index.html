@@ -1708,7 +1708,7 @@ applyLang(localStorage.getItem('or-lang') || 'he', false);
 // ===================== Client-side data layer (runs fully in the browser) =====================
 // Data lives in localStorage; Excel import/export via SheetJS. No server needed — works on GitHub Pages.
 // (In the future a cloud backend such as Google Drive can replace loadDB/saveDB.)
-const APP_VERSION = '1.34.9';
+const APP_VERSION = '1.34.10';
 const APP_BUILT_AT = 'dev'; // replaced by build.js with the deploy timestamp — lets a running page detect it's stale
 const STORE_KEY = 'or-store-v1';
 const BUGS_COLS = ['field.date', 'field.toolOrPage', 'field.description', 'field.browser'];
@@ -3252,10 +3252,15 @@ document.addEventListener('keydown', ev => { if (ev.key === 'Escape') closeHeade
 // Function-calling tool schema generated straight from REC, so every record type
 // the app already knows about (and any future one added to REC) is automatically
 // available to the assistant with no separate schema to keep in sync by hand.
+function shouldUseGoogleSearch(text) {
+  const value = String(text || '').trim();
+  if (!value || /מסמכים?|קבצים?|דרייב|google drive/i.test(value)) return false;
+  return /חפש|חפשי|חיפוש|מצא|מצאי|מומלץ|המלצה|קרוב|בסביבה|עד שעה|נסיעה|פארק|אטרקציה|מסעדה|מקום|search|find|recommend|nearby|within|drive|water park/i.test(value);
+}
 function buildGeminiTools() {
   const types = Object.keys(REC);
   const typeFields = types.map(k => `${k}: ${REC[k].fields.filter(f => f !== 'id').join(', ')}`).join(' | ');
-  return [{
+  const tools = [{
     functionDeclarations: [
       {
         name: 'add_record',
@@ -3296,11 +3301,12 @@ function buildGeminiTools() {
       },
     ],
   }];
+  return tools;
 }
 // Everything the model needs to know beyond the running conversation: what it is,
 // how this app's data looks, and the trip's current data so it can answer questions
 // and find the right id to update/delete without a separate "read" round-trip.
-function buildAssistantSystemInstruction() {
+function buildAssistantSystemInstruction(googleSearchEnabled) {
   const data = {};
   Object.keys(REC).forEach(k => { data[k] = toolData[k] || []; });
   return 'You are the built-in trip-planning assistant inside "Or" (אור), a vacation-management app. '
@@ -3308,6 +3314,7 @@ function buildAssistantSystemInstruction() {
     + 'Reply in the same language the user writes in. Dates are always "YYYY-MM-DD" strings, times are 24h "HH:MM" strings or empty. '
     + 'Use the provided tools to actually add, update, or delete a trip record whenever the user asks for a change - do not just describe the change in text without calling a tool. '
     + 'When the user asks about documents, first use list_trip_documents, then use read_trip_document for the specific PDF they choose or clearly identify. You only have access to PDFs in the current trip folder, not the rest of Google Drive. '
+    + (googleSearchEnabled ? 'Google Search is enabled for this request. For current places, recommendations, opening hours, prices, addresses, or driving distances, search the web before answering. If the user asks to find a place and add it to the itinerary, search first and then call add_record for itinerary with the verified name, address, a date supplied by the user (the itinerary date is required; if no day is specified, ask which day before adding), and source URL plus the approximate driving distance/time in notes. Do not invent a search result or claim a place is within a driving limit without evidence. If search is unavailable, explain that the current web lookup could not be completed and do not add an unverified place. ' : '')
     + 'When updating or deleting, first find the right record\'s id in the trip data below; if it is not clear which record is meant, ask instead of guessing. '
     + 'After a tool call, briefly confirm in plain language what happened (including if the user declined a deletion). '
     + 'Current trip data (JSON): ' + JSON.stringify(data);
@@ -3379,6 +3386,7 @@ function renderAssistantMessage(role, text, isThinking) {
 async function askAssistant(userText) {
   if (assistantBusy || !userText.trim()) return;
   assistantBusy = true;
+  const googleSearchEnabled = shouldUseGoogleSearch(userText);
   assistantContents.push({ role: 'user', parts: [{ text: userText }] });
   renderAssistantMessage('user', userText);
   const thinkingEl = renderAssistantMessage('model', t('assistant.thinking'), true);
@@ -3395,7 +3403,7 @@ async function askAssistant(userText) {
     }, 1800);
     finishThinking = () => { clearInterval(thinkingTimer); thinkingEl.remove(); };
     while (guard++ < 8) { // hard cap on tool-call round-trips in one turn, so a confused model can't loop forever
-      const payload = JSON.stringify({ contents: assistantContents, tools: buildGeminiTools(), systemInstruction: buildAssistantSystemInstruction() });
+      const payload = JSON.stringify({ contents: assistantContents, tools: buildGeminiTools(), systemInstruction: buildAssistantSystemInstruction(googleSearchEnabled), googleSearch: googleSearchEnabled });
       const endpoints = [];
       try { endpoints.push(new URL('/api/chat', location.href).href); } catch (e) { /* invalid location is handled by the production endpoint below */ }
       const productionEndpoint = 'https://or.rlapp.net/api/chat';
@@ -3439,7 +3447,9 @@ async function askAssistant(userText) {
       const responses = [];
       for (const part of functionCalls) {
         const result = await executeAssistantTool(part.functionCall.name, part.functionCall.args);
-        responses.push({ functionResponse: { name: part.functionCall.name, response: result } });
+        const functionResponse = { name: part.functionCall.name, response: result };
+        if (part.functionCall.id) functionResponse.id = part.functionCall.id;
+        responses.push({ functionResponse });
       }
       assistantContents.push({ role: 'function', parts: responses });
     }

@@ -22,6 +22,10 @@ export function onRequestOptions() {
 async function askGemini(body, env) {
   const payload = { contents: body.contents };
   if (Array.isArray(body.tools)) payload.tools = body.tools;
+  if (body.googleSearch) {
+    payload.tools = [...(payload.tools || []), { googleSearch: {} }];
+    payload.toolConfig = { includeServerSideToolInvocations: true };
+  }
   if (body.systemInstruction) payload.systemInstruction = { parts: [{ text: String(body.systemInstruction) }] };
   let res;
   try {
@@ -39,7 +43,10 @@ async function askGemini(body, env) {
 async function askNvidia(body, env) {
   if (!env.NVIDIA_API_KEY) return { error: 'nvidia not configured' };
   const messages = [];
-  if (body.systemInstruction) messages.push({ role: 'system', content: String(body.systemInstruction) });
+  if (body.systemInstruction || body.googleSearch) {
+    const systemInstruction = [body.systemInstruction, body.googleSearch ? 'Google Search was unavailable because this is the NVIDIA fallback. Do not claim to have searched the web and do not add an unverified place.' : ''].filter(Boolean).join(' ');
+    messages.push({ role: 'system', content: systemInstruction });
+  }
   messages.push(...geminiToOpenAiMessages(body.contents));
   const payload = { model: env.NVIDIA_MODEL || NVIDIA_MODEL, messages, temperature: 1, top_p: 0.95, max_tokens: 512, stream: false, extra_body: { chat_template_kwargs: { enable_thinking: false } } };
   const tools = geminiToOpenAiTools(body.tools);

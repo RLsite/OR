@@ -2,6 +2,11 @@
 
 All notable changes to Or are logged here, newest first. Version shown matches the number in the app's Help dialog (בדיקת עדכונים).
 
+## 1.34.10 — 2026-09-05
+
+- **Added**: search-intent requests can now use Gemini's Google Search grounding before calling the existing record tools, so the assistant can find a current place and add it to the itinerary.
+- **Safety**: if Google Search is unavailable, the assistant is instructed not to invent or add an unverified recommendation.
+
 ## 1.34.9 — 2026-09-05
 
 - **Added**: car rentals now support separate pickup and return times, shown in the car tab, Excel backup, and the trip agenda.

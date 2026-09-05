@@ -795,6 +795,67 @@
   .rpt-summary { margin-top: 16px; display: flex; flex-wrap: wrap; gap: 10px 28px; font-size: 14px; border-top: 2px solid #1E40AF; padding-top: 12px; }
   .rpt-summary b { color: #1E40AF; font-size: 16px; }
   .rpt-empty { padding: 24px; text-align: center; color: #6B7280; }
+
+  /* Guided text import: paste a travel article, review every extracted item,
+     then save only the checked recommendations into the existing trip tabs. */
+  .guide-import-intro { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-3); margin-bottom: var(--space-3); }
+  .guide-import-intro h2 { margin-bottom: 4px; color: var(--color-fg); font-size: 19px; }
+  .guide-import-badge { flex: 0 0 auto; padding: 4px 9px; border-radius: 999px; border: 1px solid rgba(5,150,105,0.5); background: rgba(5,150,105,0.13); color: var(--color-success); font-size: 12px; font-weight: 600; }
+  .guide-import-source { display: grid; grid-template-columns: minmax(0, 1fr) minmax(230px, 0.55fr); gap: var(--space-2); margin-top: var(--space-2); }
+  .guide-import-text { min-height: 250px; }
+  .guide-import-options { display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap; margin-top: var(--space-2); }
+  .guide-import-options .checkbox-row { color: var(--color-text-dim); }
+  .guide-import-actions { display: flex; gap: var(--space-2); flex-wrap: wrap; margin-top: var(--space-3); }
+  .guide-import-actions .btn-primary { display: inline-flex; align-items: center; gap: 8px; }
+  .guide-import-preview { margin-top: var(--space-4); }
+  .guide-import-preview[hidden] { display: none; }
+  .guide-import-preview-top { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-2); flex-wrap: wrap; margin-bottom: var(--space-2); }
+  .guide-import-preview-top h2 { color: var(--color-fg); margin-bottom: 4px; }
+  .guide-import-summary { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .guide-import-summary span { display: inline-flex; align-items: center; min-height: 28px; padding: 3px 10px; background: var(--color-muted); border: 1px solid var(--color-border); border-radius: 999px; color: var(--color-text-dim); font-size: 12px; }
+  .guide-import-summary .is-selected { color: var(--color-success); border-color: rgba(5,150,105,0.45); background: rgba(5,150,105,0.12); }
+  .guide-import-notice { margin: var(--space-2) 0; padding: 10px 12px; border-radius: 8px; border: 1px solid rgba(245,158,11,0.42); background: rgba(245,158,11,0.10); color: var(--color-fg); font-size: 13px; }
+  .guide-import-items { display: flex; flex-direction: column; gap: var(--space-2); margin-top: var(--space-3); }
+  .guide-import-item { border: 1px solid var(--color-border); background: var(--color-muted); border-radius: 10px; padding: var(--space-2); }
+  .guide-import-item.is-duplicate { border-color: rgba(245,158,11,0.55); }
+  .guide-import-item-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: var(--space-2); }
+  .guide-import-include { flex-direction: row; align-items: center; gap: 8px; color: var(--color-fg); font-size: 14px; font-weight: 600; cursor: pointer; }
+  .guide-import-include input { width: 18px; height: 18px; min-height: auto; accent-color: var(--color-accent); }
+  .guide-import-kind { border-radius: 999px; padding: 2px 9px; background: rgba(59,130,246,0.14); border: 1px solid rgba(59,130,246,0.38); color: var(--color-secondary); font-size: 12px; }
+  .guide-import-warning { border-radius: 999px; padding: 2px 9px; background: rgba(245,158,11,0.12); color: #FBBF24; font-size: 12px; }
+  [data-theme="light"] .guide-import-warning { color: #B45309; }
+  .guide-import-fields { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: var(--space-2); }
+  .guide-import-fields label { min-width: 0; }
+  .guide-field-name { grid-column: span 4; }
+  .guide-field-type { grid-column: span 2; }
+  .guide-field-day { grid-column: span 2; }
+  .guide-field-time { grid-column: span 2; }
+  .guide-field-cost { grid-column: span 2; }
+  .guide-field-map { grid-column: span 7; }
+  .guide-field-map input { direction: auto; text-align: start; }
+  .guide-field-map-row { display: flex; gap: 6px; align-items: center; }
+  .guide-field-map-row input { min-width: 0; flex: 1; }
+  .guide-map-link { min-height: 44px; display: inline-flex; align-items: center; justify-content: center; text-decoration: none; flex: 0 0 auto; }
+  .guide-field-price-note { grid-column: span 5; justify-content: end; color: var(--color-text-dim); padding-top: 22px; font-size: 12px; }
+  .guide-field-notes { grid-column: 1 / -1; }
+  .guide-field-notes textarea { min-height: 76px; }
+  .guide-import-footer { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); flex-wrap: wrap; border-top: 1px solid var(--color-border); margin-top: var(--space-3); padding-top: var(--space-3); }
+  .guide-import-footer-actions { display: flex; gap: var(--space-2); flex-wrap: wrap; }
+  .guide-import-empty { text-align: center; color: var(--color-text-dim); padding: var(--space-3); }
+
+  @media (max-width: 768px) {
+    .guide-import-source { grid-template-columns: 1fr; }
+    .guide-field-name { grid-column: span 6; }
+    .guide-field-type, .guide-field-day, .guide-field-time, .guide-field-cost { grid-column: span 3; }
+    .guide-field-map { grid-column: 1 / -1; }
+    .guide-field-price-note { grid-column: 1 / -1; padding-top: 0; }
+  }
+  @media (max-width: 480px) {
+    .guide-import-intro { flex-direction: column; }
+    .guide-import-badge { align-self: flex-start; }
+    .guide-field-name, .guide-field-type, .guide-field-day, .guide-field-time, .guide-field-cost { grid-column: 1 / -1; }
+    .guide-import-footer-actions, .guide-import-footer-actions button { width: 100%; }
+  }
 </style>
 </head>
 <body>
@@ -1553,6 +1614,43 @@ const I18N = {
   'trip.tabItinerary': { he: 'נקודות עניין', en: 'Points of interest', ru: 'Достопримечательности' , ar: 'معالم سياحية' },
   'trip.tabExpenses': { he: 'הוצאות', en: 'Expenses', ru: 'Расходы' , ar: 'مصروفات' },
   'trip.tabLinks': { he: 'קישורים', en: 'Links', ru: 'Ссылки' , ar: 'روابط' },
+  'trip.tabGuideImport': { he: 'ייבוא מדריך', en: 'Guide import', ru: 'Импорт гида', ar: 'استيراد دليل' },
+  'trip.guideImport.title': { he: 'הדבקת מדריך והפיכתו למסלול', en: 'Paste a guide and turn it into a trip plan', ru: 'Вставьте гид и превратите его в план поездки', ar: 'الصقوا دليلاً وحولوه إلى خطة رحلة' },
+  'trip.guideImport.intro': { he: 'הדביקו כתבה, רשימת המלצות או טקסט חופשי. אור יחלץ מסעדות ונקודות עניין, יציע חלוקה לימים, ותוכלו לערוך כל פרט לפני השמירה.', en: 'Paste an article, recommendation list, or free text. Or extracts restaurants and places, suggests days, and lets you edit every detail before saving.', ru: 'Вставьте статью, список рекомендаций или свободный текст. Or извлечёт рестораны и места, предложит дни и позволит отредактировать всё перед сохранением.', ar: 'الصقوا مقالاً أو قائمة توصيات أو نصاً حراً. يستخرج Or المطاعم والأماكن، ويقترح أياماً، ويمكنكم تعديل كل تفصيل قبل الحفظ.' },
+  'trip.guideImport.privateBadge': { he: 'נשאר במכשיר', en: 'Stays on this device', ru: 'Остаётся на устройстве', ar: 'يبقى على الجهاز' },
+  'trip.guideImport.textLabel': { he: 'הטקסט להמרה', en: 'Text to organize', ru: 'Текст для организации', ar: 'النص المراد تنظيمه' },
+  'trip.guideImport.textPlaceholder': { he: 'הדביקו כאן מדריך, כתבה או רשימת מסעדות ואטרקציות…', en: 'Paste a guide, article, or list of restaurants and attractions here…', ru: 'Вставьте сюда гид, статью или список ресторанов и достопримечательностей…', ar: 'الصقوا هنا دليلاً أو مقالاً أو قائمة مطاعم ومعالم…' },
+  'trip.guideImport.sourceLabel': { he: 'מקור (אופציונלי)', en: 'Source (optional)', ru: 'Источник (необязательно)', ar: 'المصدر (اختياري)' },
+  'trip.guideImport.sourcePlaceholder': { he: 'קישור או שם המקור', en: 'Link or source name', ru: 'Ссылка или название источника', ar: 'رابط أو اسم المصدر' },
+  'trip.guideImport.spreadLabel': { he: 'להציע חלוקה אוטומטית בין ימי הטיול', en: 'Suggest an automatic split across trip days', ru: 'Предложить автоматическое распределение по дням поездки', ar: 'اقتراح توزيع تلقائي على أيام الرحلة' },
+  'trip.guideImport.parseBtn': { he: 'חלץ וערוך פריטים', en: 'Extract and review items', ru: 'Извлечь и проверить места', ar: 'استخراج ومراجعة العناصر' },
+  'trip.guideImport.clearBtn': { he: 'ניקוי', en: 'Clear', ru: 'Очистить', ar: 'مسح' },
+  'trip.guideImport.previewTitle': { he: 'בדקו את הפריטים לפני ההוספה', en: 'Review items before adding', ru: 'Проверьте элементы перед добавлением', ar: 'راجعوا العناصر قبل الإضافة' },
+  'trip.guideImport.previewHint': { he: 'אפשר לשנות סוג, יום, שעה, חיפוש במפה, עלות והערות. כתובות ומחירים שלא הופיעו בטקסט נשארים ריקים — המערכת לא ממציאה אותם.', en: 'You can change the type, day, time, map search, cost, and notes. Addresses and prices that were not in the text stay empty — the app does not invent them.', ru: 'Можно изменить тип, день, время, поиск на карте, стоимость и заметки. Адреса и цены, которых нет в тексте, остаются пустыми — приложение их не выдумывает.', ar: 'يمكنكم تغيير النوع واليوم والوقت والبحث على الخريطة والتكلفة والملاحظات. العناوين والأسعار غير الموجودة في النص تبقى فارغة — التطبيق لا يخترعها.' },
+  'trip.guideImport.itemsCount': { he: 'נמצאו {n} פריטים', en: '{n} items found', ru: 'Найдено: {n}', ar: 'تم العثور على {n} عناصر' },
+  'trip.guideImport.selectedCount': { he: '{n} יתווספו לטיול', en: '{n} will be added to the trip', ru: '{n} будут добавлены в поездку', ar: 'سيتم إضافة {n} إلى الرحلة' },
+  'trip.guideImport.typeLabel': { he: 'שמירה ב', en: 'Save in', ru: 'Сохранить в', ar: 'الحفظ في' },
+  'trip.guideImport.typePoi': { he: 'נקודות עניין', en: 'Points of interest', ru: 'Достопримечательности', ar: 'معالم سياحية' },
+  'trip.guideImport.typeRestaurant': { he: 'מסעדות', en: 'Restaurants', ru: 'Рестораны', ar: 'مطاعم' },
+  'trip.guideImport.dayLabel': { he: 'יום בטיול', en: 'Trip day', ru: 'День поездки', ar: 'يوم الرحلة' },
+  'trip.guideImport.noDay': { he: 'טרם שויך ליום', en: 'Not assigned to a day yet', ru: 'Ещё не назначено на день', ar: 'لم يُربط بيوم بعد' },
+  'trip.guideImport.noDays': { he: 'בחרו תאריכי טיול כדי שאוכל להציע חלוקה לימים.', en: 'Choose trip dates to get a suggested day split.', ru: 'Выберите даты поездки, чтобы получить распределение по дням.', ar: 'اختاروا تواريخ الرحلة للحصول على توزيع مقترح على الأيام.' },
+  'trip.guideImport.mapLabel': { he: 'חיפוש במפה', en: 'Map search', ru: 'Поиск на карте', ar: 'بحث على الخريطة' },
+  'trip.guideImport.openMap': { he: 'מפה', en: 'Map', ru: 'Карта', ar: 'الخريطة' },
+  'trip.guideImport.originalPrice': { he: 'מחיר שמופיע במקור: {price}', en: 'Price stated in source: {price}', ru: 'Цена в источнике: {price}', ar: 'السعر المذكور في المصدر: {price}' },
+  'trip.guideImport.alreadyExists': { he: 'כבר מופיע בטיול', en: 'Already in this trip', ru: 'Уже есть в поездке', ar: 'موجود بالفعل في هذه الرحلة' },
+  'trip.guideImport.selectAll': { he: 'בחר הכל', en: 'Select all', ru: 'Выбрать всё', ar: 'تحديد الكل' },
+  'trip.guideImport.clearSelection': { he: 'נקה בחירה', en: 'Clear selection', ru: 'Снять выбор', ar: 'إلغاء التحديد' },
+  'trip.guideImport.addSelected': { he: 'הוספת הנבחרים לטיול', en: 'Add selected to trip', ru: 'Добавить выбранное в поездку', ar: 'إضافة المحدد إلى الرحلة' },
+  'trip.guideImport.added': { he: 'נוספו {n} פריטים לטיול', en: '{n} items added to the trip', ru: 'В поездку добавлено: {n}', ar: 'تمت إضافة {n} عناصر إلى الرحلة' },
+  'trip.guideImport.noText': { he: 'הדביקו קודם טקסט להמרה', en: 'Paste text to organize first', ru: 'Сначала вставьте текст для обработки', ar: 'الصقوا النص المراد تنظيمه أولاً' },
+  'trip.guideImport.noItems': { he: 'לא זוהו פריטים ברורים. נסו להדביק רשימה עם שמות של מקומות, מסעדות או אטרקציות.', en: 'No clear items were found. Try pasting a list with place, restaurant, or attraction names.', ru: 'Не найдено чётких элементов. Попробуйте вставить список с названиями мест, ресторанов или достопримечательностей.', ar: 'لم يتم العثور على عناصر واضحة. حاولوا لصق قائمة بأسماء أماكن أو مطاعم أو معالم.' },
+  'trip.guideImport.noSelection': { he: 'בחרו לפחות פריט אחד להוספה', en: 'Select at least one item to add', ru: 'Выберите хотя бы один элемент для добавления', ar: 'حددوا عنصراً واحداً على الأقل للإضافة' },
+  'trip.guideImport.needsDates': { he: 'כדי לשמור נקודות עניין במסלול יש לשייך להן יום. בחרו תאריך ליד כל נקודת עניין או הגדירו תאריכי טיול.', en: 'Points of interest need a day before they can be saved. Choose a date for each one or set the trip dates.', ru: 'Достопримечательностям нужен день перед сохранением. Выберите дату для каждой или задайте даты поездки.', ar: 'تحتاج المعالم إلى يوم قبل حفظها. اختاروا تاريخاً لكل عنصر أو حددوا تواريخ الرحلة.' },
+  'trip.guideImport.skippedNoDate': { he: '{n} נקודות עניין נשארו בתצוגה המקדימה כי לא שויך להן יום.', en: '{n} points of interest remain in the preview because no day was assigned.', ru: '{n} достопримечательностей остались в предварительном просмотре без назначенного дня.', ar: 'بقيت {n} معالم في المعاينة لأنه لم يتم تعيين يوم لها.' },
+  'trip.guideImport.autoPlanHint': { he: 'החלוקה לימים היא הצעה לפי סדר המדריך. בדקו את הימים, המיקום והמחיר לפני השמירה.', en: 'The day split is a suggestion based on the guide order. Review days, location, and price before saving.', ru: 'Распределение по дням — предложение по порядку в гиде. Проверьте дни, место и цену перед сохранением.', ar: 'توزيع الأيام هو اقتراح بناءً على ترتيب الدليل. راجعوا الأيام والموقع والسعر قبل الحفظ.' },
+  'trip.guideImport.sourceNote': { he: 'מקור: {source}', en: 'Source: {source}', ru: 'Источник: {source}', ar: 'المصدر: {source}' },
+  'trip.guideImport.importedNote': { he: 'נוסף מייבוא מדריך', en: 'Added from guide import', ru: 'Добавлено из импорта гида', ar: 'أضيف من استيراد الدليل' },
   'trip.tabDocuments': { he: 'מסמכים', en: 'Documents', ru: 'Документы' , ar: 'المستندات' },
   'trip.docsConnectPrompt': { he: 'התחברו ל-Google Drive כדי להעלות ולשמור מסמכים (כרטיסי טיסה, שוברים, ביטוח) לתיקייה שנקראת על שם הטיול.', en: 'Connect to Google Drive to upload and save documents (boarding passes, vouchers, insurance) to a folder named after the trip.', ru: 'Подключитесь к Google Drive, чтобы загружать и сохранять документы (посадочные талоны, ваучеры, страховку) в папку с названием поездки.', ar: 'اتصلوا بـ Google Drive لرفع وحفظ المستندات (بطاقات صعود، قسائم، تأمين) في مجلد يحمل اسم الرحلة.' },
   'drive.docsMovedHint': { he: 'העלאת מסמכי PDF ורשימת המסמכים השמורים עברו לטאב "מסמכים" בתוך ניהול החופשה.', en: 'Uploading PDF documents and the saved-documents list moved to the "Documents" tab inside vacation management.', ru: 'Загрузка PDF-документов и список сохранённых документов перенесены на вкладку «Документы» в разделе управления отпуском.', ar: 'انتقل رفع مستندات PDF وقائمة المستندات المحفوظة إلى تبويب "المستندات" داخل إدارة الإجازة.' },
@@ -1824,7 +1922,7 @@ applyLang(localStorage.getItem('or-lang') || 'he', false);
 // ===================== Client-side data layer (runs fully in the browser) =====================
 // Data lives in localStorage; Excel import/export via SheetJS. No server needed — works on GitHub Pages.
 // (In the future a cloud backend such as Google Drive can replace loadDB/saveDB.)
-const APP_VERSION = '1.35.13';
+const APP_VERSION = '1.36.0';
 const APP_BUILT_AT = 'dev'; // replaced by build.js with the deploy timestamp — lets a running page detect it's stale
 const STORE_KEY = 'or-store-v1';
 const BUGS_COLS = ['field.date', 'field.toolOrPage', 'field.description', 'field.browser'];
@@ -4702,6 +4800,7 @@ function tripViewHTML() {
       <button type="button" class="tab" data-tab="restaurants">${t('trip.tabRestaurants')}</button>
       <button type="button" class="tab" data-tab="cars">${t('trip.tabCars')}</button>
       <button type="button" class="tab" data-tab="itinerary">${t('trip.tabItinerary')}</button>
+      <button type="button" class="tab" data-tab="guideimport">${t('trip.tabGuideImport')}</button>
       <button type="button" class="tab" data-tab="tripexp">${t('trip.tabExpenses')}</button>
       <button type="button" class="tab" data-tab="triplinks">${t('trip.tabLinks')}</button>
       <button type="button" class="tab" data-tab="documents">${t('trip.tabDocuments')}</button>
@@ -4738,6 +4837,40 @@ function tripViewHTML() {
           </div>
         </form>
       </dialog>
+    </div>
+
+    <div class="tab-panel" data-panel="guideimport" hidden>
+      <section class="panel">
+        <div class="guide-import-intro">
+          <div>
+            <h2>${t('trip.guideImport.title')}</h2>
+            <p class="file-hint">${t('trip.guideImport.intro')}</p>
+          </div>
+          <span class="guide-import-badge">${t('trip.guideImport.privateBadge')}</span>
+        </div>
+        <label>
+          <span>${t('trip.guideImport.textLabel')}</span>
+          <textarea id="guideImportText" class="guide-import-text" rows="12" placeholder="${t('trip.guideImport.textPlaceholder')}"></textarea>
+        </label>
+        <div class="guide-import-source">
+          <label>
+            <span>${t('trip.guideImport.sourceLabel')}</span>
+            <input type="text" id="guideImportSource" placeholder="${t('trip.guideImport.sourcePlaceholder')}">
+          </label>
+          <div class="guide-import-options">
+            <label class="checkbox-row"><input type="checkbox" id="guideImportSpread" checked> <span>${t('trip.guideImport.spreadLabel')}</span></label>
+          </div>
+        </div>
+        <div class="guide-import-actions">
+          <button type="button" class="btn-primary" id="guideImportParse">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v18M3 12h18"/><path d="m16.5 6.5 1 1M6.5 16.5l1 1"/></svg>
+            ${t('trip.guideImport.parseBtn')}
+          </button>
+          <button type="button" class="btn-ghost" id="guideImportClear">${t('trip.guideImport.clearBtn')}</button>
+        </div>
+        <p class="file-hint" style="margin-top:var(--space-2)">${t('trip.guideImport.previewHint')}</p>
+      </section>
+      <section class="panel guide-import-preview" id="guideImportPreview" hidden aria-live="polite"></section>
     </div>
 
     <div class="tab-panel" data-panel="flights" hidden>${listViewHTML('flights', TOOLKIT.flights)}</div>
@@ -4859,6 +4992,7 @@ function wireTripView() {
   wireToolView('cars', TOOLKIT.cars);
   wireToolView('tripexp', TOOLKIT.tripexp);
   wireToolView('triplinks', TOOLKIT.triplinks);
+  wireGuideImportView();
   document.getElementById('tripDocsConnectBtn').addEventListener('click', async () => { await driveConnect({ syncAfterConnect: true }); renderTripDocsTab(true); }); // explicit user action - fetch right after connecting
   const assistantBriefInput = document.getElementById('driveAssistantBriefInput');
   assistantBriefInput.addEventListener('input', () => { assistantBriefInput.dataset.dirty = '1'; });
@@ -4942,6 +5076,366 @@ function wireTripView() {
     document.getElementById('tdDest').value = (toolData.trip || {}).destination || '';
     document.getElementById('tripDestDialog').showModal();
   });
+}
+
+// ===== Pasted travel guide importer =====
+// The importer is deliberately local and deterministic: it does not send the
+// pasted article to an AI provider, does not invent addresses/prices, and lets
+// the traveler review every extracted record before it reaches the trip data.
+let guideImportItems = [];
+let guideImportSequence = 0;
+let guideImportDraft = { text: '', source: '', spread: true };
+
+function guideImportPlainText(value) {
+  return String(value || '')
+    .replace(/\[([^\]]+)\]\([^)]*\)/g, '$1')
+    .replace(/[\*_`~]/g, '')
+    .replace(/&nbsp;|&#(?:160|xA0);?|&#x20;/gi, ' ')
+    .replace(/&amp;/gi, '&')
+    .replace(/[\u200e\u200f]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function guideImportCleanName(value) {
+  return guideImportPlainText(value)
+    .replace(/^[\s:：–—-]+|[\s:：–—-]+$/g, '')
+    .replace(/^[-•]\s*/, '')
+    .trim();
+}
+
+function guideImportSectionType(value) {
+  const s = guideImportPlainText(value).toLowerCase();
+  if (/(מסעד|אוכל|טברנ|קפה|מאפ|קולינר|סופלאקי|קבב|המבורגר|restaurant|cafe|dining|food|bar\b)/i.test(s)) return 'restaurants';
+  if (/(אטרקצי|טבע|חופ|היסטור|תרבות|מוזי|מוזא|כנסי|טירה|מבצר|אגם|פארק|צליל|שייט|טיול|כפר|מרינה|חיות|קייפ|attraction|museum|beach|park|tour|diving|fort|church|lake|day trip)/i.test(s)) return 'itinerary';
+  return '';
+}
+
+function guideImportLooksLikeSection(value) {
+  const s = guideImportPlainText(value).toLowerCase();
+  return /^(?:מסעדות|אוכל|טברנות|בשרים|בתי קפה|אטרקציות|אטרקציות היסטוריות|טבע|חופים|ספורט ימי|טיולי יום|אטרקציות מרכזיות|מסעדות מקומיות|cuisine|restaurants|food|attractions|history|nature|beaches|water sports|day trips)/i.test(s);
+}
+
+function guideImportEntryParts(content) {
+  const text = String(content || '').trim();
+  const bold = text.match(/\*\*([^*]+?)\*\*/);
+  let name = '', description = '';
+  if (bold) {
+    name = guideImportCleanName(bold[1]);
+    description = guideImportPlainText(text.slice((bold.index || 0) + bold[0].length).replace(/^[\s:：–—-]+/, ''));
+  } else {
+    const split = guideImportPlainText(text).match(/^(.{2,110}?)(?:\s*(?::|：|—|–|-)\s+)(.+)$/);
+    if (!split) return null;
+    name = guideImportCleanName(split[1]);
+    description = guideImportPlainText(split[2]);
+  }
+  if (!name || name.length < 2 || name.length > 120) return null;
+  return { name, description };
+}
+
+function guideImportExtractPrice(text) {
+  const m = guideImportPlainText(text).match(/(?:₪|ש["״']?ח|ILS)\s*[\d.,]+|[\d.,]+\s*(?:₪|ש["״']?ח|ILS|€|EUR|USD|\$|£)/i);
+  return m ? m[0].trim() : '';
+}
+
+function guideImportExistingNames() {
+  const normalize = value => String(value || '').normalize('NFKD').toLowerCase().replace(/[^\p{L}\p{N}]+/gu, '');
+  const names = new Set();
+  ['itinerary', 'restaurants'].forEach(type => (toolData[type] || []).forEach(row => {
+    const key = normalize(row.name);
+    if (key) names.add(key);
+  }));
+  return { names, normalize };
+}
+
+function guideImportTripDays() {
+  const trip = toolData.trip || {};
+  if (!trip.from || !trip.to || trip.to < trip.from) return [];
+  const [fy, fm, fd] = trip.from.split('-').map(Number);
+  const [ty, tm, td] = trip.to.split('-').map(Number);
+  const cur = new Date(fy, fm - 1, fd);
+  const end = new Date(ty, tm - 1, td);
+  const days = [];
+  while (cur <= end && days.length < 120) {
+    days.push(cur.getFullYear() + '-' + pad2(cur.getMonth() + 1) + '-' + pad2(cur.getDate()));
+    cur.setDate(cur.getDate() + 1);
+  }
+  return days;
+}
+
+function guideImportDayLabel(date) {
+  const trip = toolData.trip || {};
+  const n = trip.from ? Math.round((new Date(date) - new Date(trip.from)) / 86400000) + 1 : 0;
+  return (n > 0 ? t('trip.dayNPrefix', { n }) : '') + fmtDate(date, { weekday: 'short' });
+}
+
+function guideImportDefaultMapQuery(name) {
+  const destination = guideImportPlainText((toolData.trip || {}).destination);
+  return [name, destination].filter(Boolean).join(', ');
+}
+
+function guideImportMapUrl(item) {
+  const query = guideImportPlainText(item.mapQuery) || guideImportDefaultMapQuery(item.name);
+  return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(query);
+}
+
+function guideImportExtractEntries(raw) {
+  const lines = String(raw || '').replace(/\r\n?/g, '\n').split('\n');
+  const blocks = [];
+  let currentType = '';
+  let current = null;
+  const commit = () => {
+    if (current) blocks.push(current);
+    current = null;
+  };
+
+  lines.forEach(rawLine => {
+    const line = rawLine.trim();
+    if (!line) { commit(); return; }
+    const heading = line.match(/^#{1,6}\s+(.+)$/);
+    if (heading) {
+      commit();
+      const type = guideImportSectionType(heading[1]);
+      if (type) currentType = type;
+      return;
+    }
+    const list = line.match(/^\s*(?:[-*•]|(?:\d+|[א-ת])[.)])\s+(.+)$/);
+    if (list) {
+      commit();
+      const content = list[1].trim();
+      const parts = guideImportEntryParts(content);
+      if (parts && !parts.description && guideImportLooksLikeSection(parts.name)) {
+        const type = guideImportSectionType(parts.name);
+        if (type) currentType = type;
+        return;
+      }
+      current = { content, type: currentType };
+      return;
+    }
+    const standaloneTitle = line.match(/^\*\*([^*]+?)\*\*\s*:?[\s]*$/);
+    if (standaloneTitle && guideImportLooksLikeSection(standaloneTitle[1])) {
+      commit();
+      const type = guideImportSectionType(standaloneTitle[1]);
+      if (type) currentType = type;
+      return;
+    }
+    // Most copied articles wrap a recommendation description across several
+    // visual lines. Preserve those continuations as one note for the place.
+    if (current) current.content += ' ' + line;
+    else if (guideImportLooksLikeSection(line)) {
+      const type = guideImportSectionType(line);
+      if (type) currentType = type;
+    }
+  });
+  commit();
+
+  const existing = guideImportExistingNames();
+  const seen = new Set();
+  return blocks.map(block => {
+    const parts = guideImportEntryParts(block.content);
+    if (!parts || (!parts.description && guideImportLooksLikeSection(parts.name))) return null;
+    const type = block.type || guideImportSectionType(parts.name + ' ' + parts.description) || 'itinerary';
+    const key = existing.normalize(parts.name);
+    if (!key || seen.has(key)) return null;
+    seen.add(key);
+    const priceText = guideImportExtractPrice(parts.description);
+    return {
+      id: 'guide-' + (++guideImportSequence),
+      include: !existing.names.has(key),
+      duplicate: existing.names.has(key),
+      type,
+      date: '',
+      time: '',
+      name: parts.name,
+      mapQuery: guideImportDefaultMapQuery(parts.name),
+      cost: '',
+      priceText,
+      notes: parts.description
+    };
+  }).filter(Boolean);
+}
+
+function guideImportSuggestDays(items) {
+  const days = guideImportTripDays();
+  if (!days.length || !guideImportDraft.spread) return;
+  ['itinerary', 'restaurants'].forEach(type => {
+    items.filter(item => item.type === type).forEach((item, index) => { item.date = days[index % days.length]; });
+  });
+}
+
+function guideImportDayOptions(item, days) {
+  const none = `<option value="">${escapeHtml(t('trip.guideImport.noDay'))}</option>`;
+  return none + days.map(date => `<option value="${date}"${item.date === date ? ' selected' : ''}>${escapeHtml(guideImportDayLabel(date))}</option>`).join('');
+}
+
+function guideImportItemHTML(item, days) {
+  const kind = item.type === 'restaurants' ? t('trip.guideImport.typeRestaurant') : t('trip.guideImport.typePoi');
+  const originalPrice = item.priceText ? `<div class="guide-field-price-note">${escapeHtml(t('trip.guideImport.originalPrice', { price: item.priceText }))}</div>` : '';
+  return `<article class="guide-import-item${item.duplicate ? ' is-duplicate' : ''}" data-guide-item="${item.id}">
+    <div class="guide-import-item-top">
+      <label class="guide-import-include"><input type="checkbox" data-guide-field="include"${item.include ? ' checked' : ''}> <span>${escapeHtml(item.name)}</span></label>
+      <span class="guide-import-kind" data-guide-kind>${escapeHtml(kind)}</span>
+      ${item.duplicate ? `<span class="guide-import-warning">${t('trip.guideImport.alreadyExists')}</span>` : ''}
+    </div>
+    <div class="guide-import-fields">
+      <label class="guide-field-name"><span>${t('field.name')}</span><input type="text" data-guide-field="name" value="${escapeHtml(item.name)}"></label>
+      <label class="guide-field-type"><span>${t('trip.guideImport.typeLabel')}</span><select data-guide-field="type"><option value="itinerary"${item.type === 'itinerary' ? ' selected' : ''}>${t('trip.guideImport.typePoi')}</option><option value="restaurants"${item.type === 'restaurants' ? ' selected' : ''}>${t('trip.guideImport.typeRestaurant')}</option></select></label>
+      <label class="guide-field-day"><span>${t('trip.guideImport.dayLabel')}</span><select data-guide-field="date">${guideImportDayOptions(item, days)}</select></label>
+      <label class="guide-field-time"><span>${t('field.time')}</span><input type="time" data-guide-field="time" value="${escapeHtml(item.time)}" lang="he-IL"></label>
+      <label class="guide-field-cost"><span>${t('field.costILS')}</span><input type="number" min="0" step="0.01" data-guide-field="cost" value="${escapeHtml(item.cost)}"></label>
+      <label class="guide-field-map"><span>${t('trip.guideImport.mapLabel')}</span><span class="guide-field-map-row"><input type="text" data-guide-field="mapQuery" value="${escapeHtml(item.mapQuery)}"><a class="btn-edit guide-map-link" data-guide-map target="_blank" rel="noopener" href="${guideImportMapUrl(item)}">${t('trip.guideImport.openMap')}</a></span></label>
+      ${originalPrice}
+      <label class="guide-field-notes"><span>${t('field.notes')}</span><textarea data-guide-field="notes" rows="3">${escapeHtml(item.notes)}</textarea></label>
+    </div>
+  </article>`;
+}
+
+function updateGuideImportPreviewSummary() {
+  const selected = guideImportItems.filter(item => item.include).length;
+  const count = document.getElementById('guideImportSelectedCount');
+  if (count) count.textContent = t('trip.guideImport.selectedCount', { n: selected });
+  const save = document.getElementById('guideImportSave');
+  if (save) save.disabled = selected === 0;
+}
+
+function renderGuideImportPreview() {
+  const panel = document.getElementById('guideImportPreview');
+  if (!panel) return;
+  if (!guideImportItems.length) { panel.hidden = true; panel.innerHTML = ''; return; }
+  const days = guideImportTripDays();
+  const hasUnscheduledPoi = guideImportItems.some(item => item.include && item.type === 'itinerary' && !item.date);
+  panel.hidden = false;
+  panel.innerHTML = `<div class="guide-import-preview-top">
+      <div><h2>${t('trip.guideImport.previewTitle')}</h2><p class="file-hint">${t('trip.guideImport.previewHint')}</p></div>
+      <div class="guide-import-summary"><span>${t('trip.guideImport.itemsCount', { n: guideImportItems.length })}</span><span class="is-selected" id="guideImportSelectedCount"></span></div>
+    </div>
+    ${!days.length ? `<div class="guide-import-notice">${t('trip.guideImport.noDays')}</div>` : ''}
+    ${days.length && guideImportDraft.spread ? `<p class="file-hint">${t('trip.guideImport.autoPlanHint')}</p>` : ''}
+    ${hasUnscheduledPoi ? `<div class="guide-import-notice">${t('trip.guideImport.needsDates')}</div>` : ''}
+    <div class="guide-import-items">${guideImportItems.map(item => guideImportItemHTML(item, days)).join('')}</div>
+    <div class="guide-import-footer"><p class="file-hint">${t('trip.guideImport.autoPlanHint')}</p><div class="guide-import-footer-actions"><button type="button" class="btn-ghost" data-guide-action="select-all">${t('trip.guideImport.selectAll')}</button><button type="button" class="btn-ghost" data-guide-action="clear-selection">${t('trip.guideImport.clearSelection')}</button><button type="button" class="btn-primary" id="guideImportSave" data-guide-action="save">${t('trip.guideImport.addSelected')}</button></div></div>`;
+  updateGuideImportPreviewSummary();
+  upgradeAllDateTimeInputs(panel);
+}
+
+function guideImportItemForControl(control) {
+  const card = control.closest('[data-guide-item]');
+  if (!card) return null;
+  return guideImportItems.find(item => item.id === card.dataset.guideItem) || null;
+}
+
+function updateGuideImportMapLink(card, item) {
+  const link = card && card.querySelector('[data-guide-map]');
+  if (link) link.href = guideImportMapUrl(item);
+}
+
+function guideImportNotes(item) {
+  const parts = [guideImportPlainText(item.notes)];
+  const source = guideImportPlainText(guideImportDraft.source);
+  if (source) parts.push(t('trip.guideImport.sourceNote', { source }));
+  parts.push(t('trip.guideImport.importedNote'));
+  return parts.filter(Boolean).join('\n').slice(0, 2000);
+}
+
+async function saveGuideImportItems() {
+  const selected = guideImportItems.filter(item => item.include);
+  if (!selected.length) { toast(t('trip.guideImport.noSelection'), true); return; }
+  const saveable = selected.filter(item => item.type === 'restaurants' || item.date);
+  const skipped = selected.length - saveable.length;
+  if (!saveable.length) { toast(t('trip.guideImport.needsDates'), true); return; }
+  const saveButton = document.getElementById('guideImportSave');
+  if (saveButton) saveButton.disabled = true;
+  const saved = new Set();
+  try {
+    for (const item of saveable) {
+      const type = item.type === 'restaurants' ? 'restaurants' : 'itinerary';
+      const base = { name: guideImportPlainText(item.name), address: guideImportPlainText(item.mapQuery), coords: '', cost: Number(item.cost) || 0, notes: guideImportNotes(item) };
+      const payload = type === 'restaurants'
+        ? { ...base, date: item.date || '', ref: guideImportPlainText(guideImportDraft.source) }
+        : { ...base, date: item.date, time: item.time || '', category: 'אטרקציה', url: '', image: '' };
+      if (!base.name) continue;
+      await api('/api/records/' + type, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+      saved.add(item.id);
+    }
+    guideImportItems = guideImportItems.filter(item => !saved.has(item.id));
+    await loadTrip();
+    renderGuideImportPreview();
+    if (saved.size) toast(t('trip.guideImport.added', { n: saved.size }));
+    if (skipped) toast(t('trip.guideImport.skippedNoDate', { n: skipped }), true);
+  } catch (err) {
+    toast(err.message, true);
+  } finally {
+    updateGuideImportPreviewSummary();
+  }
+}
+
+function wireGuideImportView() {
+  const text = document.getElementById('guideImportText');
+  const source = document.getElementById('guideImportSource');
+  const spread = document.getElementById('guideImportSpread');
+  const parse = document.getElementById('guideImportParse');
+  const clear = document.getElementById('guideImportClear');
+  const preview = document.getElementById('guideImportPreview');
+  if (!text || !source || !spread || !parse || !clear || !preview) return;
+  text.value = guideImportDraft.text;
+  source.value = guideImportDraft.source;
+  spread.checked = guideImportDraft.spread;
+  text.addEventListener('input', () => { guideImportDraft.text = text.value; });
+  source.addEventListener('input', () => { guideImportDraft.source = source.value; });
+  spread.addEventListener('change', () => { guideImportDraft.spread = spread.checked; });
+  parse.addEventListener('click', () => {
+    guideImportDraft.text = text.value;
+    guideImportDraft.source = source.value;
+    guideImportDraft.spread = spread.checked;
+    if (!guideImportPlainText(guideImportDraft.text)) { toast(t('trip.guideImport.noText'), true); return; }
+    guideImportItems = guideImportExtractEntries(guideImportDraft.text);
+    guideImportSuggestDays(guideImportItems);
+    if (!guideImportItems.length) { renderGuideImportPreview(); toast(t('trip.guideImport.noItems'), true); return; }
+    renderGuideImportPreview();
+  });
+  clear.addEventListener('click', () => {
+    guideImportDraft = { text: '', source: '', spread: true };
+    guideImportItems = [];
+    text.value = ''; source.value = ''; spread.checked = true;
+    renderGuideImportPreview();
+  });
+  preview.addEventListener('input', ev => {
+    const control = ev.target.closest('[data-guide-field]');
+    const item = control && guideImportItemForControl(control);
+    if (!item) return;
+    const field = control.dataset.guideField;
+    item[field] = control.type === 'checkbox' ? control.checked : control.value;
+    if (field === 'mapQuery' || field === 'name') updateGuideImportMapLink(control.closest('[data-guide-item]'), item);
+    updateGuideImportPreviewSummary();
+  });
+  preview.addEventListener('change', ev => {
+    const control = ev.target.closest('[data-guide-field]');
+    const item = control && guideImportItemForControl(control);
+    if (!item) return;
+    const field = control.dataset.guideField;
+    item[field] = control.type === 'checkbox' ? control.checked : control.value;
+    const card = control.closest('[data-guide-item]');
+    if (field === 'type') {
+      const kind = card.querySelector('[data-guide-kind]');
+      if (kind) kind.textContent = item.type === 'restaurants' ? t('trip.guideImport.typeRestaurant') : t('trip.guideImport.typePoi');
+    }
+    if (field === 'mapQuery' || field === 'name') updateGuideImportMapLink(card, item);
+    updateGuideImportPreviewSummary();
+  });
+  preview.addEventListener('click', ev => {
+    const action = ev.target.closest('[data-guide-action]');
+    if (!action) return;
+    if (action.dataset.guideAction === 'select-all') {
+      guideImportItems.forEach(item => { item.include = true; });
+      renderGuideImportPreview();
+    } else if (action.dataset.guideAction === 'clear-selection') {
+      guideImportItems.forEach(item => { item.include = false; });
+      renderGuideImportPreview();
+    } else if (action.dataset.guideAction === 'save') {
+      saveGuideImportItems();
+    }
+  });
+  if (guideImportItems.length) renderGuideImportPreview();
 }
 
 // Trip destination dialog (static element — wired once)

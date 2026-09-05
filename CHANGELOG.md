@@ -2,6 +2,12 @@
 
 All notable changes to Or are logged here, newest first. Version shown matches the number in the app's Help dialog (בדיקת עדכונים).
 
+## 1.36.0 — 2026-09-06
+
+- **Added**: a local **Guide import** tab. Paste a Hebrew or Markdown travel guide, review every extracted restaurant and point of interest, then add only the chosen records to the existing trip tabs.
+- **Added**: editable suggestions for trip day, time, map search, cost, and notes. When trip dates are set, recommendations are distributed across the days as a proposal; the traveller controls the final result before saving.
+- **Safety**: exact-name recommendations already in the trip are detected and left unchecked. Missing addresses and prices are never guessed, and pasted guide text is processed in the browser rather than sent to an AI provider.
+
 ## 1.35.13 — 2026-09-06
 
 - **Fixed**: on a narrow phone screen, the "All days" button sat squeezed above the day cells on its own line. It's now one wide bar below the day-cell row instead.

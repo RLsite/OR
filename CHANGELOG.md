@@ -2,6 +2,13 @@
 
 All notable changes to Or are logged here, newest first. Version shown matches the number in the app's Help dialog (בדיקת עדכונים).
 
+## 1.35.3 — 2026-09-05
+
+- **Added**: the Documents tab can now create and maintain an `or-trip-assistant-brief.md` file inside the existing per-trip Google Drive folder. It keeps user-editable permanent instructions alongside a refreshed, privacy-filtered trip snapshot, and the assistant reads it as user context for each new question without opening a surprise Google sign-in popup.
+- **Improved**: the fallback notice is now the neutral “Switching models…” status rather than exposing the active AI provider to the traveller.
+- **Fixed**: fallback-model answers that try to disclose or endlessly repeat model/provider/training identity are replaced before display and before they enter chat history; provider/API diagnostic errors are also shown as a neutral availability message.
+- **Privacy**: documented the optional Markdown context file and its AI processing in the privacy policy and terms. Booking references and insurance-policy details are intentionally excluded from the Drive snapshot.
+
 ## 1.35.2 — 2026-09-05
 
 - **Fixed**: a date field could get stuck with only a 2-digit year (e.g. "0026" instead of "2026") if a date input was saved before all 4 year digits were typed. This showed up two ways: the date displaying with a 2-digit year in tables, and that record silently disappearing when filtering the trip to that specific day (it still showed up fine in the "all days" view). The repair now recognizes this shape too and fixes it automatically on next load; day-view filtering for flights, hotels, restaurants, cars, expenses and itinerary items also no longer relies on the raw stored value being well-formed.

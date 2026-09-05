@@ -2,6 +2,12 @@
 
 All notable changes to Or are logged here, newest first. Version shown matches the number in the app's Help dialog (בדיקת עדכונים).
 
+## 1.33.0 — 2026-09-05
+
+- **Added**: NVIDIA API fallback when Gemini is unavailable or its quota is exhausted.
+- **Added**: a visible notice tells the user when the assistant switches providers.
+- **Configured**: the fallback uses NVIDIA's hosted `openai/gpt-oss-20b` model with native tool-calling support.
+
 ## 1.32.4 — 2026-09-05
 
 - **Fixed**: upstream Gemini failures now stay JSON with a client-visible error instead of using HTTP 502, which Cloudflare was replacing with an unhelpful plain-text gateway page.

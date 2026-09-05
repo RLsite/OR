@@ -504,6 +504,175 @@
     .cards { grid-template-columns: 1fr; }
   }
 
+  /* ---- Full responsive layout: touch-friendly phones and small tablets ----
+     Keep the page itself inside the viewport. Components that genuinely need
+     more width (data tables and printable reports) scroll inside their own
+     container instead of moving the whole page sideways. */
+  @media (max-width: 768px) {
+    html, body { overflow-x: hidden; min-width: 0; }
+    .container {
+      width: 100%;
+      padding: max(16px, env(safe-area-inset-top))
+               max(12px, env(safe-area-inset-right))
+               max(24px, env(safe-area-inset-bottom))
+               max(12px, env(safe-area-inset-left));
+    }
+    header { margin-bottom: 16px; }
+    header h1, #appTitle { min-width: 0; overflow-wrap: anywhere; }
+    .header-actions { min-width: 0; flex-wrap: wrap; }
+    .panel, .card, .tab-panel { min-width: 0; }
+
+    /* Tabs stay one line and swipe horizontally instead of wrapping into a
+       tall, hard-to-scan block on phones. */
+    .tabs {
+      margin-inline: -12px;
+      padding-inline: 12px;
+      overflow-x: auto;
+      flex-wrap: nowrap;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+    }
+    .tabs::-webkit-scrollbar { display: none; }
+    .tab { flex: 0 0 auto; white-space: nowrap; }
+
+    form.add-form { grid-template-columns: minmax(0, 1fr); }
+    .details-grid { grid-template-columns: minmax(0, 1fr); }
+    input, select, textarea { max-width: 100%; }
+    .dialog-actions { flex-wrap: wrap; align-items: stretch; }
+    .dialog-actions > button { flex: 1 1 150px; min-width: 0; }
+
+    /* Every ordinary dialog fits above the mobile browser chrome. */
+    dialog {
+      width: calc(100vw - 24px);
+      max-width: calc(100vw - 24px);
+      max-height: calc(100dvh - 24px);
+      overflow-y: auto;
+    }
+    #helpDialog, #settingsDialog {
+      width: calc(100vw - 16px);
+      max-width: calc(100vw - 16px);
+      height: min(88dvh, 720px);
+      max-height: calc(100dvh - 16px);
+      padding: 16px 14px;
+    }
+    #helpDialog, #settingsDialog { overflow: hidden; }
+    #helpDialog .tabs, #settingsDialog .tabs {
+      margin-inline: 0;
+      padding-inline: 0;
+    }
+    .settings-section { padding-inline-end: 2px; }
+    .file-actions { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .file-actions button { width: 100%; min-width: 0; }
+    .drive-file-row { align-items: flex-start; flex-wrap: wrap; }
+    .drive-file-row .drive-file-meta { flex: 1 1 180px; }
+    .drive-file-row button { margin-inline-start: auto; }
+
+    /* Tables remain readable: only the table surface scrolls. */
+    .table-wrap {
+      max-width: 100%;
+      overflow-x: auto;
+      overscroll-behavior-inline: contain;
+      -webkit-overflow-scrolling: touch;
+    }
+    table { min-width: max-content; }
+    th, td { padding: 9px 10px; }
+    td.col-address, td.col-description, td.col-notes {
+      white-space: normal;
+      overflow-wrap: anywhere;
+      min-width: 150px;
+      max-width: 280px;
+    }
+    .actions-cell { flex-wrap: wrap; align-items: center; }
+
+    /* The trip date controls use the full row, while day buttons remain
+       horizontally scrollable and easy to tap. */
+    .trip-datebar-top { align-items: flex-start; }
+    .trip-dest { max-width: 100%; overflow-wrap: anywhere; }
+    .trip-datebar-head { align-items: stretch; }
+    .trip-datebar-head > .btn-primary,
+    .trip-datebar-head > .btn-edit { flex: 1 1 0; min-width: 0; }
+    .day-strip { flex-basis: 100%; width: 100%; order: 3; }
+    .day-sq { flex: 0 0 66px; }
+
+    .agenda-item { margin-inline-start: 44px; padding-inline-start: 10px; gap: 6px; }
+    .agenda-time { inset-inline-start: -44px; width: 36px; font-size: 12px; }
+    .agenda-drag { width: 40px; height: 40px; margin: -6px; }
+    .agenda-title, .agenda-sub { overflow-wrap: anywhere; }
+    .nav-links { display: flex; flex-wrap: wrap; margin-inline-start: 0; margin-top: 4px; }
+
+    .report-controls { flex-direction: column; align-items: stretch; }
+    .report-controls label, .report-controls select, .report-controls .btn-primary { width: 100%; }
+    .report-preview { max-height: 56dvh; padding: 10px; overflow: auto; }
+    .rpt { min-width: 620px; padding: 14px; }
+
+    #toast {
+      left: 12px;
+      right: 12px;
+      bottom: max(12px, env(safe-area-inset-bottom));
+      width: auto;
+      transform: none;
+      text-align: center;
+    }
+  }
+
+  @media (max-width: 480px) {
+    input, select, textarea { font-size: 16px; } /* prevents iOS focus zoom */
+    button { white-space: normal; }
+    header h1#appTitle { font-size: 18px; line-height: 1.3; }
+    .header-actions { flex-wrap: nowrap; }
+    .header-actions .icon-btn { flex: 0 0 44px; }
+    .header-menu {
+      inset-inline-start: 0;
+      inset-inline-end: auto;
+      width: min(280px, calc(100vw - 24px));
+      min-width: 0;
+      max-height: calc(100dvh - 90px);
+      overflow-y: auto;
+    }
+    .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .card { padding: 12px; }
+    .card .cat-label { font-size: 13px; }
+    .card .amount { font-size: 20px; overflow-wrap: anywhere; }
+    .card .sub { overflow-wrap: anywhere; }
+    .list-panel-header { align-items: stretch; }
+    .list-panel-header h2 { flex: 1 1 100%; }
+    .list-panel-header > .btn-primary { width: 100%; }
+    .actions-cell { min-width: 140px; align-items: stretch; }
+    .actions-cell > button, .actions-cell > select { width: 100%; }
+    .date-range-picker { flex-direction: column; align-items: stretch; }
+    .date-range-arrow { transform: rotate(90deg); align-self: center; }
+    html[dir="ltr"] .date-range-arrow { transform: rotate(90deg) scaleX(-1); }
+    .assistant-toggle {
+      inset-inline-end: max(12px, env(safe-area-inset-right));
+      bottom: max(12px, env(safe-area-inset-bottom));
+    }
+    .assistant-panel {
+      inset-inline-start: max(12px, env(safe-area-inset-left));
+      inset-inline-end: max(12px, env(safe-area-inset-right));
+      bottom: max(76px, calc(76px + env(safe-area-inset-bottom)));
+      width: auto;
+      height: min(60dvh, 520px);
+      max-height: calc(100dvh - 100px);
+      border-radius: 16px;
+    }
+    .assistant-msg { max-width: 92%; overflow-wrap: anywhere; }
+    .assistant-form {
+      padding: 8px;
+      padding-bottom: max(8px, env(safe-area-inset-bottom));
+    }
+    .assistant-form input { min-width: 0; width: 100%; }
+    .assistant-form button { flex: 0 0 auto; padding-inline: 12px; }
+    .empty { padding: 32px 12px; }
+    .app-footer { flex-wrap: wrap; padding-bottom: env(safe-area-inset-bottom); }
+  }
+
+  @media (max-width: 360px) {
+    .cards { grid-template-columns: 1fr; }
+    .file-actions { grid-template-columns: 1fr; }
+    .dialog-actions > button { flex-basis: 100%; }
+    .assistant-panel { inset-inline-start: 8px; inset-inline-end: 8px; }
+  }
+
   /* Splash screen */
   #splash {
     position: fixed; inset: 0; z-index: 5000;
@@ -1518,7 +1687,7 @@ applyLang(localStorage.getItem('or-lang') || 'he', false);
 // ===================== Client-side data layer (runs fully in the browser) =====================
 // Data lives in localStorage; Excel import/export via SheetJS. No server needed — works on GitHub Pages.
 // (In the future a cloud backend such as Google Drive can replace loadDB/saveDB.)
-const APP_VERSION = '1.30.1';
+const APP_VERSION = '1.31.0';
 const APP_BUILT_AT = 'dev'; // replaced by build.js with the deploy timestamp — lets a running page detect it's stale
 const STORE_KEY = 'or-store-v1';
 const BUGS_COLS = ['field.date', 'field.toolOrPage', 'field.description', 'field.browser'];
@@ -2033,7 +2202,8 @@ async function driveUploadLocalFile(file) {
   } catch (err) { toast(t('drive.uploadError', { msg: err.message }), true); }
   finally { btn.disabled = false; btn.textContent = original; }
 }
-async function driveConnect() {
+async function driveConnect(options) {
+  options = options || {};
   if (!driveConfigured()) { toast(t('drive.notConfigured'), true); return; }
   try {
     const token = await driveRequestToken();
@@ -2043,6 +2213,10 @@ async function driveConnect() {
     updateDriveUI();
     restartBackupReminderTimer();
     updateBackupClock();
+    // A newly connected browser has its own localStorage and may be empty even
+    // though this same Google account already has the real trip backup. Check
+    // Drive before any caller is allowed to upload local data over it.
+    if (options.syncAfterConnect) await openDriveSyncDialog();
   } catch (err) { toast(t('drive.connectError', { msg: err.message }), true); }
 }
 function driveDisconnect() {
@@ -2328,15 +2502,25 @@ document.getElementById('openSettingsFromBackupReminder').addEventListener('clic
   document.getElementById('backupReminderDialog').close();
   openSettingsOnBackupTab();
 });
+function localBrowserHasTripData() {
+  const s = loadDB();
+  const recordCount = Object.values(s.records || {}).reduce((sum, rows) => sum + ((rows && rows.length) || 0), 0);
+  const tripValues = ['destination', 'from', 'to', 'travelers', 'budget', 'insCompany', 'insPolicy', 'insPhone', 'notes'];
+  return !!s.savedAt || recordCount > 0 || tripValues.some(key => String((s.trip || {})[key] || '').trim());
+}
 // Clicking the header save/backup icon backs up immediately: already connected ->
-// upload right now; not connected -> run the Drive connect flow, then upload right
-// after, so one click both connects AND performs the first backup (no Settings
-// detour - see how Alon's own equivalent icon behaves).
+// upload right now when this browser already has data; not connected (or empty)
+// -> inspect Drive first, so a new phone cannot overwrite the real backup with
+// its blank local store.
 async function backupClockClick() {
   try {
     if (!isDriveConnected()) {
-      await driveConnect();
-      if (!isDriveConnected()) return; // user closed the consent popup, or it failed (driveConnect already showed a toast)
+      await driveConnect({ syncAfterConnect: true });
+      return;
+    }
+    if (!localBrowserHasTripData()) {
+      await openDriveSyncDialog();
+      return;
     }
     const token = await driveEnsureToken();
     await driveUploadBackup(token);
@@ -2427,7 +2611,7 @@ document.getElementById('driveSyncUpdateLocal').addEventListener('click', async 
   } catch (err) { toast(t('drive.restoreError', { msg: err.message }), true); btn.disabled = false; }
 });
 
-document.getElementById('driveConnectBtn').addEventListener('click', driveConnect);
+document.getElementById('driveConnectBtn').addEventListener('click', () => driveConnect({ syncAfterConnect: true }));
 document.getElementById('driveBackupBtn').addEventListener('click', openDriveSyncDialog);
 document.getElementById('driveRestoreBtn').addEventListener('click', openDriveSyncDialog);
 document.getElementById('driveDisconnectBtn').addEventListener('click', driveDisconnect);
@@ -3675,7 +3859,7 @@ function wireTripView() {
   wireToolView('cars', TOOLKIT.cars);
   wireToolView('tripexp', TOOLKIT.tripexp);
   wireToolView('triplinks', TOOLKIT.triplinks);
-  document.getElementById('tripDocsConnectBtn').addEventListener('click', async () => { await driveConnect(); renderTripDocsTab(true); }); // explicit user action - fetch right after connecting
+  document.getElementById('tripDocsConnectBtn').addEventListener('click', async () => { await driveConnect({ syncAfterConnect: true }); renderTripDocsTab(true); }); // explicit user action - fetch right after connecting
   document.getElementById('driveUploadDocBtn').addEventListener('click', () => document.getElementById('driveDocFileInput').click());
   document.getElementById('driveDocFileInput').addEventListener('change', async ev => {
     const files = [...ev.target.files];

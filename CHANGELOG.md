@@ -2,6 +2,11 @@
 
 All notable changes to Or are logged here, newest first. Version shown matches the number in the app's Help dialog (בדיקת עדכונים).
 
+## 1.31.0 — 2026-09-05
+
+- **Added**: full responsive mobile layout for the trip dashboard, forms, dialogs, tabs, tables, reports and floating assistant, including safe-area spacing and touch-friendly controls.
+- **Fixed**: connecting Google Drive from a new or empty device now checks the existing Drive backup first and opens the sync choice instead of silently overwriting it with empty local data.
+
 ## 1.30.1 — 2026-09-05
 
 - **Fixed**: the AI trip assistant now uses the available Gemini 3.6 Flash model instead of the retired Gemini 2.5 Flash model.

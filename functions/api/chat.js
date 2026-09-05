@@ -72,7 +72,11 @@ async function askNvidia(body, env) {
   // API field. Calling the HTTP API directly (as this does), those fields belong
   // at the top level of the JSON body instead, or NVIDIA rejects the whole
   // request with "Unsupported parameter(s): `extra_body`".
-  const payload = { model: env.NVIDIA_MODEL || NVIDIA_MODEL, messages, temperature: 0.2, top_p: 0.95, max_tokens: ASSISTANT_MAX_OUTPUT_TOKENS, stream: false, chat_template_kwargs: { enable_thinking: false } };
+  const model = env.NVIDIA_MODEL || NVIDIA_MODEL;
+  const payload = { model, messages, temperature: 0.2, top_p: 0.95, max_tokens: ASSISTANT_MAX_OUTPUT_TOKENS, stream: false };
+  // `chat_template_kwargs` is a Nemotron-specific control. Sending it to
+  // gpt-oss is unnecessary and can make an otherwise valid request fail.
+  if (model.startsWith('nvidia/nemotron-')) payload.chat_template_kwargs = { enable_thinking: false };
   const tools = geminiToOpenAiTools(body.tools);
   if (tools.length) { payload.tools = tools; payload.tool_choice = 'auto'; }
   let res;

@@ -31,7 +31,10 @@ const GOOGLE_CLIENT_ID = '297437869958-gvh093f0s50ti02t8l7bg4dbo858g38h.apps.goo
 const CF_ACCOUNT_ID = '530e19fb222ff31560e9fe60073df458'; // public - visible in every Cloudflare dashboard URL for this account, not a secret
 const WORKERS_AI_MODEL = '@cf/meta/llama-3.2-1b-instruct'; // cheapest Workers AI model confirmed to support tool_calls
 const GEMINI_MODEL = 'gemini-3.6-flash';
-const NVIDIA_MODEL = 'nvidia/nemotron-3.5-lightning-30b-a3b';
+// gpt-oss is a lighter, instruction-following/tool-use model that behaves more
+// reliably for this Hebrew-first travel assistant than the prior English-first
+// Nemotron Lightning default. A Cloudflare NVIDIA_MODEL variable can override it.
+const NVIDIA_MODEL = 'openai/gpt-oss-20b';
 // Keep replies short by default. The client instruction also asks for concise
 // answers, but a provider-side ceiling prevents an accidental long completion.
 const ASSISTANT_MAX_OUTPUT_TOKENS = 360;
@@ -327,7 +330,11 @@ async function askNvidia(body, env) {
   // API field. Calling the HTTP API directly (as this does), those fields belong
   // at the top level of the JSON body instead, or NVIDIA rejects the whole
   // request with "Unsupported parameter(s): `extra_body`".
-  const payload = { model: env.NVIDIA_MODEL || NVIDIA_MODEL, messages, temperature: 0.2, top_p: 0.95, max_tokens: ASSISTANT_MAX_OUTPUT_TOKENS, stream: false, chat_template_kwargs: { enable_thinking: false } };
+  const model = env.NVIDIA_MODEL || NVIDIA_MODEL;
+  const payload = { model, messages, temperature: 0.2, top_p: 0.95, max_tokens: ASSISTANT_MAX_OUTPUT_TOKENS, stream: false };
+  // `chat_template_kwargs` is a Nemotron-specific control. Sending it to
+  // gpt-oss is unnecessary and can make an otherwise valid request fail.
+  if (model.startsWith('nvidia/nemotron-')) payload.chat_template_kwargs = { enable_thinking: false };
   const tools = geminiToOpenAiTools(body.tools);
   if (tools.length) { payload.tools = tools; payload.tool_choice = 'auto'; }
   let res;

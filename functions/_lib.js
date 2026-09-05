@@ -20,7 +20,7 @@ export const GOOGLE_CLIENT_ID = '297437869958-gvh093f0s50ti02t8l7bg4dbo858g38h.a
 export const CF_ACCOUNT_ID = '530e19fb222ff31560e9fe60073df458'; // public - visible in every Cloudflare dashboard URL for this account, not a secret
 export const WORKERS_AI_MODEL = '@cf/meta/llama-3.2-1b-instruct'; // cheapest Workers AI model confirmed to support tool_calls
 export const GEMINI_MODEL = 'gemini-3.6-flash';
-export const NVIDIA_MODEL = 'nvidia/nemotron-3.5-lightning-30b-a3b';
+export const NVIDIA_MODEL = 'openai/gpt-oss-20b';
 
 export function jsonResponse(body, status) {
   return new Response(JSON.stringify(body), { status: status || 200, headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store', 'Access-Control-Allow-Origin': '*' } });

@@ -2,6 +2,11 @@
 
 All notable changes to Or are logged here, newest first. Version shown matches the number in the app's Help dialog (בדיקת עדכונים).
 
+## 1.35.9 — 2026-09-05
+
+- **Improved**: the vacation-style question in the assistant’s personalisation chat now supports multiple selections. For example, travellers can choose both “City & culture” and “Nature & beaches”, then press Continue; old one-choice profiles are migrated safely.
+- **Changed**: NVIDIA fallback now defaults to `openai/gpt-oss-20b`, a lighter model with instruction following and tool-use support. The previous Nemotron Lightning default was intended primarily for English and could produce poor Hebrew replies. A configured `NVIDIA_MODEL` variable still overrides this default.
+
 ## 1.35.8 — 2026-09-05
 
 - **Fixed**: a request that needs current web information (such as finding child-friendly attractions) now follows Gemini → NVIDIA directly. It no longer falls through to the small Workers AI model, which cannot search the web and could return a weak generic sentence instead of a useful trip response. Ordinary chat still uses Workers AI → Gemini → NVIDIA.

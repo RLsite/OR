@@ -1424,7 +1424,7 @@ const I18N = {
   'assistant.profile.start': { he: 'התאמה אישית', en: 'Personalize', ru: 'Настроить', ar: 'تخصيص' },
   'assistant.profile.startTitle': { he: 'התאמת המלצות החופשה', en: 'Personalize trip recommendations', ru: 'Настроить рекомендации для поездки', ar: 'تخصيص توصيات الرحلة' },
   'assistant.profile.intro': { he: 'נבנה התאמה קצרה כדי שההמלצות שלי יתאימו לכם יותר. אפשר לעדכן אותה בכל זמן.', en: 'Let’s do a short setup so my recommendations fit you better. You can update it anytime.', ru: 'Давайте быстро настроим профиль, чтобы мои рекомендации подходили вам лучше. Его можно изменить в любое время.', ar: 'لننشئ إعدادًا قصيرًا كي تناسب توصياتي رحلتكم أكثر. يمكنكم تحديثه في أي وقت.' },
-  'assistant.profile.question.style': { he: 'איזה סוג חופשה הכי מדבר אליכם?', en: 'What kind of vacation suits you best?', ru: 'Какой тип отпуска вам больше подходит?', ar: 'أي نوع من العطلات يناسبكم أكثر؟' },
+  'assistant.profile.question.style': { he: 'איזה סוגי חופשה מדברים אליכם? אפשר לבחור כמה אפשרויות ואז ללחוץ על המשך.', en: 'Which vacation styles fit you? Choose any that apply, then continue.', ru: 'Какие форматы отдыха вам подходят? Выберите все подходящие варианты и продолжите.', ar: 'ما أنواع العطلات التي تناسبكم؟ يمكنكم اختيار أكثر من خيار ثم المتابعة.' },
   'assistant.profile.question.party': { he: 'מי מטייל בחופשה הזו?', en: 'Who is traveling on this vacation?', ru: 'Кто путешествует в этой поездке?', ar: 'من المسافر في هذه الرحلة؟' },
   'assistant.profile.question.pace': { he: 'איזה קצב מתאים לכם?', en: 'What pace do you prefer?', ru: 'Какой темп вы предпочитаете?', ar: 'ما الوتيرة التي تفضّلونها؟' },
   'assistant.profile.question.interests': { he: 'מה חשוב לכם במיוחד? אפשר לבחור כמה אפשרויות.', en: 'What matters most to you? You can choose several options.', ru: 'Что для вас особенно важно? Можно выбрать несколько вариантов.', ar: 'ما الذي يهمكم أكثر؟ يمكنكم اختيار عدة خيارات.' },
@@ -1820,7 +1820,7 @@ applyLang(localStorage.getItem('or-lang') || 'he', false);
 // ===================== Client-side data layer (runs fully in the browser) =====================
 // Data lives in localStorage; Excel import/export via SheetJS. No server needed — works on GitHub Pages.
 // (In the future a cloud backend such as Google Drive can replace loadDB/saveDB.)
-const APP_VERSION = '1.35.8';
+const APP_VERSION = '1.35.9';
 const APP_BUILT_AT = 'dev'; // replaced by build.js with the deploy timestamp — lets a running page detect it's stale
 const STORE_KEY = 'or-store-v1';
 const BUGS_COLS = ['field.date', 'field.toolOrPage', 'field.description', 'field.browser'];
@@ -1857,11 +1857,17 @@ const ASSISTANT_PROFILE_VALUES = {
 function normalizeAssistantProfile(value) {
   const raw = value && typeof value === 'object' && !Array.isArray(value) ? value : {};
   const choose = field => ASSISTANT_PROFILE_VALUES[field].includes(String(raw[field] || '')) ? String(raw[field]) : '';
+  const chooseMany = field => [...new Set((Array.isArray(raw[field]) ? raw[field] : [raw[field]])
+    .map(item => String(item || ''))
+    .filter(item => ASSISTANT_PROFILE_VALUES[field].includes(item)))].slice(0, ASSISTANT_PROFILE_VALUES[field].length);
+  // `tripStyle` used to be a single string in the earliest questionnaire
+  // version. Accept that old shape and migrate it transparently to an array.
+  const tripStyle = chooseMany('tripStyle');
   const interests = [...new Set((Array.isArray(raw.interests) ? raw.interests : [])
     .map(item => String(item || ''))
     .filter(item => ASSISTANT_PROFILE_VALUES.interests.includes(item)))].slice(0, ASSISTANT_PROFILE_VALUES.interests.length);
   return {
-    tripStyle: choose('tripStyle'),
+    tripStyle,
     party: choose('party'),
     pace: choose('pace'),
     interests,
@@ -1872,7 +1878,7 @@ function normalizeAssistantProfile(value) {
 }
 function hasAssistantProfile(value) {
   const profile = normalizeAssistantProfile(value);
-  return !!(profile.tripStyle || profile.party || profile.pace || profile.interests.length || profile.budgetStyle || profile.notes);
+  return !!(profile.tripStyle.length || profile.party || profile.pace || profile.interests.length || profile.budgetStyle || profile.notes);
 }
 function assistantProfileForPrompt(value) {
   const profile = normalizeAssistantProfile(value);
@@ -3875,7 +3881,7 @@ let assistantContents = []; // Gemini-format conversation so far - kept client-s
 let assistantBusy = false;
 const ASSISTANT_PROFILE_QUESTIONS = [
   {
-    field: 'tripStyle', promptKey: 'assistant.profile.question.style', options: [
+    field: 'tripStyle', promptKey: 'assistant.profile.question.style', multi: true, options: [
       { value: 'city_culture', labelKey: 'assistant.profile.option.style.city' },
       { value: 'nature_beaches', labelKey: 'assistant.profile.option.style.nature' },
       { value: 'food_culinary', labelKey: 'assistant.profile.option.style.food' },
@@ -3949,17 +3955,18 @@ function renderAssistantProfileQuestion() {
     choice.type = 'button';
     choice.className = 'assistant-profile-choice';
     choice.textContent = profileOptionLabel(option);
-    const selected = question.multi && flow.draft.interests.includes(option.value);
+    const selectedValues = Array.isArray(flow.draft[question.field]) ? flow.draft[question.field] : [];
+    const selected = question.multi && selectedValues.includes(option.value);
     choice.classList.toggle('is-selected', selected);
     if (question.multi) choice.setAttribute('aria-pressed', String(selected));
     choice.addEventListener('click', () => {
       if (assistantProfileFlow !== flow || flow.step !== questionIndex) return;
       if (question.multi) {
-        const current = flow.draft.interests || [];
-        flow.draft.interests = current.includes(option.value)
+        const current = Array.isArray(flow.draft[question.field]) ? flow.draft[question.field] : [];
+        flow.draft[question.field] = current.includes(option.value)
           ? current.filter(value => value !== option.value)
           : [...current, option.value];
-        const nowSelected = flow.draft.interests.includes(option.value);
+        const nowSelected = flow.draft[question.field].includes(option.value);
         choice.classList.toggle('is-selected', nowSelected);
         choice.setAttribute('aria-pressed', String(nowSelected));
         return;
@@ -3979,7 +3986,7 @@ function renderAssistantProfileQuestion() {
     continueButton.addEventListener('click', () => {
       if (assistantProfileFlow !== flow || flow.step !== questionIndex) return;
       const selectedLabels = question.options
-        .filter(option => flow.draft.interests.includes(option.value))
+        .filter(option => (Array.isArray(flow.draft[question.field]) ? flow.draft[question.field] : []).includes(option.value))
         .map(profileOptionLabel);
       renderAssistantMessage('user', selectedLabels.join(', ') || t('assistant.profile.none'));
       flow.step++;

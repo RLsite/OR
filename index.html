@@ -1477,10 +1477,8 @@ const I18N = {
   'assistant.noReply': { he: 'לא התקבלה תשובה.', en: 'No reply received.', ru: 'Ответ не получен.' , ar: 'لم يتم استلام رد.' },
   'assistant.error': { he: 'משהו השתבש: {msg}', en: 'Something went wrong: {msg}', ru: 'Что-то пошло не так: {msg}' , ar: 'حدث خطأ ما: {msg}' },
   'assistant.apiUnavailable': { he: 'שירות העוזר לא זמין כרגע — השרת החזיר דף אתר במקום תשובת נתונים. נסו לרענן את הדפדפן.', en: 'The assistant service is unavailable right now — the server returned the site page instead of data. Please refresh the browser.', ru: 'Сервис помощника сейчас недоступен — сервер вернул страницу сайта вместо данных. Обновите браузер.', ar: 'خدمة المساعد غير متاحة حالياً — أعاد الخادم صفحة الموقع بدلاً من البيانات. يرجى تحديث المتصفح.' },
-  'assistant.providerFallback': { he: 'מחליף מודל…', en: 'Switching models…', ru: 'Переключаю модель…', ar: 'جارٍ تبديل النموذج…' },
   'assistant.identityReply': { he: 'אני העוזר של אור לתכנון החופשה. איך אפשר לעזור עם הטיול?', en: "I'm Or's trip-planning assistant. How can I help with the trip?", ru: 'Я помощник Or по планированию поездки. Чем могу помочь с поездкой?', ar: 'أنا مساعد Or لتخطيط الرحلة. كيف يمكنني المساعدة في الرحلة؟' },
   'assistant.serviceError': { he: 'שירות העוזר אינו זמין כרגע. נסו שוב בעוד רגע.', en: 'The assistant service is unavailable right now. Please try again shortly.', ru: 'Сервис помощника сейчас недоступен. Повторите попытку чуть позже.', ar: 'خدمة المساعد غير متاحة حالياً. يرجى المحاولة بعد قليل.' },
-  'assistant.nvidiaNotConfigured': { he: 'אין כרגע ספק עוזר זמין. נסו שוב בעוד רגע.', en: 'No assistant provider is available right now. Please try again shortly.', ru: 'Сейчас нет доступного поставщика помощника. Повторите попытку чуть позже.', ar: 'لا يوجد مزود مساعد متاح حالياً. يرجى المحاولة بعد قليل.' },
   'assistant.driveNotConnected': { he: 'Google Drive לא מחובר. התחברו ל-Drive דרך לשונית המסמכים ונסו שוב.', en: 'Google Drive is not connected. Connect it from the Documents tab and try again.', ru: 'Google Drive не подключён. Подключите его на вкладке документов и повторите попытку.', ar: 'Google Drive غير متصل. اتصلوا به من تبويب المستندات وحاولوا مرة أخرى.' },
   'assistant.documentReadError': { he: 'לא ניתן לקרוא את המסמך כרגע: {msg}', en: 'The document could not be read right now: {msg}', ru: 'Не удалось прочитать документ: {msg}', ar: 'تعذرت قراءة المستند حالياً: {msg}' },
   'assistant.notConfigured': { he: 'העוזר עדיין לא מוגדר בצד השרת.', en: 'The assistant isn’t configured on the server yet.', ru: 'Помощник ещё не настроен на сервере.' , ar: 'المساعد غير مهيأ على الخادم بعد.' },
@@ -1922,7 +1920,7 @@ applyLang(localStorage.getItem('or-lang') || 'he', false);
 // ===================== Client-side data layer (runs fully in the browser) =====================
 // Data lives in localStorage; Excel import/export via SheetJS. No server needed — works on GitHub Pages.
 // (In the future a cloud backend such as Google Drive can replace loadDB/saveDB.)
-const APP_VERSION = '1.36.0';
+const APP_VERSION = '1.36.1';
 const APP_BUILT_AT = 'dev'; // replaced by build.js with the deploy timestamp — lets a running page detect it's stale
 const STORE_KEY = 'or-store-v1';
 const BUGS_COLS = ['field.date', 'field.toolOrPage', 'field.description', 'field.browser'];
@@ -4224,7 +4222,7 @@ function cleanAssistantReplyText(text) {
 function normalizeAssistantReply(text) {
   const compact = cleanAssistantReplyText(text);
   if (!compact) return '';
-  // A fallback model may occasionally return a useful first sentence (for
+  // An upstream response may occasionally return a useful first sentence (for
   // example, that a requested PDF cannot be found) followed by a generic
   // "I am a model..." introduction and capability dump. Preserve the useful
   // result before it, and never show the internal self-description.
@@ -4234,10 +4232,10 @@ function normalizeAssistantReply(text) {
     const prefix = compact.slice(0, identityMatch.index).replace(/[\s,;:—–-]+$/, '').trim();
     return prefix;
   }
-  const mentionsProvider = /(?:\bNVIDIA\b|\bGemini\b|Workers?\s*AI|Cloudflare\s*AI)/i.test(compact);
+  const mentionsProvider = /(?:\bGemini\b|\bGoogle\b)/i.test(compact);
   const internalIdentity = /(?:מודל\s+שפה|language\s+model|חוקרים|researchers?|אומן(?:תי)?|נוצר(?:תי)?|פותח(?:תי)?|trained|training|developed\s+by|provider|ספק|API)/i.test(compact);
   const selfReference = /(?:^|[\s.!?…])(?:אני(?:\s|$)|i(?:'m| am| was)\b|my training\b)/i.test(compact);
-  // Some fallback models occasionally ignore the identity instruction and
+  // The assistant can occasionally ignore the identity instruction and
   // repeat a provider/training disclaimer. Replace it before rendering and
   // before storing it in the conversation, so it cannot poison later turns.
   if ((mentionsProvider && internalIdentity) || (selfReference && internalIdentity)) return '';
@@ -4268,7 +4266,6 @@ async function askAssistant(userText) {
   try {
     const assistantBrief = await assistantBriefForPrompt();
     let guard = 0;
-    let providerNoticeShown = false;
     const thinkingStages = ['assistant.thinking', 'assistant.thinking.checking', 'assistant.thinking.preparing'];
     let thinkingStage = 0;
     const thinkingTimer = setInterval(() => {
@@ -4302,11 +4299,6 @@ async function askAssistant(userText) {
         } catch (requestErr) { /* try the production endpoint if this is an old/preview host */ }
       }
       if (!res || !data) throw new Error(t('assistant.apiUnavailable'));
-      if (data.fallback && data.provider && !providerNoticeShown) {
-        renderAssistantMessage('system', t('assistant.providerFallback'));
-        providerNoticeShown = true;
-      }
-      if (data.fallback === 'nvidia' && data.nvidiaConfigured === false) throw new Error(t('assistant.serviceError'));
       if (res.status === 500 && data.error === 'not configured') throw new Error(t('assistant.serviceError'));
       if (res.status === 429) throw new Error(t('assistant.rateLimited'));
       if (!res.ok || data.error) throw new Error(assistantPublicError(data.error || `HTTP ${res.status}`));

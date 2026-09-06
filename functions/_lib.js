@@ -7,20 +7,12 @@
 //
 // Required secrets (Pages project → Settings → Environment variables, Production):
 //   GOOGLE_CLIENT_SECRET - for /api/google/exchange and /api/google/refresh
-//   CF_API_TOKEN          - for /api/chat (first attempt, Workers AI)
-//   GEMINI_API_KEY       - for /api/chat (second attempt)
-//   NVIDIA_API_KEY       - for /api/chat (third attempt)
-// CF_API_TOKEN needs "Workers AI: Read" permission on the account - Workers AI
-// is called over plain HTTPS with that token, not a wrangler.toml [ai] binding
-// (see worker.js's own copy of this comment for why).
+//   GEMINI_API_KEY        - for /api/chat
 // Routes that need a secret degrade to a clear {error:"not configured"} until
 // it's set.
 
 export const GOOGLE_CLIENT_ID = '297437869958-gvh093f0s50ti02t8l7bg4dbo858g38h.apps.googleusercontent.com'; // public, not a secret - kept in sync with index.html's copy
-export const CF_ACCOUNT_ID = '530e19fb222ff31560e9fe60073df458'; // public - visible in every Cloudflare dashboard URL for this account, not a secret
-export const WORKERS_AI_MODEL = '@cf/meta/llama-3.2-1b-instruct'; // cheapest Workers AI model confirmed to support tool_calls
 export const GEMINI_MODEL = 'gemini-3.6-flash';
-export const NVIDIA_MODEL = 'openai/gpt-oss-20b';
 
 export function jsonResponse(body, status) {
   return new Response(JSON.stringify(body), { status: status || 200, headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store', 'Access-Control-Allow-Origin': '*' } });
@@ -37,87 +29,6 @@ export function corsResponse() {
 
 export async function readJsonBody(request) {
   try { return await request.json(); } catch (e) { return null; }
-}
-
-// NVIDIA's hosted endpoint is OpenAI-compatible, while the browser keeps its
-// conversation in Gemini's format. These adapters keep the provider switch
-// server-side and preserve the assistant's existing tool-calling contract.
-export function openAiSchema(schema) {
-  schema = schema || {};
-  const out = {};
-  if (schema.type) out.type = String(schema.type).toLowerCase();
-  if (schema.description) out.description = schema.description;
-  if (Array.isArray(schema.enum)) out.enum = schema.enum;
-  if (schema.properties) {
-    out.properties = {};
-    Object.keys(schema.properties).forEach(k => { out.properties[k] = openAiSchema(schema.properties[k]); });
-  }
-  if (Array.isArray(schema.required)) out.required = schema.required;
-  if (schema.items) out.items = openAiSchema(schema.items);
-  return out;
-}
-
-export function geminiToOpenAiMessages(contents) {
-  const messages = [];
-  const pendingCalls = new Map();
-  let callNumber = 0;
-  for (const turn of contents || []) {
-    const parts = Array.isArray(turn.parts) ? turn.parts : [];
-    const responses = parts.filter(p => p && p.functionResponse).map(p => p.functionResponse);
-    if (responses.length) {
-      for (const response of responses) {
-        const name = response.name || 'tool';
-        const queue = pendingCalls.get(name) || [];
-        const id = queue.shift() || `call_${++callNumber}`;
-        pendingCalls.set(name, queue);
-        messages.push({ role: 'tool', tool_call_id: id, content: JSON.stringify(response.response || {}) });
-      }
-      continue;
-    }
-    const role = turn.role === 'model' ? 'assistant' : 'user';
-    const text = parts.filter(p => p && p.text).map(p => String(p.text)).join('\n');
-    const toolCalls = [];
-    for (const part of parts) {
-      if (!part || !part.functionCall || !part.functionCall.name) continue;
-      const name = part.functionCall.name;
-      const id = `call_${++callNumber}`;
-      const queue = pendingCalls.get(name) || [];
-      queue.push(id);
-      pendingCalls.set(name, queue);
-      toolCalls.push({ id, type: 'function', function: { name, arguments: JSON.stringify(part.functionCall.args || {}) } });
-    }
-    if (text || toolCalls.length) {
-      const message = { role, content: text || null };
-      if (toolCalls.length) message.tool_calls = toolCalls;
-      messages.push(message);
-    }
-  }
-  return messages;
-}
-
-export function geminiToOpenAiTools(tools) {
-  return (tools || []).flatMap(group => (group.functionDeclarations || []).map(fn => ({
-    type: 'function',
-    function: {
-      name: fn.name,
-      description: fn.description || '',
-      parameters: openAiSchema(fn.parameters),
-    },
-  })));
-}
-
-export function openAiToGeminiContent(data) {
-  const message = data && data.choices && data.choices[0] && data.choices[0].message;
-  if (!message) return null;
-  const parts = [];
-  if (message.content) parts.push({ text: String(message.content) });
-  for (const call of message.tool_calls || []) {
-    if (!call.function || !call.function.name) continue;
-    let args = {};
-    try { args = JSON.parse(call.function.arguments || '{}'); } catch (e) { args = {}; }
-    parts.push({ functionCall: { name: call.function.name, args } });
-  }
-  return parts.length ? { role: 'model', parts } : null;
 }
 
 // Shared by /api/google/exchange and /api/google/refresh - both just POST to

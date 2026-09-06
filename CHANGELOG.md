@@ -2,6 +2,11 @@
 
 All notable changes to Or are logged here, newest first. Version shown matches the number in the app's Help dialog (בדיקת עדכונים).
 
+## 1.36.1 — 2026-09-06
+
+- **Changed**: the trip assistant now uses only Google Gemini. Cloudflare AI, NVIDIA, every provider fallback, and the visible “Switching models…” notice were removed.
+- **Simplified**: when Gemini is unavailable, the traveller sees the existing neutral service-unavailable message; the app does not try a different model or expose provider diagnostics.
+
 ## 1.36.0 — 2026-09-06
 
 - **Added**: a local **Guide import** tab. Paste a Hebrew or Markdown travel guide, review every extracted restaurant and point of interest, then add only the chosen records to the existing trip tabs.

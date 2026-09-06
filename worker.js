@@ -10,17 +10,7 @@
 // Settings > Variables and Secrets for this Worker) - routes that need one
 // degrade to a clear {error:"not configured"} response until it's set:
 //   GOOGLE_CLIENT_SECRET - for /api/google/exchange and /api/google/refresh
-//   CF_API_TOKEN          - for /api/chat (first attempt, Workers AI)
-//   GEMINI_API_KEY       - for /api/chat (second attempt)
-//   NVIDIA_API_KEY        - for /api/chat (third attempt)
-// CF_API_TOKEN needs "Workers AI: Read" permission on this account (My Profile
-// > API Tokens > Create Token in the Cloudflare dashboard). Workers AI is
-// called over plain HTTPS (api.cloudflare.com/.../ai/run/<model>) with that
-// token, the same way Gemini/NVIDIA are called below - NOT via wrangler.toml's
-// [ai] binding (env.AI), which was tried first and abandoned: every deploy
-// that added it updated static assets but never actually activated the new
-// worker.js, with no error and no way to tell why. The REST call sidesteps
-// that entirely, at the cost of needing this one extra secret like the others.
+//   GEMINI_API_KEY        - for /api/chat
 //
 // (Earlier attempt: a Cloudflare Pages "functions/api/*.js" file. That's a
 // Pages-only convention and is never invoked under this project's actual
@@ -28,13 +18,7 @@
 // 404'd. This is the version that actually runs.)
 
 const GOOGLE_CLIENT_ID = '297437869958-gvh093f0s50ti02t8l7bg4dbo858g38h.apps.googleusercontent.com'; // public, not a secret - kept in sync with index.html's copy
-const CF_ACCOUNT_ID = '530e19fb222ff31560e9fe60073df458'; // public - visible in every Cloudflare dashboard URL for this account, not a secret
-const WORKERS_AI_MODEL = '@cf/meta/llama-3.2-1b-instruct'; // cheapest Workers AI model confirmed to support tool_calls
 const GEMINI_MODEL = 'gemini-3.6-flash';
-// gpt-oss is a lighter, instruction-following/tool-use model that behaves more
-// reliably for this Hebrew-first travel assistant than the prior English-first
-// Nemotron Lightning default. A Cloudflare NVIDIA_MODEL variable can override it.
-const NVIDIA_MODEL = 'openai/gpt-oss-20b';
 // Keep replies short by default. The client instruction also asks for concise
 // answers, but a provider-side ceiling prevents an accidental long completion.
 const ASSISTANT_MAX_OUTPUT_TOKENS = 256;
@@ -73,79 +57,6 @@ function corsResponse() {
 
 async function readJsonBody(request) {
   try { return await request.json(); } catch (e) { return null; }
-}
-
-function openAiSchema(schema) {
-  schema = schema || {};
-  const out = {};
-  if (schema.type) out.type = String(schema.type).toLowerCase();
-  if (schema.description) out.description = schema.description;
-  if (Array.isArray(schema.enum)) out.enum = schema.enum;
-  if (schema.properties) {
-    out.properties = {};
-    Object.keys(schema.properties).forEach(k => { out.properties[k] = openAiSchema(schema.properties[k]); });
-  }
-  if (Array.isArray(schema.required)) out.required = schema.required;
-  if (schema.items) out.items = openAiSchema(schema.items);
-  return out;
-}
-
-function geminiToOpenAiMessages(contents) {
-  const messages = [];
-  const pendingCalls = new Map();
-  let callNumber = 0;
-  for (const turn of contents || []) {
-    const parts = Array.isArray(turn.parts) ? turn.parts : [];
-    const responses = parts.filter(p => p && p.functionResponse).map(p => p.functionResponse);
-    if (responses.length) {
-      for (const response of responses) {
-        const name = response.name || 'tool';
-        const queue = pendingCalls.get(name) || [];
-        const id = queue.shift() || `call_${++callNumber}`;
-        pendingCalls.set(name, queue);
-        messages.push({ role: 'tool', tool_call_id: id, content: JSON.stringify(response.response || {}) });
-      }
-      continue;
-    }
-    const role = turn.role === 'model' ? 'assistant' : 'user';
-    const text = parts.filter(p => p && p.text).map(p => String(p.text)).join('\n');
-    const toolCalls = [];
-    for (const part of parts) {
-      if (!part || !part.functionCall || !part.functionCall.name) continue;
-      const name = part.functionCall.name;
-      const id = `call_${++callNumber}`;
-      const queue = pendingCalls.get(name) || [];
-      queue.push(id);
-      pendingCalls.set(name, queue);
-      toolCalls.push({ id, type: 'function', function: { name, arguments: JSON.stringify(part.functionCall.args || {}) } });
-    }
-    if (text || toolCalls.length) {
-      const message = { role, content: text || null };
-      if (toolCalls.length) message.tool_calls = toolCalls;
-      messages.push(message);
-    }
-  }
-  return messages;
-}
-
-function geminiToOpenAiTools(tools) {
-  return (tools || []).flatMap(group => (group.functionDeclarations || []).map(fn => ({
-    type: 'function', function: { name: fn.name, description: fn.description || '', parameters: openAiSchema(fn.parameters) },
-  })));
-}
-
-function openAiToGeminiContent(data) {
-  const message = data && data.choices && data.choices[0] && data.choices[0].message;
-  if (!message) return null;
-  const parts = [];
-  if (message.content) parts.push({ text: String(message.content) });
-  for (const call of message.tool_calls || []) {
-    if (!call.function || !call.function.name) continue;
-    let args = {};
-    try { args = JSON.parse(call.function.arguments || '{}'); } catch (e) { args = {}; }
-    parts.push({ functionCall: { name: call.function.name, args } });
-  }
-  return parts.length ? { role: 'model', parts } : null;
 }
 
 // GET /api/link-preview?url=<encoded> - fetches the target page server-side (the
@@ -288,14 +199,14 @@ function isUsableAssistantContent(content) {
   const text = parts.map(part => part && part.text ? String(part.text) : '').join(' ').replace(/\s+/g, ' ').trim();
   if (!text) return false;
   // A broken generation can get stuck emitting escaped Markdown punctuation.
-  // Retry with the next provider rather than letting it fill the chat bubble.
+  // Reject it rather than letting it fill the chat bubble.
   if (/(?:\\?[_*`]\s*){8,}/.test(text)) return false;
-  // Smaller fallback models occasionally ignore the system prompt and answer
+  // A generated answer can occasionally ignore the system prompt and answer
   // with a provider/training disclaimer instead of the traveller's request.
-  // Treat it as a failed attempt so the next provider gets a chance to answer.
+  // Treat it as a failed attempt instead of showing it to the traveller.
   const startsWithModelIdentity = /(?:^|[\s.!?…])(?:אני|I(?:'m| am)?|I’m)\s+(?:מודל(?:\s+שפה)?|(?:an?\s+)?(?:AI|language)\s+model|בוט|chatbot|virtual\s+assistant|עוזר\s+וירטואלי)/i.test(text);
-  const providerTrainingIdentity = /(?:NVIDIA|Gemini|Google|Cloudflare|Workers?\s*AI).{0,180}(?:model|training|trained|researchers?|provider|מודל|חוקרים|אומן(?:תי)?|נוצר(?:תי)?|פותח(?:תי)?)/i.test(text)
-    || /(?:אומן(?:תי)?|נוצר(?:תי)?|פותח(?:תי)?|trained|created|developed)\s+(?:על[\s-]*ידי|by)\s+(?:חוקרי|researchers?|NVIDIA|Google|Gemini)/i.test(text);
+  const providerTrainingIdentity = /(?:Gemini|Google).{0,180}(?:model|training|trained|researchers?|provider|מודל|חוקרים|אומן(?:תי)?|נוצר(?:תי)?|פותח(?:תי)?)/i.test(text)
+    || /(?:אומן(?:תי)?|נוצר(?:תי)?|פותח(?:תי)?|trained|created|developed)\s+(?:על[\s-]*ידי|by)\s+(?:חוקרי|researchers?|Google|Gemini)/i.test(text);
   return !startsWithModelIdentity && !providerTrainingIdentity;
 }
 
@@ -320,128 +231,18 @@ async function askGemini(body, env) {
   return content && isUsableAssistantContent(content) ? { content } : { error: 'gemini returned an unusable response' };
 }
 
-async function askNvidia(body, env) {
-  if (!env.NVIDIA_API_KEY) return { error: 'nvidia not configured' };
-  const messages = [];
-  if (body.systemInstruction || body.googleSearch) {
-    const systemInstruction = [body.systemInstruction, body.googleSearch ? 'Google Search was unavailable because this is the NVIDIA fallback. Do not claim to have searched the web and do not add an unverified place.' : ''].filter(Boolean).join(' ');
-    messages.push({ role: 'system', content: systemInstruction });
-  }
-  messages.push(...geminiToOpenAiMessages(body.contents));
-  // `extra_body` is a wrapper the OpenAI *Python SDK* uses to merge extra fields
-  // into the request when you can't pass them as named kwargs - it isn't a real
-  // API field. Calling the HTTP API directly (as this does), those fields belong
-  // at the top level of the JSON body instead, or NVIDIA rejects the whole
-  // request with "Unsupported parameter(s): `extra_body`".
-  const model = env.NVIDIA_MODEL || NVIDIA_MODEL;
-  const payload = { model, messages, temperature: 0.2, top_p: 0.95, max_tokens: ASSISTANT_MAX_OUTPUT_TOKENS, stream: false };
-  // `chat_template_kwargs` is a Nemotron-specific control. Sending it to
-  // gpt-oss is unnecessary and can make an otherwise valid request fail.
-  if (model.startsWith('nvidia/nemotron-')) payload.chat_template_kwargs = { enable_thinking: false };
-  const tools = geminiToOpenAiTools(body.tools);
-  if (tools.length) { payload.tools = tools; payload.tool_choice = 'auto'; }
-  let res;
-  try {
-    res = await fetch('https://integrate.api.nvidia.com/v1/chat/completions', {
-      method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json', Authorization: `Bearer ${env.NVIDIA_API_KEY}` }, body: JSON.stringify(payload), signal: AbortSignal.timeout(30000),
-    });
-  } catch (e) { return { error: e && e.name === 'TimeoutError' ? 'nvidia request timed out' : 'nvidia request failed' }; }
-  const raw = await res.text();
-  let data;
-  try { data = JSON.parse(raw); } catch (e) { return { error: `nvidia HTTP ${res.status}: ${raw.slice(0, 300) || 'invalid response'}` }; }
-  if (!res.ok) return { error: (data.error && (data.error.message || data.error)) || data.detail || data.message || `nvidia HTTP ${res.status}` };
-  const content = openAiToGeminiContent(data);
-  return content && isUsableAssistantContent(content) ? { content } : { error: 'nvidia returned an unusable response' };
-}
-
-// Workers AI's own tool-calling shape is a bit simpler than OpenAI's - tools are
-// flat {name, description, parameters} (no {type:'function', function:{...}}
-// wrapper), and a returned tool call's arguments come back as an already-parsed
-// object rather than a JSON string. These two small adapters exist only for that
-// difference; the messages themselves reuse geminiToOpenAiMessages() unchanged.
-function geminiToWorkersAiTools(tools) {
-  return (tools || []).flatMap(group => (group.functionDeclarations || []).map(fn => ({
-    name: fn.name,
-    description: fn.description || '',
-    parameters: openAiSchema(fn.parameters),
-  })));
-}
-function workersAiToGeminiContent(data) {
-  if (!data) return null;
-  const parts = [];
-  if (data.response) parts.push({ text: String(data.response) });
-  for (const call of data.tool_calls || []) {
-    if (!call || !call.name) continue;
-    parts.push({ functionCall: { name: call.name, args: call.arguments || {} } });
-  }
-  return parts.length ? { role: 'model', parts } : null;
-}
-// Cloudflare Workers AI, called over plain HTTPS with an API token rather than
-// wrangler.toml's [ai] binding - see the secrets comment at the top of this file
-// for why. Tried first: fastest, and free up to the account's daily Workers AI
-// allowance before any per-token cost.
-async function askWorkersAi(body, env) {
-  const messages = [];
-  if (body.systemInstruction || body.googleSearch) {
-    const systemInstruction = [body.systemInstruction, body.googleSearch ? 'Google Search was unavailable on this provider. Do not claim to have searched the web and do not add an unverified place.' : ''].filter(Boolean).join(' ');
-    messages.push({ role: 'system', content: systemInstruction });
-  }
-  messages.push(...geminiToOpenAiMessages(body.contents));
-  const options = { messages, max_tokens: ASSISTANT_MAX_OUTPUT_TOKENS };
-  const tools = geminiToWorkersAiTools(body.tools);
-  if (tools.length) options.tools = tools;
-  let json;
-  try {
-    const res = await fetch(`https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT_ID}/ai/run/${WORKERS_AI_MODEL}`, {
-      method: 'POST',
-      headers: { 'Authorization': `Bearer ${env.CF_API_TOKEN}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify(options),
-      signal: AbortSignal.timeout(20000),
-    });
-    json = await res.json();
-  } catch (e) { return { error: (e && e.message) || 'workers ai request failed' }; }
-  if (!json || !json.success) return { error: (json && json.errors && json.errors[0] && json.errors[0].message) || 'workers ai request failed' };
-  const content = workersAiToGeminiContent(json.result);
-  return content && isUsableAssistantContent(content) ? { content } : { error: 'workers ai returned an unusable response' };
-}
-
 async function handleChat(request, env) {
   if (request.method !== 'POST') return jsonResponse({ error: 'method not allowed' }, 405);
-  if (!env.CF_API_TOKEN && !env.GEMINI_API_KEY && !env.NVIDIA_API_KEY) return jsonResponse({ error: 'not configured' }, 500);
+  if (!env.GEMINI_API_KEY) return jsonResponse({ error: 'not configured' }, 500);
   const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
   if (isRateLimited(ip)) return jsonResponse({ error: 'rate limited' }, 429);
 
   const body = await readJsonBody(request);
   if (!body || !Array.isArray(body.contents) || !body.contents.length) return jsonResponse({ error: 'missing contents' }, 400);
 
-  // Gemini is the only configured provider with Google Search. A request that
-  // requires current recommendations therefore uses Gemini -> NVIDIA. Workers
-  // AI is intentionally not used for this fallback: it cannot search the web
-  // and its small first-line model can turn a useful search request into a
-  // low-quality generic reply. Ordinary chat remains Workers -> Gemini -> NVIDIA.
-  if (body.googleSearch) {
-    const gemini = env.GEMINI_API_KEY ? await askGemini(body, env) : { error: 'gemini not configured' };
-    if (gemini.content) return jsonResponse({ content: gemini.content, provider: 'gemini' });
-    const nvidia = env.NVIDIA_API_KEY ? await askNvidia(body, env) : { error: 'nvidia not configured' };
-    if (nvidia.content) return jsonResponse({ content: nvidia.content, provider: 'nvidia', fallback: 'gemini' });
-    return jsonResponse({ error: `Gemini: ${gemini.error}; NVIDIA: ${nvidia.error}` }, 500);
-  }
-
-  let workersAi = { error: 'workers ai not attempted' };
-  let gemini = { error: 'gemini not attempted' };
-
-  workersAi = env.CF_API_TOKEN ? await askWorkersAi(body, env) : { error: 'workers ai not configured' };
-  if (workersAi.content) return jsonResponse({ content: workersAi.content, provider: 'workers-ai' });
-
-  gemini = env.GEMINI_API_KEY ? await askGemini(body, env) : { error: 'gemini not configured' };
-  if (gemini.content) return jsonResponse({ content: gemini.content, provider: 'gemini', fallback: 'workers-ai' });
-
-  if (env.NVIDIA_API_KEY) {
-    const nvidia = await askNvidia(body, env);
-    if (nvidia.content) return jsonResponse({ content: nvidia.content, provider: 'nvidia', fallback: 'gemini' });
-    return jsonResponse({ error: `Workers AI: ${workersAi.error}; Gemini: ${gemini.error}; NVIDIA: ${nvidia.error}` }, 500);
-  }
-  return jsonResponse({ error: `Workers AI: ${workersAi.error}; Gemini: ${gemini.error}` }, 500);
+  const gemini = await askGemini(body, env);
+  if (gemini.content) return jsonResponse({ content: gemini.content, provider: 'gemini' });
+  return jsonResponse({ error: `Gemini: ${gemini.error}` }, 500);
 }
 
 export default {
@@ -450,13 +251,6 @@ export default {
     if (url.pathname === '/api/link-preview') return handleLinkPreview(request);
     if (url.pathname === '/api/google/exchange') return handleGoogleExchange(request, env);
     if (url.pathname === '/api/google/refresh') return handleGoogleRefresh(request, env);
-    // TEMPORARY diagnostic - isolates Workers AI from the Gemini/NVIDIA fallback
-    // chain so its own error (if any) is visible directly. Remove once verified.
-    if (url.pathname === '/api/debug-ai') {
-      if (!env.CF_API_TOKEN) return jsonResponse({ error: 'no CF_API_TOKEN secret' });
-      const result = await askWorkersAi({ contents: [{ role: 'user', parts: [{ text: 'Say hello in exactly three words.' }] }] }, env);
-      return jsonResponse(result);
-    }
     if (url.pathname === '/api/chat') {
       if (request.method === 'OPTIONS') return corsResponse();
       return handleChat(request, env);

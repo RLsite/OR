@@ -24,8 +24,5 @@ not_found_handling = "404-page"
 # costs nothing.
 run_worker_first = true
 
-# No [ai] binding here on purpose: an earlier attempt at one never actually
-# activated on deploy (assets updated, worker.js silently didn't - no error,
-# never diagnosed). worker.js instead calls Workers AI over plain HTTPS with
-# the CF_API_TOKEN secret, the same way it calls Gemini/NVIDIA - see the
-# secrets comment at the top of worker.js.
+# The assistant calls Gemini directly from worker.js using GEMINI_API_KEY.
+# No Cloudflare AI binding or provider fallback is configured.

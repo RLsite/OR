@@ -2,6 +2,13 @@
 
 All notable changes to Or are logged here, newest first. Version shown matches the number in the app's Help dialog (בדיקת עדכונים).
 
+## 1.36.2 — 2026-09-06
+
+- **Improved**: the assistant now treats the live OR itinerary, restaurants, traveller profile and day-load as a mandatory recommendation inventory. Requests for “more” first exclude existing places, identify gaps, and place verified additions on a sensible less-busy trip day when one was not specified.
+- **Improved**: children and family requests explicitly use the saved travel profile, avoid duplicate venues, and add a small verified batch unless the traveller explicitly asks for all suitable options.
+- **Improved**: the visible “Thinking…” state now appears immediately, cycles through checking/searching/preparing steps, has a stronger animation, and remains visible long enough to be noticed.
+- **Fixed**: Gemini search-and-plan requests receive a bounded larger response allowance for tool work, while regular chat stays short. A transient transport or server failure is retried once on Gemini only, and a completed add/update tool call now returns in Gemini 3's required follow-up format instead of failing with a generic service error.
+
 ## 1.36.1 — 2026-09-06
 
 - **Changed**: the trip assistant now uses only Google Gemini. Cloudflare AI, NVIDIA, every provider fallback, and the visible “Switching models…” notice were removed.

@@ -22,6 +22,9 @@ const GEMINI_MODEL = 'gemini-3.6-flash';
 // Keep replies short by default. The client instruction also asks for concise
 // answers, but a provider-side ceiling prevents an accidental long completion.
 const ASSISTANT_MAX_OUTPUT_TOKENS = 256;
+// Search-and-plan requests need room for Gemini's internal tool work before the
+// short final reply. Ordinary chat stays at the lower cap to control usage.
+const ASSISTANT_COMPLEX_OUTPUT_TOKENS = 512;
 const MAX_HTML_BYTES = 300000; // the tags we need are always in <head>; no reason to buffer a whole page
 
 function decodeEntities(s) {
@@ -210,8 +213,9 @@ function isUsableAssistantContent(content) {
   return !startsWithModelIdentity && !providerTrainingIdentity;
 }
 
-async function askGemini(body, env) {
-  const payload = { contents: body.contents, generationConfig: { maxOutputTokens: ASSISTANT_MAX_OUTPUT_TOKENS } };
+async function askGeminiAttempt(body, env) {
+  const maxOutputTokens = body.googleSearch ? ASSISTANT_COMPLEX_OUTPUT_TOKENS : ASSISTANT_MAX_OUTPUT_TOKENS;
+  const payload = { contents: body.contents, generationConfig: { maxOutputTokens } };
   if (Array.isArray(body.tools)) payload.tools = body.tools;
   if (body.googleSearch) {
     payload.tools = [...(payload.tools || []), { googleSearch: {} }];
@@ -223,12 +227,19 @@ async function askGemini(body, env) {
     res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${env.GEMINI_API_KEY}`, {
       method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload), signal: AbortSignal.timeout(30000),
     });
-  } catch (e) { return { error: 'gemini request failed' }; }
+  } catch (e) { return { error: 'gemini request failed', retryable: true }; }
   let data;
-  try { data = await res.json(); } catch (e) { return { error: 'gemini returned an invalid response' }; }
-  if (!res.ok) return { error: (data.error && data.error.message) || 'gemini error' };
+  try { data = await res.json(); } catch (e) { return { error: 'gemini returned an invalid response', retryable: true }; }
+  if (!res.ok) return { error: (data.error && data.error.message) || 'gemini error', retryable: res.status >= 500 && res.status < 600 };
   const content = data.candidates && data.candidates[0] && data.candidates[0].content;
   return content && isUsableAssistantContent(content) ? { content } : { error: 'gemini returned an unusable response' };
+}
+
+// A one-time retry stays on Gemini and is limited to transport/5xx failures.
+// It avoids a transient service error without retrying quota or invalid-key errors.
+async function askGemini(body, env) {
+  const first = await askGeminiAttempt(body, env);
+  return first.retryable ? askGeminiAttempt(body, env) : first;
 }
 
 async function handleChat(request, env) {

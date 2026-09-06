@@ -1654,6 +1654,7 @@ const I18N = {
   'trip.guideImport.autoPlanHint': { he: 'החלוקה לימים היא הצעה לפי סדר המדריך. בדקו את הימים, המיקום והמחיר לפני השמירה.', en: 'The day split is a suggestion based on the guide order. Review days, location, and price before saving.', ru: 'Распределение по дням — предложение по порядку в гиде. Проверьте дни, место и цену перед сохранением.', ar: 'توزيع الأيام هو اقتراح بناءً على ترتيب الدليل. راجعوا الأيام والموقع والسعر قبل الحفظ.' },
   'trip.guideImport.sourceNote': { he: 'מקור: {source}', en: 'Source: {source}', ru: 'Источник: {source}', ar: 'المصدر: {source}' },
   'trip.guideImport.importedNote': { he: 'נוסף מייבוא מדריך', en: 'Added from guide import', ru: 'Добавлено из импорта гида', ar: 'أضيف من استيراد الدليل' },
+  'trip.guideImport.briefConnectHint': { he: 'התחברו ל-Google Drive (בטאב מסמכים) כדי לשמור הקשר קבוע לעוזר הטיול.', en: 'Connect Google Drive (in the Documents tab) to save persistent context for the trip assistant.', ru: 'Подключите Google Drive (на вкладке «Документы»), чтобы сохранить постоянный контекст для помощника по путешествиям.', ar: 'اربطوا Google Drive (في تبويب المستندات) لحفظ سياق دائم لمساعد الرحلة.' },
   'trip.tabDocuments': { he: 'מסמכים', en: 'Documents', ru: 'Документы' , ar: 'المستندات' },
   'trip.docsConnectPrompt': { he: 'התחברו ל-Google Drive כדי להעלות ולשמור מסמכים (כרטיסי טיסה, שוברים, ביטוח) לתיקייה שנקראת על שם הטיול.', en: 'Connect to Google Drive to upload and save documents (boarding passes, vouchers, insurance) to a folder named after the trip.', ru: 'Подключитесь к Google Drive, чтобы загружать и сохранять документы (посадочные талоны, ваучеры, страховку) в папку с названием поездки.', ar: 'اتصلوا بـ Google Drive لرفع وحفظ المستندات (بطاقات صعود، قسائم، تأمين) في مجلد يحمل اسم الرحلة.' },
   'drive.docsMovedHint': { he: 'העלאת מסמכי PDF ורשימת המסמכים השמורים עברו לטאב "מסמכים" בתוך ניהול החופשה.', en: 'Uploading PDF documents and the saved-documents list moved to the "Documents" tab inside vacation management.', ru: 'Загрузка PDF-документов и список сохранённых документов перенесены на вкладку «Документы» в разделе управления отпуском.', ar: 'انتقل رفع مستندات PDF وقائمة المستندات المحفوظة إلى تبويب "المستندات" داخل إدارة الإجازة.' },
@@ -1925,7 +1926,7 @@ applyLang(localStorage.getItem('or-lang') || 'he', false);
 // ===================== Client-side data layer (runs fully in the browser) =====================
 // Data lives in localStorage; Excel import/export via SheetJS. No server needed — works on GitHub Pages.
 // (In the future a cloud backend such as Google Drive can replace loadDB/saveDB.)
-const APP_VERSION = '1.36.4';
+const APP_VERSION = '1.36.5';
 const APP_BUILT_AT = 'dev'; // replaced by build.js with the deploy timestamp — lets a running page detect it's stale
 const STORE_KEY = 'or-store-v1';
 const BUGS_COLS = ['field.date', 'field.toolOrPage', 'field.description', 'field.browser'];
@@ -2424,6 +2425,7 @@ function updateDriveUI() {
   document.getElementById('driveDisconnectBtn').hidden = !connected;
   document.getElementById('driveFilesSection').hidden = !connected;
   renderTripDocsTab();
+  renderGuideImportBriefSection();
   const email = localStorage.getItem('or-drive-email') || '';
   document.getElementById('driveStatus').textContent = connected ? t('drive.connected', { email }) : t('drive.notConnected');
   const lastBackup = localStorage.getItem('or-drive-last-backup');
@@ -2850,9 +2852,6 @@ async function assistantBriefForPrompt() {
   catch (err) { return ''; }
 }
 async function loadTripDocumentsTab() {
-  // Load the context file first, so both it and the PDF list share the token
-  // acquired from this explicit Documents-tab interaction.
-  await driveLoadAssistantBriefEditor();
   await driveListDocuments();
 }
 // Uploads one or more PDFs picked in a single file-dialog selection, all
@@ -4919,6 +4918,24 @@ function tripViewHTML() {
         <p class="file-hint" style="margin-top:var(--space-2)">${t('trip.guideImport.previewHint')}</p>
       </section>
       <section class="panel guide-import-preview" id="guideImportPreview" hidden aria-live="polite"></section>
+      <section class="panel" id="guideImportBriefPrompt">
+        <h2>${t('drive.assistantBriefHeading')}</h2>
+        <p class="file-hint">${t('trip.guideImport.briefConnectHint')}</p>
+      </section>
+      <section class="panel" id="guideImportBriefSection" hidden>
+        <div class="assistant-brief-card">
+          <h3>${t('drive.assistantBriefHeading')}</h3>
+          <p class="file-hint">${t('drive.assistantBriefHint')}</p>
+          <label style="margin-top:var(--space-2)"><span>${t('drive.assistantBriefLabel')}</span>
+            <textarea id="driveAssistantBriefInput" rows="6" maxlength="${ASSISTANT_BRIEF_INSTRUCTIONS_MAX_CHARS}" dir="auto" placeholder="${t('drive.assistantBriefPh')}"></textarea>
+          </label>
+          <div class="file-actions" style="margin-top:var(--space-2)">
+            <button type="button" class="btn-edit" id="driveAssistantBriefSaveBtn">${t('drive.assistantBriefSaveBtn')}</button>
+            <button type="button" class="btn-ghost" id="driveAssistantBriefOpenBtn" hidden>${t('drive.assistantBriefOpenBtn')}</button>
+          </div>
+          <p class="file-hint assistant-brief-status" id="driveAssistantBriefStatus">${t('drive.assistantBriefMissing')}</p>
+        </div>
+      </section>
     </div>
 
     <div class="tab-panel" data-panel="flights" hidden>${listViewHTML('flights', TOOLKIT.flights)}</div>
@@ -4938,18 +4955,6 @@ function tripViewHTML() {
       </section>
       <section class="panel" id="tripDocsUploadSection" hidden>
         <h2>${t('drive.docsHeading')}</h2>
-        <div class="assistant-brief-card">
-          <h3>${t('drive.assistantBriefHeading')}</h3>
-          <p class="file-hint">${t('drive.assistantBriefHint')}</p>
-          <label style="margin-top:var(--space-2)"><span>${t('drive.assistantBriefLabel')}</span>
-            <textarea id="driveAssistantBriefInput" rows="6" maxlength="${ASSISTANT_BRIEF_INSTRUCTIONS_MAX_CHARS}" dir="auto" placeholder="${t('drive.assistantBriefPh')}"></textarea>
-          </label>
-          <div class="file-actions" style="margin-top:var(--space-2)">
-            <button type="button" class="btn-edit" id="driveAssistantBriefSaveBtn">${t('drive.assistantBriefSaveBtn')}</button>
-            <button type="button" class="btn-ghost" id="driveAssistantBriefOpenBtn" hidden>${t('drive.assistantBriefOpenBtn')}</button>
-          </div>
-          <p class="file-hint assistant-brief-status" id="driveAssistantBriefStatus">${t('drive.assistantBriefMissing')}</p>
-        </div>
         <label><span>${t('drive.docDescLabel')}</span>
           <input type="text" id="driveDocDescInput" placeholder="${t('drive.docDescPh')}">
         </label>
@@ -5092,6 +5097,7 @@ function wireTripView() {
     // request (and its popup, if a silent refresh isn't available) is expected
     // here - unlike on every page load, which is what renderTripDocsTab() avoids.
     if (btn.dataset.tab === 'documents' && isDriveConnected()) void loadTripDocumentsTab();
+    if (btn.dataset.tab === 'guideimport' && isDriveConnected()) void driveLoadAssistantBriefEditor();
   });
 
   // Day squares (including the "all days" button, which sits next to the destination): click filters ALL tabs (flights, hotel, POIs, expenses) to that day
@@ -5865,6 +5871,7 @@ function renderTrip() {
   renderTripSummary();
   renderTripDayViews();
   renderTripDocsTab();
+  renderGuideImportBriefSection();
 }
 
 // Shows a "connect to Drive" prompt or the upload/list UI in the trip's own
@@ -5883,6 +5890,20 @@ function renderTripDocsTab(shouldFetch) {
   prompt.hidden = connected;
   section.hidden = !connected;
   if (connected && shouldFetch) void loadTripDocumentsTab();
+}
+
+// The assistant-context editor lives in the Guide Import tab (not Documents,
+// where it used to be) since it's about feeding the assistant more
+// information, same spirit as pasting a guide - but saving it still goes
+// through the trip's Drive folder, so it needs the same connect-or-show
+// pattern as renderTripDocsTab(), kept in sync from the same call sites.
+function renderGuideImportBriefSection() {
+  const prompt = document.getElementById('guideImportBriefPrompt');
+  const section = document.getElementById('guideImportBriefSection');
+  if (!prompt || !section) return;
+  const connected = isDriveConnected();
+  prompt.hidden = connected;
+  section.hidden = !connected;
 }
 
 // Native <input type="date"/"time"> render their picker/placeholder/chosen-

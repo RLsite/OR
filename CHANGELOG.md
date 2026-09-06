@@ -2,6 +2,10 @@
 
 All notable changes to Or are logged here, newest first. Version shown matches the number in the app's Help dialog (בדיקת עדכונים).
 
+## 1.36.5 — 2026-09-06
+
+- **Moved**: the assistant's editable trip-context/playbook card moved from the Documents tab to the new Guide Import tab, alongside the other way to feed the assistant more information about the trip.
+
 ## 1.36.4 — 2026-09-06
 
 - **Added**: a "recommended visit duration" field on itinerary/points-of-interest, alongside cost, address, website and image.

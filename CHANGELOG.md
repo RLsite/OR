@@ -2,6 +2,12 @@
 
 All notable changes to Or are logged here, newest first. Version shown matches the number in the app's Help dialog (בדיקת עדכונים).
 
+## 1.36.6 — 2026-09-06
+
+- **Added**: every chat message in the trip assistant can now be copied or deleted individually - deleting also removes it from what the assistant remembers for the rest of the conversation.
+- **Added**: documents can now be added by photographing them with the phone's camera, not just uploading an existing PDF file.
+- **Improved**: the assistant now treats a car rental's pickup and return locations as required - since only the traveller knows their own booking details, it asks for them instead of leaving them blank or guessing.
+
 ## 1.36.5 — 2026-09-06
 
 - **Moved**: the assistant's editable trip-context/playbook card moved from the Documents tab to the new Guide Import tab, alongside the other way to feed the assistant more information about the trip.

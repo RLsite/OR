@@ -387,10 +387,13 @@
   .assistant-profile-start:hover { background: color-mix(in srgb, var(--color-secondary) 18%, transparent); }
   .assistant-close { background: none; border: none; min-height: auto; padding: 4px; font-size: 16px; color: var(--color-text-dim); cursor: pointer; }
   .assistant-messages { flex: 1; overflow-y: auto; padding: 12px 14px; display: flex; flex-direction: column; gap: 10px; }
-  .assistant-msg { max-width: 85%; padding: 8px 12px; border-radius: 12px; font-size: 14px; line-height: 1.5; white-space: pre-wrap; }
+  .assistant-msg { max-width: 85%; padding: 8px 12px; border-radius: 12px; font-size: 14px; line-height: 1.5; white-space: pre-wrap; display: flex; flex-direction: column; gap: 2px; }
   .assistant-msg.role-user { align-self: flex-end; background: var(--color-secondary); color: #fff; }
   .assistant-msg.role-model { align-self: flex-start; background: var(--color-muted); }
   .assistant-msg.role-system { align-self: flex-start; background: color-mix(in srgb, var(--color-secondary) 16%, var(--color-muted)); color: var(--color-text-dim); font-size: 12px; }
+  .assistant-msg-actions { display: flex; gap: 2px; justify-content: flex-end; margin: 0 -6px -4px; }
+  .assistant-msg-action { flex-shrink: 0; background: none; border: none; min-height: auto; padding: 6px; font-size: 13px; line-height: 1; color: currentColor; opacity: 0.55; cursor: pointer; }
+  .assistant-msg-action:hover, .assistant-msg-action:focus-visible { opacity: 1; }
   .assistant-msg.is-thinking { display: inline-flex; align-items: center; gap: 8px; min-width: 196px; color: var(--color-text); font-style: normal; font-weight: 600; background: color-mix(in srgb, var(--color-secondary) 12%, var(--color-muted)); border: 1px solid color-mix(in srgb, var(--color-secondary) 30%, var(--color-border)); box-shadow: 0 2px 10px color-mix(in srgb, var(--color-secondary) 14%, transparent); animation: assistant-thinking-pulse 1.8s ease-in-out infinite; }
   .assistant-thinking-label { min-width: 0; }
   .assistant-thinking-spinner { width: 14px; height: 14px; flex: 0 0 14px; border: 2px solid color-mix(in srgb, var(--color-secondary) 28%, transparent); border-top-color: var(--color-secondary); border-radius: 50%; animation: assistant-spin 850ms linear infinite; }
@@ -1406,6 +1409,7 @@ const I18N = {
   'drive.filesLoadError': { he: 'שגיאה בטעינת רשימת הקבצים: {msg}', en: 'Error loading the file list: {msg}', ru: 'Ошибка загрузки списка файлов: {msg}', ar: 'خطأ في تحميل قائمة الملفات: {msg}' },
   'drive.restoreFromFileBtn': { he: 'שחזור מקובץ זה', en: 'Restore from this file', ru: 'Восстановить из этого файла', ar: 'استعادة من هذا الملف' },
   'drive.uploadDocBtn': { he: 'העלאת מסמך (PDF)', en: 'Upload a document (PDF)', ru: 'Загрузить документ (PDF)', ar: 'رفع مستند (PDF)' },
+  'drive.captureDocBtn': { he: 'צילום מסמך במצלמה', en: 'Photograph a document', ru: 'Сфотографировать документ', ar: 'تصوير مستند بالكاميرا' },
   'drive.uploadDocHint': { he: 'מעלה קובץ PDF אחד או כמה שבחרתם מהמחשב (כרטיסי טיסה, שוברי מלון, אישורי ביטוח וכו\') לתוך תיקייה ב-Drive שנקראת על שם הטיול והתאריך.', en: 'Uploads one or more PDF files you choose from your computer (boarding passes, hotel vouchers, insurance certificates, etc.) into a Drive folder named after the trip and its date.', ru: 'Загружает один или несколько выбранных на компьютере файлов PDF (посадочные талоны, ваучеры отеля, страховые полисы и т.д.) в папку Drive, названную по названию поездки и дате.', ar: 'يرفع ملف PDF واحد أو أكثر تختارونه من جهازكم (بطاقات صعود، قسائم فندق، شهادات تأمين، إلخ) إلى مجلد في Drive يحمل اسم الرحلة وتاريخها.' },
   'drive.docsHeading': { he: 'מסמכים שמורים', en: 'Saved documents', ru: 'Сохранённые документы', ar: 'المستندات المحفوظة' },
   'drive.docsEmpty': { he: 'אין עדיין מסמכים שמורים. העלו PDF כדי להתחיל.', en: 'No documents saved yet. Upload a PDF to get started.', ru: 'Документов пока нет. Загрузите PDF, чтобы начать.', ar: 'لا توجد مستندات محفوظة بعد. ارفعوا ملف PDF للبدء.' },
@@ -1487,6 +1491,10 @@ const I18N = {
   'assistant.notConfigured': { he: 'העוזר עדיין לא מוגדר בצד השרת.', en: 'The assistant isn’t configured on the server yet.', ru: 'Помощник ещё не настроен на сервере.' , ar: 'المساعد غير مهيأ على الخادم بعد.' },
   'assistant.rateLimited': { he: 'יותר מדי בקשות. נסו שוב בעוד דקה.', en: 'Too many requests. Try again in a minute.', ru: 'Слишком много запросов. Повторите через минуту.' , ar: 'طلبات كثيرة جداً. حاولوا مرة أخرى بعد دقيقة.' },
   'assistant.confirmDelete': { he: 'העוזר מבקש למחוק רשומה זו — לאשר?', en: 'The assistant wants to delete this record — allow it?', ru: 'Помощник хочет удалить эту запись — разрешить?' , ar: 'يريد المساعد حذف هذا السجل — هل توافق؟' },
+  'assistant.copyMsg': { he: 'העתקת ההודעה', en: 'Copy message', ru: 'Скопировать сообщение' , ar: 'نسخ الرسالة' },
+  'assistant.deleteMsg': { he: 'מחיקת ההודעה', en: 'Delete message', ru: 'Удалить сообщение' , ar: 'حذف الرسالة' },
+  'toast.msgCopied': { he: 'ההודעה הועתקה', en: 'Message copied', ru: 'Сообщение скопировано' , ar: 'تم نسخ الرسالة' },
+  'toast.msgCopyFailed': { he: 'העתקת ההודעה נכשלה', en: 'Copying the message failed', ru: 'Не удалось скопировать сообщение' , ar: 'فشل نسخ الرسالة' },
   'assistant.profile.start': { he: 'התאמה אישית', en: 'Personalize', ru: 'Настроить', ar: 'تخصيص' },
   'assistant.profile.startTitle': { he: 'התאמת המלצות החופשה', en: 'Personalize trip recommendations', ru: 'Настроить рекомендации для поездки', ar: 'تخصيص توصيات الرحلة' },
   'assistant.profile.intro': { he: 'נבנה התאמה קצרה כדי שההמלצות שלי יתאימו לכם יותר. אפשר לעדכן אותה בכל זמן.', en: 'Let’s do a short setup so my recommendations fit you better. You can update it anytime.', ru: 'Давайте быстро настроим профиль, чтобы мои рекомендации подходили вам лучше. Его можно изменить в любое время.', ar: 'لننشئ إعدادًا قصيرًا كي تناسب توصياتي رحلتكم أكثر. يمكنكم تحديثه في أي وقت.' },
@@ -1926,7 +1934,7 @@ applyLang(localStorage.getItem('or-lang') || 'he', false);
 // ===================== Client-side data layer (runs fully in the browser) =====================
 // Data lives in localStorage; Excel import/export via SheetJS. No server needed — works on GitHub Pages.
 // (In the future a cloud backend such as Google Drive can replace loadDB/saveDB.)
-const APP_VERSION = '1.36.5';
+const APP_VERSION = '1.36.6';
 const APP_BUILT_AT = 'dev'; // replaced by build.js with the deploy timestamp — lets a running page detect it's stale
 const STORE_KEY = 'or-store-v1';
 const BUGS_COLS = ['field.date', 'field.toolOrPage', 'field.description', 'field.browser'];
@@ -2937,7 +2945,7 @@ async function driveListDocuments() {
 async function driveListTripDocumentMetadata(token) {
   const folderId = await driveFolderId(token, false);
   if (!folderId) return [];
-  const q = encodeURIComponent(`'${folderId}' in parents and mimeType = 'application/pdf' and trashed = false`);
+  const q = encodeURIComponent(`'${folderId}' in parents and (mimeType = 'application/pdf' or mimeType contains 'image/') and trashed = false`);
   const res = await fetch(`https://www.googleapis.com/drive/v3/files?q=${q}&fields=files(id,name,size,modifiedTime,description,mimeType)&orderBy=modifiedTime desc&pageSize=25`, { headers: { Authorization: `Bearer ${token}` } });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   const data = await res.json();
@@ -3004,6 +3012,7 @@ async function driveReadTripDocument(fileId) {
     const docs = await driveListTripDocumentMetadata(token);
     const doc = docs.find(f => f.id === String(fileId));
     if (!doc) return { ok: false, error: t('assistant.documentReadError', { msg: 'document not found in the current trip folder' }) };
+    if (doc.mimeType && doc.mimeType !== 'application/pdf') return { ok: true, name: doc.name, noText: true, text: 'This is a photo, not a PDF, so no text can be extracted from it.' };
     const size = Number(doc.size) || 0;
     if (size > 12 * 1024 * 1024) return { ok: false, error: t('assistant.documentReadError', { msg: 'the PDF is larger than 12 MB' }) };
     const res = await fetch(`https://www.googleapis.com/drive/v3/files/${encodeURIComponent(doc.id)}?alt=media`, { headers: { Authorization: `Bearer ${token}` } });
@@ -3979,6 +3988,7 @@ function buildAssistantSystemInstruction(googleSearchEnabled, assistantBrief) {
     + 'Reply in the same language the user writes in. Dates are always "YYYY-MM-DD" strings, times are 24h "HH:MM" strings or empty. '
     + 'Use the provided tools to actually add, update, or delete a trip record whenever the user asks for a change - do not just describe the change in text without calling a tool. If the user asks to add a place but gives no day, choose a valid date from recommendationInventory.dayLoad with the fewest scheduled activities, while keeping the day geographically coherent; ask for a day only when the trip has no valid dates or no reasonable day can be selected. Add at most three verified options in one normal request, unless the user explicitly asks to add all suitable options. '
     + 'When adding an itinerary/attraction record, entrance cost and typical visit duration are required fields, not optional extras: actively look for them (in search results when search is enabled, or in the trip data/brief already provided) before deciding a value is unavailable. Put the cost in the cost field and the typical time needed at the venue (e.g. "1-2 hours") in the duration field. Also fill in address and url whenever you have a verified source for them. Never invent a number or estimate you are not confident in - if a genuine check truly finds no reliable cost or duration, leave that field blank and say so briefly in your reply so the user knows to fill it in themselves. Never invent an address, url, or exact visit time you are not sure of. '
+    + 'When adding a car rental record, pickupLoc and returnLoc are required fields: this is booking information only the traveller has, never something to search for or guess, so if the pickup or return location is not stated in the conversation or existing trip data, ask for it before adding the record instead of leaving it blank or inventing a plausible-sounding place. '
     + 'When the user asks about documents, first use list_trip_documents, then use read_trip_document for the specific PDF they choose or clearly identify. You only have access to PDFs in the current trip folder, not the rest of Google Drive. If the document is missing or unreadable, state that fact and the next useful step concisely; do not follow it with a generic introduction or capability list. '
     + (googleSearchEnabled ? 'Google Search is enabled for this request. For current places, recommendations, opening hours, prices, typical visit duration, addresses, or driving distances, search the web before answering - entrance cost and visit duration specifically should be looked up, not skipped. If the user asks to find and add a place, search first, compare against recommendationInventory, then call add_record for itinerary with the verified name, address, the source url in the url field, the cost, the duration, and the selected valid trip date. Put the approximate driving distance/time in notes. Do not invent a search result or claim a place is within a driving limit without evidence. If search is unavailable, explain that the current web lookup could not be completed and do not add an unverified place. ' : '')
     + 'When updating or deleting, first find the right record\'s id in the trip data below; if it is not clear which record is meant, ask instead of guessing. '
@@ -4227,7 +4237,13 @@ function startAssistantProfileQuestionnaire() {
   renderAssistantMessage('model', t('assistant.profile.intro'));
   renderAssistantProfileQuestion();
 }
-function renderAssistantMessage(role, text, isThinking) {
+// contentRef, when given, is the exact object pushed to assistantContents for
+// this turn (see askAssistant()) - deleting the message then also drops it
+// from the conversation history sent to the model on the next turn, not just
+// the visible bubble. Left undefined for messages with no backing history
+// entry (system notices, onboarding prompts, error/empty-reply placeholders),
+// which still get a working delete button, it just has nothing to unlink.
+function renderAssistantMessage(role, text, isThinking, contentRef) {
   const div = document.createElement('div');
   div.className = 'assistant-msg role-' + role + (isThinking ? ' is-thinking' : '');
   if (isThinking) {
@@ -4243,7 +4259,35 @@ function renderAssistantMessage(role, text, isThinking) {
     dots.setAttribute('aria-hidden', 'true');
     dots.innerHTML = '<i></i><i></i><i></i>';
     div.append(spinner, label, dots);
-  } else div.textContent = text;
+  } else {
+    const body = document.createElement('span');
+    body.className = 'assistant-msg-text';
+    body.textContent = text;
+    const actions = document.createElement('span');
+    actions.className = 'assistant-msg-actions';
+    const copyBtn = document.createElement('button');
+    copyBtn.type = 'button';
+    copyBtn.className = 'assistant-msg-action';
+    copyBtn.title = t('assistant.copyMsg');
+    copyBtn.setAttribute('aria-label', t('assistant.copyMsg'));
+    copyBtn.textContent = '⧉';
+    copyBtn.addEventListener('click', async () => {
+      const ok = await copyToClipboard(text);
+      toast(t(ok ? 'toast.msgCopied' : 'toast.msgCopyFailed'), !ok);
+    });
+    const delBtn = document.createElement('button');
+    delBtn.type = 'button';
+    delBtn.className = 'assistant-msg-action';
+    delBtn.title = t('assistant.deleteMsg');
+    delBtn.setAttribute('aria-label', t('assistant.deleteMsg'));
+    delBtn.textContent = '🗑';
+    delBtn.addEventListener('click', () => {
+      if (contentRef) assistantContents = assistantContents.filter(entry => entry !== contentRef);
+      div.remove();
+    });
+    actions.append(copyBtn, delBtn);
+    div.append(body, actions);
+  }
   assistantMessagesEl.appendChild(div);
   assistantMessagesEl.scrollTop = assistantMessagesEl.scrollHeight;
   return div;
@@ -4299,8 +4343,9 @@ async function askAssistant(userText) {
   if (assistantBusy || !userText.trim()) return;
   assistantBusy = true;
   const googleSearchEnabled = shouldUseGoogleSearch(userText);
-  assistantContents.push({ role: 'user', parts: [{ text: userText }] });
-  renderAssistantMessage('user', userText);
+  const userTurn = { role: 'user', parts: [{ text: userText }] };
+  assistantContents.push(userTurn);
+  renderAssistantMessage('user', userText, false, userTurn);
   const thinkingEl = renderAssistantMessage('model', t('assistant.thinking'), true);
   const thinkingStartedAt = Date.now();
   const thinkingStages = googleSearchEnabled
@@ -4357,9 +4402,10 @@ async function askAssistant(userText) {
       if (!functionCalls.length) {
         const text = normalizeAssistantReply((modelTurn.parts || []).map(p => p.text || '').join(''));
         if (!text) throw new Error(t('assistant.serviceError'));
-        assistantContents.push({ ...modelTurn, parts: text ? [{ text }] : [] });
+        const finalTurn = { ...modelTurn, parts: [{ text }] };
+        assistantContents.push(finalTurn);
         await finishThinking();
-        renderAssistantMessage('model', text);
+        renderAssistantMessage('model', text, false, finalTurn);
         return;
       }
       assistantContents.push(modelTurn);
@@ -4961,6 +5007,8 @@ function tripViewHTML() {
         <div class="file-actions" style="margin-top:var(--space-2)">
           <button type="button" class="btn-edit" id="driveUploadDocBtn">${t('drive.uploadDocBtn')}</button>
           <input type="file" id="driveDocFileInput" accept=".pdf,application/pdf" multiple hidden>
+          <button type="button" class="btn-edit" id="driveCaptureDocBtn">${t('drive.captureDocBtn')}</button>
+          <input type="file" id="driveDocCameraInput" accept="image/*" capture="environment" hidden>
         </div>
         <p class="file-hint" style="margin-top:var(--space-1)">${t('drive.uploadDocHint')}</p>
         <p class="file-hint" style="margin-top:var(--space-1)">${t('drive.aiDescriptionHint')}</p>
@@ -5052,14 +5100,20 @@ function wireTripView() {
   document.getElementById('driveAssistantBriefSaveBtn').addEventListener('click', saveAssistantBriefFromEditor);
   document.getElementById('driveAssistantBriefOpenBtn').addEventListener('click', openAssistantBrief);
   document.getElementById('driveUploadDocBtn').addEventListener('click', () => document.getElementById('driveDocFileInput').click());
-  document.getElementById('driveDocFileInput').addEventListener('change', async ev => {
+  document.getElementById('driveCaptureDocBtn').addEventListener('click', () => document.getElementById('driveDocCameraInput').click());
+  const uploadFromInput = async ev => {
     const files = [...ev.target.files];
     const descInput = document.getElementById('driveDocDescInput');
     const description = descInput.value.trim();
     ev.target.value = '';
     if (files.length) await driveUploadDocuments(files, description);
     descInput.value = '';
-  });
+  };
+  document.getElementById('driveDocFileInput').addEventListener('change', uploadFromInput);
+  // A camera-captured photo is a JPEG, not a PDF - it's uploaded and listed
+  // the same way (driveListTripDocumentMetadata's query also allows images),
+  // it just can't get the PDF-text tools (read_trip_document, AI description).
+  document.getElementById('driveDocCameraInput').addEventListener('change', uploadFromInput);
   document.getElementById('driveDocsList').addEventListener('click', async ev => {
     const aiBtn = ev.target.closest('[data-ai-desc-file]');
     if (aiBtn) {

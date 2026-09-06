@@ -2,6 +2,10 @@
 
 All notable changes to Or are logged here, newest first. Version shown matches the number in the app's Help dialog (בדיקת עדכונים).
 
+## 1.36.3 — 2026-09-06
+
+- **Fixed**: a recommendation request (e.g. "find more attractions for kids") could come back as a short, cut-off fragment instead of a real answer - sometimes even echoing a piece of the assistant's own internal instructions. Gemini's internal reasoning was drawing from the same reply budget as the visible answer and could use it all up before writing anything back. The reasoning budget is now bounded separately, the reply budget is larger, and a truncated response is automatically retried once instead of shown as-is.
+
 ## 1.36.2 — 2026-09-06
 
 - **Improved**: the assistant now treats the live OR itinerary, restaurants, traveller profile and day-load as a mandatory recommendation inventory. Requests for “more” first exclude existing places, identify gaps, and place verified additions on a sensible less-busy trip day when one was not specified.

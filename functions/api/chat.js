@@ -9,10 +9,21 @@ const chatHits = new Map(); // ip -> timestamps[]
 const CHAT_LIMIT = { windowMs: 60000, max: 15 };
 // Keep replies short by default. The client instruction also asks for concise
 // answers, but a provider-side ceiling prevents an accidental long completion.
-const ASSISTANT_MAX_OUTPUT_TOKENS = 256;
-// Search-and-plan requests need room for Gemini's internal tool work before the
-// short final reply. Ordinary chat stays at the lower cap to control usage.
-const ASSISTANT_COMPLEX_OUTPUT_TOKENS = 512;
+// gemini-3.6-flash is a thinking model: its internal reasoning tokens are
+// drawn from this same maxOutputTokens budget and aren't shown in the
+// response, so a cap sized only for the visible reply left nothing for the
+// actual answer once thinking used most of it - the traveller would see a
+// few truncated words (sometimes ones that echo the system instruction,
+// since the model was mid-reasoning about its own rules) instead of a real
+// reply. thinkingConfig below bounds that reasoning explicitly so the rest
+// of the budget reliably reaches the visible text.
+const ASSISTANT_MAX_OUTPUT_TOKENS = 1024;
+const ASSISTANT_THINKING_BUDGET = 512;
+// Search-and-plan requests need room for both Gemini's internal tool work and
+// a fuller multi-day answer. Ordinary chat stays at the lower cap above to
+// control usage.
+const ASSISTANT_COMPLEX_OUTPUT_TOKENS = 2048;
+const ASSISTANT_COMPLEX_THINKING_BUDGET = 1024;
 function isRateLimited(ip) {
   const now = Date.now();
   const hits = (chatHits.get(ip) || []).filter(t => now - t < CHAT_LIMIT.windowMs);
@@ -45,8 +56,10 @@ function isUsableAssistantContent(content) {
 }
 
 async function askGeminiAttempt(body, env) {
-  const maxOutputTokens = body.googleSearch ? ASSISTANT_COMPLEX_OUTPUT_TOKENS : ASSISTANT_MAX_OUTPUT_TOKENS;
-  const payload = { contents: body.contents, generationConfig: { maxOutputTokens } };
+  const complex = !!body.googleSearch;
+  const maxOutputTokens = complex ? ASSISTANT_COMPLEX_OUTPUT_TOKENS : ASSISTANT_MAX_OUTPUT_TOKENS;
+  const thinkingBudget = complex ? ASSISTANT_COMPLEX_THINKING_BUDGET : ASSISTANT_THINKING_BUDGET;
+  const payload = { contents: body.contents, generationConfig: { maxOutputTokens, thinkingConfig: { thinkingBudget } } };
   if (Array.isArray(body.tools)) payload.tools = body.tools;
   if (body.googleSearch) {
     payload.tools = [...(payload.tools || []), { googleSearch: {} }];
@@ -62,7 +75,9 @@ async function askGeminiAttempt(body, env) {
   let data;
   try { data = await res.json(); } catch (e) { return { error: 'gemini returned an invalid response', retryable: true }; }
   if (!res.ok) return { error: (data.error && data.error.message) || 'gemini error', retryable: res.status >= 500 && res.status < 600 };
-  const content = data.candidates && data.candidates[0] && data.candidates[0].content;
+  const candidate = data.candidates && data.candidates[0];
+  const content = candidate && candidate.content;
+  if (candidate && candidate.finishReason === 'MAX_TOKENS') return { error: 'gemini response was truncated', retryable: true };
   return content && isUsableAssistantContent(content) ? { content } : { error: 'gemini returned an unusable response' };
 }
 

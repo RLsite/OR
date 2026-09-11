@@ -1382,6 +1382,7 @@ const I18N = {
   'drive.restoreError': { he: 'שגיאה בשחזור מ-Drive: {msg}', en: 'Error restoring from Drive: {msg}', ru: 'Ошибка восстановления из Drive: {msg}', ar: 'خطأ في الاستعادة من Drive: {msg}' },
   'drive.notConfigured': { he: 'חיבור Google Drive עדיין לא הוגדר על ידי מפתח האתר.', en: 'Google Drive connection has not been configured by the site developer yet.', ru: 'Подключение Google Drive ещё не настроено разработчиком сайта.', ar: 'لم يتم تكوين الاتصال بـ Google Drive بعد من قبل مطور الموقع.' },
   'drive.connectError': { he: 'שגיאה בהתחברות ל-Google Drive: {msg}', en: 'Error connecting to Google Drive: {msg}', ru: 'Ошибка подключения к Google Drive: {msg}', ar: 'خطأ في الاتصال بـ Google Drive: {msg}' },
+  'drive.standaloneConnectBlocked': { he: 'לא ניתן להתחבר ל-Google מתוך קיצור הדרך במסך הבית. פתחו את or.rlapp.net בדפדפן הרגיל (Safari/Chrome) כדי להתחבר, ולאחר מכן אפשר לחזור לשימוש מהקיצור.', en: 'Google sign-in can’t work from the home-screen shortcut. Open or.rlapp.net in your regular browser (Safari/Chrome) to connect, then you can go back to using the shortcut.', ru: 'Вход через Google не работает из ярлыка на главном экране. Откройте or.rlapp.net в обычном браузере (Safari/Chrome), чтобы подключиться, а затем можно снова пользоваться ярлыком.', ar: 'لا يمكن تسجيل الدخول عبر Google من اختصار الشاشة الرئيسية. افتحوا or.rlapp.net في المتصفح العادي (Safari/Chrome) للاتصال، ثم يمكنكم العودة لاستخدام الاختصار.' },
   'drive.uploadLocalBtn': { he: 'העלאת קובץ מקומי ל-Drive', en: 'Upload a local file to Drive', ru: 'Загрузить локальный файл в Drive', ar: 'رفع ملف محلي إلى Drive' },
   'drive.uploadLocalHint': { he: 'מעלה קובץ אקסל שבחרתם מהמחשב כקובץ חדש ב-Drive שלכם (בנוסף לקובץ הגיבוי הקבוע).', en: 'Uploads an Excel file you choose from your computer as a new file in your Drive (in addition to the fixed backup file).', ru: 'Загружает выбранный на компьютере файл Excel как новый файл в вашем Drive (в дополнение к постоянному файлу резервной копии).', ar: 'يرفع ملف إكسل تختارونه من جهازكم كملف جديد في Drive الخاص بكم (بالإضافة إلى ملف النسخة الاحتياطية الثابت).' },
   'drive.uploading': { he: 'מעלה ל-Drive...', en: 'Uploading to Drive...', ru: 'Загрузка в Drive...', ar: 'جارٍ الرفع إلى Drive...' },
@@ -1939,7 +1940,7 @@ applyLang(localStorage.getItem('or-lang') || 'he', false);
 // ===================== Client-side data layer (runs fully in the browser) =====================
 // Data lives in localStorage; Excel import/export via SheetJS. No server needed — works on GitHub Pages.
 // (In the future a cloud backend such as Google Drive can replace loadDB/saveDB.)
-const APP_VERSION = '1.36.7';
+const APP_VERSION = '1.36.8';
 const APP_BUILT_AT = 'dev'; // replaced by build.js with the deploy timestamp — lets a running page detect it's stale
 const STORE_KEY = 'or-store-v1';
 const BUGS_COLS = ['field.date', 'field.toolOrPage', 'field.description', 'field.browser'];
@@ -2353,6 +2354,15 @@ let driveAccessToken = null;
 let driveTokenExpiry = 0;
 
 function driveConfigured() { return !!GOOGLE_CLIENT_ID; }
+// An installed home-screen app (iOS "Add to Home Screen", or an Android/desktop
+// PWA install) runs in its own isolated web view rather than a normal browser
+// tab. Google's OAuth popup can't complete there - it fails with a generic,
+// unbranded-to-Or "Can't access your Google Account" page instead of ever
+// reaching driveTokenClient's callback. Detected once here and used to head
+// that off with a clear in-app message rather than let the popup attempt happen.
+function isStandaloneApp() {
+  return window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+}
 // Uses the authorization-code flow (still just a popup, ux_mode:'popup' - no redirect
 // URI needed) instead of the plain implicit token flow, because only the code flow can
 // ever produce a refresh token. The code itself is useless to the browser - exchanging
@@ -2385,6 +2395,7 @@ async function driveExchangeCode(code) {
 function driveRequestToken() {
   return new Promise((resolve, reject) => {
     if (!driveConfigured()) { reject(new Error(t('drive.notConfigured'))); return; }
+    if (isStandaloneApp()) { reject(new Error(t('drive.standaloneConnectBlocked'))); return; }
     initDriveTokenClient();
     if (!driveTokenClient) { reject(new Error(t('drive.notConfigured'))); return; }
     driveTokenClient.callback = async resp => {
@@ -3640,7 +3651,7 @@ window.addEventListener('beforeinstallprompt', ev => {
 });
 function updateInstallHints() {
   const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
-  const standalone = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+  const standalone = isStandaloneApp();
   // Only re-hide when installed; tab switching controls the section's visibility otherwise
   if (standalone) document.getElementById('installSection').hidden = true;
   document.getElementById('iosInstall').hidden = !isIOS || standalone;

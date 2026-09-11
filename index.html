@@ -1414,6 +1414,11 @@ const I18N = {
   'drive.docsHeading': { he: 'מסמכים שמורים', en: 'Saved documents', ru: 'Сохранённые документы', ar: 'المستندات المحفوظة' },
   'drive.docsEmpty': { he: 'אין עדיין מסמכים שמורים. העלו PDF כדי להתחיל.', en: 'No documents saved yet. Upload a PDF to get started.', ru: 'Документов пока нет. Загрузите PDF, чтобы начать.', ar: 'لا توجد مستندات محفوظة بعد. ارفعوا ملف PDF للبدء.' },
   'drive.docsLoadError': { he: 'שגיאה בטעינת המסמכים: {msg}', en: 'Error loading the documents: {msg}', ru: 'Ошибка загрузки документов: {msg}', ar: 'خطأ في تحميل المستندات: {msg}' },
+  'drive.docsFolderLabel': { he: 'תיקיית המסמכים ב-Drive:', en: 'Documents folder in Drive:', ru: 'Папка документов в Drive:', ar: 'مجلد المستندات في Drive:' },
+  'drive.chooseFolderBtn': { he: 'בחירת תיקייה אחרת', en: 'Choose a different folder', ru: 'Выбрать другую папку', ar: 'اختيار مجلد آخر' },
+  'drive.folderPickerNotConfigured': { he: 'בחירת תיקייה עדיין לא הוגדרה על ידי מפתח האתר', en: 'Picking a folder has not been configured by the site developer yet', ru: 'Выбор папки ещё не настроен разработчиком сайта', ar: 'لم يتم إعداد اختيار مجلد بعد من قبل مطور الموقع' },
+  'drive.folderChosen': { he: 'התיקייה „{name}” נבחרה למסמכי הטיול', en: 'Folder "{name}" selected for trip documents', ru: 'Папка «{name}» выбрана для документов поездки', ar: 'تم اختيار المجلد "{name}" لمستندات الرحلة' },
+  'drive.folderPickError': { he: 'שגיאה בבחירת תיקייה: {msg}', en: 'Error choosing a folder: {msg}', ru: 'Ошибка выбора папки: {msg}', ar: 'خطأ في اختيار المجلد: {msg}' },
   'drive.openFileBtn': { he: 'פתיחה', en: 'Open', ru: 'Открыть', ar: 'فتح' },
   'drive.aiDescribeBtn': { he: 'תיאור AI', en: 'AI description', ru: 'Описание ИИ', ar: 'وصف بالذكاء الاصطناعي' },
   'drive.aiDescribing': { he: 'יוצר תיאור...', en: 'Creating description...', ru: 'Создание описания...', ar: 'جارٍ إنشاء الوصف...' },
@@ -1934,7 +1939,7 @@ applyLang(localStorage.getItem('or-lang') || 'he', false);
 // ===================== Client-side data layer (runs fully in the browser) =====================
 // Data lives in localStorage; Excel import/export via SheetJS. No server needed — works on GitHub Pages.
 // (In the future a cloud backend such as Google Drive can replace loadDB/saveDB.)
-const APP_VERSION = '1.36.6';
+const APP_VERSION = '1.36.7';
 const APP_BUILT_AT = 'dev'; // replaced by build.js with the deploy timestamp — lets a running page detect it's stale
 const STORE_KEY = 'or-store-v1';
 const BUGS_COLS = ['field.date', 'field.toolOrPage', 'field.description', 'field.browser'];
@@ -2633,7 +2638,7 @@ async function driveFolderId(token, createIfMissing) {
   const q = encodeURIComponent(`name = '${name}' and mimeType = 'application/vnd.google-apps.folder' and trashed = false`);
   const res = await fetch(`https://www.googleapis.com/drive/v3/files?q=${q}&fields=files(id,name)`, { headers: { Authorization: `Bearer ${token}` } });
   const data = await res.json();
-  if (data.files && data.files.length) { folderId = data.files[0].id; localStorage.setItem('or-drive-folder-id', folderId); return folderId; }
+  if (data.files && data.files.length) { folderId = data.files[0].id; localStorage.setItem('or-drive-folder-id', folderId); localStorage.setItem('or-drive-folder-name', data.files[0].name); return folderId; }
   if (!createIfMissing) return null;
   const createRes = await fetch('https://www.googleapis.com/drive/v3/files?fields=id', {
     method: 'POST',
@@ -2643,7 +2648,45 @@ async function driveFolderId(token, createIfMissing) {
   if (!createRes.ok) throw new Error(`HTTP ${createRes.status}`);
   const created = await createRes.json();
   localStorage.setItem('or-drive-folder-id', created.id);
+  localStorage.setItem('or-drive-folder-name', name);
   return created.id;
+}
+function currentDocsFolderName() {
+  return localStorage.getItem('or-drive-folder-name') || tripFolderName();
+}
+// Lets the traveller point Or's document uploads at any folder they can see in
+// Drive - their own, or one shared with them - instead of the auto-created
+// per-trip folder above. Same drive.file + Picker escape hatch as
+// openSharedFilePicker(): explicitly selecting a folder here grants this app
+// drive.file-scoped access to it, same as if Or had created it itself.
+async function chooseDocsFolder() {
+  if (!GOOGLE_API_KEY) { toast(t('drive.folderPickerNotConfigured'), true); return; }
+  try {
+    const token = await driveEnsureToken();
+    await loadPickerApi();
+    const view = new google.picker.DocsView(google.picker.ViewId.FOLDERS)
+      .setIncludeFolders(true)
+      .setSelectFolderEnabled(true);
+    const picker = new google.picker.PickerBuilder()
+      .setOAuthToken(token)
+      .setDeveloperKey(GOOGLE_API_KEY)
+      .addView(view)
+      .setCallback(data => {
+        if (data.action !== google.picker.Action.PICKED) return;
+        const folder = data.docs[0];
+        localStorage.setItem('or-drive-folder-id', folder.id);
+        localStorage.setItem('or-drive-folder-name', folder.name);
+        toast(t('drive.folderChosen', { name: folder.name }));
+        updateDocsFolderLabel();
+        void driveListDocuments();
+      })
+      .build();
+    picker.setVisible(true);
+  } catch (err) { toast(t('drive.folderPickError', { msg: err.message }), true); }
+}
+function updateDocsFolderLabel() {
+  const el = document.getElementById('driveDocsFolderName');
+  if (el) el.textContent = currentDocsFolderName();
 }
 
 function cleanAssistantBriefInstructions(value) {
@@ -2860,6 +2903,7 @@ async function assistantBriefForPrompt() {
   catch (err) { return ''; }
 }
 async function loadTripDocumentsTab() {
+  updateDocsFolderLabel();
   await driveListDocuments();
 }
 // Uploads one or more PDFs picked in a single file-dialog selection, all
@@ -5001,6 +5045,9 @@ function tripViewHTML() {
       </section>
       <section class="panel" id="tripDocsUploadSection" hidden>
         <h2>${t('drive.docsHeading')}</h2>
+        <p class="file-hint">${t('drive.docsFolderLabel')} <strong id="driveDocsFolderName"></strong>
+          <button type="button" class="btn-ghost" id="driveChooseFolderBtn" style="margin-inline-start:var(--space-2)">${t('drive.chooseFolderBtn')}</button>
+        </p>
         <label><span>${t('drive.docDescLabel')}</span>
           <input type="text" id="driveDocDescInput" placeholder="${t('drive.docDescPh')}">
         </label>
@@ -5099,6 +5146,7 @@ function wireTripView() {
   assistantBriefInput.addEventListener('input', () => { assistantBriefInput.dataset.dirty = '1'; });
   document.getElementById('driveAssistantBriefSaveBtn').addEventListener('click', saveAssistantBriefFromEditor);
   document.getElementById('driveAssistantBriefOpenBtn').addEventListener('click', openAssistantBrief);
+  document.getElementById('driveChooseFolderBtn').addEventListener('click', chooseDocsFolder);
   document.getElementById('driveUploadDocBtn').addEventListener('click', () => document.getElementById('driveDocFileInput').click());
   document.getElementById('driveCaptureDocBtn').addEventListener('click', () => document.getElementById('driveDocCameraInput').click());
   const uploadFromInput = async ev => {
@@ -5943,6 +5991,7 @@ function renderTripDocsTab(shouldFetch) {
   const connected = isDriveConnected();
   prompt.hidden = connected;
   section.hidden = !connected;
+  if (connected) updateDocsFolderLabel();
   if (connected && shouldFetch) void loadTripDocumentsTab();
 }
 

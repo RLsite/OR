@@ -2,6 +2,10 @@
 
 All notable changes to Or are logged here, newest first. Version shown matches the number in the app's Help dialog (בדיקת עדכונים).
 
+## 1.36.7 — 2026-09-11
+
+- **Added**: the Documents tab now shows which Drive folder trip documents are saved to, with a "Choose a different folder" button to point it at any folder you can see in Drive (yours, or one shared with you) instead of only the automatically created per-trip folder.
+
 ## 1.36.6 — 2026-09-06
 
 - **Added**: every chat message in the trip assistant can now be copied or deleted individually - deleting also removes it from what the assistant remembers for the rest of the conversation.

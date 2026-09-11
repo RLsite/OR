@@ -2,6 +2,10 @@
 
 All notable changes to Or are logged here, newest first. Version shown matches the number in the app's Help dialog (בדיקת עדכונים).
 
+## 1.36.8 — 2026-09-11
+
+- **Fixed**: connecting to Google Drive from Or installed as a home-screen app (iOS "Add to Home Screen", or an installed PWA) failed with a confusing, unbranded Google "Can't access your Google Account" page instead of working. The app now detects that installed/standalone mode ahead of time and shows a clear message asking to open the site in a regular browser tab to connect, then return to the shortcut.
+
 ## 1.36.7 — 2026-09-11
 
 - **Added**: the Documents tab now shows which Drive folder trip documents are saved to, with a "Choose a different folder" button to point it at any folder you can see in Drive (yours, or one shared with you) instead of only the automatically created per-trip folder.
